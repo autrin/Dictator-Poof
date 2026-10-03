@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://mymrq7n44bjc"]
 
-[ext_resource type="Script" path="res://scripts/game.gd" id="1_game"]
+[ext_resource type="Script" uid="uid://bcavc0ktjslxm" path="res://scripts/game.gd" id="1_game"]
 
-[node name="DictatorPoof" type="Node3D"]
+[node name="DictatorPoof" type="Node3D" unique_id=1514121022]
 script = ExtResource("1_game")

@@ -13,7 +13,7 @@ func _ready() -> void:
 	settings.background_color = Color("111c31")
 	settings.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	settings.ambient_light_color = Color("a4bbd5")
-	settings.ambient_light_energy = 0.36
+	settings.ambient_light_energy = 0.08
 	settings.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	environment.environment = settings
 	add_child(environment)
