@@ -31,6 +31,7 @@ func _ready() -> void:
 	add_child(collision)
 	visual = Node3D.new()
 	add_child(visual)
+	add_face_picture()
 	PoofShapes.box(visual, Vector3(0, 1.05, 0), Vector3(0.64, 0.65, 0.34), Color("5f5961"))
 	PoofShapes.box(visual, Vector3(0, 1.63, 0), Vector3(0.7, 0.58, 0.54), Color("b79887"))
 	PoofShapes.box(visual, Vector3(0, 1.97, 0), Vector3(0.83, 0.13, 0.68), Color("31333e"))
@@ -123,3 +124,21 @@ func take_damage(amount: int, point: Vector3) -> void:
 		tween.tween_property(visual, "rotation:x", -PI / 2.0, 0.3)
 		tween.parallel().tween_property(visual, "position:y", 0.22, 0.3)
 		# Bodies stay in the level; no smoke or disappearing death effect.
+
+func add_face_picture() -> void:
+	var face := MeshInstance3D.new()
+	var quad := QuadMesh.new()
+	quad.size = Vector2(0.70, 0.70)
+	face.mesh = quad
+
+	var material := StandardMaterial3D.new()
+	material.albedo_texture = load(
+		"res://assets/textures/faces/A_Kh_face.jpg"
+	) as Texture2D
+	material.roughness = 1.0
+	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	face.material_override = material
+
+	visual.add_child(face)
+	face.position = Vector3(0, 1.63, -0.39)
+	face.rotation.y = PI
