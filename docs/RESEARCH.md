@@ -1,58 +1,62 @@
-# Research notebook
+# Iran references
 
-Accessed 27 September 2026. This is an initial narrative reference list, not
-an exhaustive history. Source findings and invented gameplay are separate.
-No source text, documentary footage, photographs, or recordings are bundled.
+This is a short reference shelf for the game's story and art. References are
+not asset licenses. Fictional scenes and dialogue should be identified as such.
 
-## Surveillance and control of ordinary life
+## Books selected by the creator
 
-**UN Geneva, 14 March 2025:** the Iran Fact-Finding Mission described increased
-surveillance tied to mandatory hijab enforcement, including online repression
-and the Nazer reporting app. It also described sanctions against peaceful
-human-rights activity and abuses during the repression of protests.
+The screenshot shows filenames, not the books' contents; these have not been
+read in this session. Editions and translations still need identifying.
 
-[UN Geneva briefing](https://www.unognewsroom.org/story/en/2562/hrc-press-conference-independent-international-fact-finding-mission-on-the-islamic-republic-of-iran-14-march-2025)
+- **Shahnameh — Ferdowsi:** a personal favorite, mentioned separately.
+- **Two Centuries of Silence — Abdolhossein Zarrinkoub:** the creator's
+  reference for the two centuries following the Arab conquest.
+- **Twenty-Three Years — Ali Dashti:** Persian and English filenames shown.
+- **Persepolis — Marjane Satrapi.**
+- **A History of Iran: Empire of the Mind — Michael Axworthy.**
+- **All the Shah's Men — Stephen Kinzer.**
+- **The Blind Owl — Sadegh Hedayat.**
+- **History of the Iranian Constitutional Revolution — Ahmad Kasravi.**
+- **A Look at the Shah — Abbas Milan.i**
+- **Zoroastrians: Their Religious Beliefs and Practices — Mary Boyce.**
+- Additional filenames concern Babak Khorramdin, ancient Iranian history,
+  and works titled Soghoot-e Behesht and Tavallod-e Digar. Identify authors
+  and editions before attributing claims to them.
 
-Creative interpretation: intrusive announcements and obstructive permissions.
-The game's absurd office signs are original satire, not quotations from law.
+## Story and visual references
 
-## Internet shutdowns and isolation
+- [Kaveh — Encyclopaedia Iranica](https://www.iranicaonline.org/articles/kava-hero/):
+  the blacksmith's resistance to Zahhak and the banner tradition. Used for
+  the fictional lane's name and an original banner, not copied artwork.
+- [Anti-Iranian sentiment — Wikipedia](https://en.wikipedia.org/wiki/Anti-Iranian_sentiment):
+  supplied by the creator; context and citation leads on discrimination,
+  Ajam, and the early conquest period. Consult the underlying sources before
+  adapting particular historical claims.
+- [Persian protest slogans](https://iranslogans.org/posts/slogans/):
+  wording leads, including زن، زندگی، آزادی.
+- [Zahedan wall-writing, November 2022](https://www.iranintl.com/fa/202211013268/):
+  visual reference; no photograph copied.
+- [Iran Human Rights on X](https://x.com/IHRights/status/2025629156193554590):
+  a chant reference lead. Check event date, original footage, and corroboration
+  before treating social-media material as verified history.
 
-**Amnesty International, A Web of Impunity:** an investigation of the November
-2019 crackdown describes how an internet shutdown impeded communication and
-documentation of killings. It explains its verification methods and dataset
-updates. This historical investigation is not evidence of current app-by-app
-filtering status.
+## Contemporary context
 
-[Investigation](https://iran-shutdown.amnesty.org/)
+- [UN Fact-Finding Mission, March 2025](https://www.unognewsroom.org/story/en/2562/hrc-press-conference-independent-international-fact-finding-mission-on-the-islamic-republic-of-iran-14-march-2025):
+  compulsory hijab, surveillance, and repression.
+- [Amnesty: A Web of Impunity](https://iran-shutdown.amnesty.org/):
+  the November 2019 internet shutdown and crackdown.
+- [Amnesty, September 2022](https://www.amnesty.org/en/latest/news/2022/09/iran-protester-killings-must-be-urgently-investigated-by-international-accountability-mechanism-says-amnesty-chief/):
+  protest repression.
+- [Joint reporting, September 2025](https://www.amnesty.org/en/latest/news/2025/09/iran-authorities-unleash-wave-of-oppression-after-hostilities-with-israel/):
+  repression following the June hostilities.
+- [Amnesty, January 2026](https://www.amnesty.org/en/latest/campaigns/2026/01/what-happened-at-the-protests-in-iran/):
+  protest killings. No numerical casualty claim is used in the game.
+- [Ramadan enforcement, March 2025](https://www.iranintl.com/en/202503040841):
+  public eating and venue restrictions during fasting hours. Enforcement
+  details should be tied to the story's time and place.
 
-Creative interpretation: restoring a broadcast means reconnecting people,
-not simply completing a technical checklist.
-
-## War and intensified domestic repression
-
-**Amnesty International and Human Rights Watch, 3 September 2025:** reporting
-describes arrests and repression under national-security claims following the
-June 2025 hostilities with Israel.
-
-[Joint reporting](https://www.amnesty.org/en/latest/news/2025/09/iran-authorities-unleash-wave-of-oppression-after-hostilities-with-israel/)
-
-Creative interpretation: private conversations and ordinary plans disrupted
-by overlapping threats. Keep civilian experience central.
-
-## January 2026 protests
-
-**Amnesty International, 26 January 2026:** the article describes massacres
-primarily on 8–9 January and a death toll in the thousands. It does not establish
-a verified total of 40,000. The prototype makes no numerical casualty claim.
-
-[Background article](https://www.amnesty.org/en/latest/campaigns/2026/01/what-happened-at-the-protests-in-iran/)
-
-## Adding accounts later
-
-Record source, publication date, event date, firsthand versus secondary
-account, corroboration, uncertainty, and permission to reuse media. X posts
-and blogs can identify leads and perspectives, but a repost alone does not
-verify an event. Preserve distinctions between witness experience, reported
-findings, historical facts, and fictional composites. Add sources on economic
-pressure and LGBTQ+ life before presenting detailed general claims about them.
+The game uses a fictional present-day neighborhood. Specific legal claims,
+historical episodes, and the unnamed professor's language-ancestry account
+need their actual sources before adaptation. The native-Persian writing
+preference is already part of the creative direction.

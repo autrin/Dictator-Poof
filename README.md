@@ -1,5 +1,5 @@
 # Dictator Poof
-
+![Game Screenshot](game-sc.png)
 **A night on Kaveh Lane. Bring back the light.**
 
 A first-person resistance game set in a fictional Iranian neighborhood.
@@ -41,6 +41,15 @@ in `player.gd`, and patrol behavior in `guard.gd`.
 
 [Story and creative direction](docs/STORY.md) · [Iran references](docs/RESEARCH.md)
 
+## License and project identity
+
+Original source code is licensed under [GPL-3.0-or-later](LICENSE). The
+project was founded and is directed by **Autrin**. Keep the copyright, license,
+and founder notices in copies and substantial distributions. Modified releases
+must use a distinct name and branding; see [TRADEMARKS.md](TRADEMARKS.md).
+Contributors are welcome and credited in [CONTRIBUTORS.md](CONTRIBUTORS.md).
+For formal reuse credit, see [CITATION.cff](CITATION.cff).
+
 ## Checks
 
 With Godot on PATH:
@@ -57,7 +66,7 @@ A full manual playthrough and performance benchmark remain to be done.
 
 ## Credits
 
-Original code and procedural art: [MIT](LICENSE).
+Original code and procedural art: [GPL-3.0-or-later](LICENSE).
 Bundled Persian font: [Vazirmatn, SIL OFL 1.1](assets/fonts/vazirmatn/OFL.txt),
 by the Vazirmatn Project Authors. [Source and credits](assets/fonts/vazirmatn/README.md).
 The existing face image in `assets/textures/faces/` is separate from these
