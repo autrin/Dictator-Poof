@@ -43,7 +43,7 @@ func _ready() -> void:
 		legs.append(PoofShapes.box(visual, Vector3(side * 0.19, 0.36, 0), Vector3(0.23, 0.7, 0.28), Color("292e38")))
 		PoofShapes.box(visual, Vector3(side * 0.4, 1.03, -0.06), Vector3(0.18, 0.56, 0.23), Color("5f5961"))
 	PoofShapes.box(visual, Vector3(0.26, 1.04, -0.4), Vector3(0.14, 0.15, 0.62), Color("181f2b"))
-	bark = PoofShapes.label(self, Vector3(0, 2.65, 0), "", Color("f9d7a0"), 24)
+	bark = game.world.persian(self, Vector3(0, 2.65, 0), "", Color("f9d7a0"), 24)
 	bark.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 
 func _physics_process(delta: float) -> void:
@@ -78,7 +78,7 @@ func _physics_process(delta: float) -> void:
 		if visible:
 			attack_left -= delta
 		visor.material_override.albedo_color = Color("fff1c2") if attack_left < 0.4 else Color("ed8575")
-		bark.text = ["STOP! YOU NEED A FORM!", "RUNNING IS NOT APPROVED!", "I AM THE MANAGER!"][guard_index % 3]
+		bark.text = ["بایست!", "برگرد!", "همین‌جا بمان!"][guard_index % 3]
 		if attack_left <= 0.0 and visible:
 			attack_left = 2.1
 			game.tracer(global_position + Vector3(0, 1.25, 0), game.player.camera.global_position, Color("ff726e"))
@@ -115,7 +115,7 @@ func take_damage(amount: int, point: Vector3) -> void:
 	game.impact(point, true)
 	if health <= 0:
 		alive = false
-		bark.text = "ON AN UNSCHEDULED BREAK."
+		bark.text = ""
 		visual.rotation = Vector3.ZERO
 		collision_layer = 0
 		collision_mask = 0

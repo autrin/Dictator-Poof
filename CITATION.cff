@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+title: "Dictator Poof"
+message: "If you use or build on this project, please cite the founder and contributors."
+authors:
+  - family-names: "Autrin"
+    given-names: "Autrin"
+    affiliation: "Founder and director of Dictator Poof"
+version: "0.1.0"
+date-released: 2026-10-03
+repository-code: "https://github.com/autrin/Dictator-Poof"
+license: "GPL-3.0-or-later"
+keywords:
+  - Godot
+  - Iran
+  - resistance game

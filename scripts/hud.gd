@@ -15,6 +15,8 @@ var description: Label
 var start_button: Button
 var blood_button: CheckButton
 var hint: Label
+var replay_button: Button
+var controls: Label
 
 func _ready() -> void:
 	var root := Control.new()
@@ -37,14 +39,14 @@ func _ready() -> void:
 	top.position = Vector2(32, 26)
 	hud.add_child(top)
 	text(top, "D I C T A T O R   P O O F   /   0 1", 16, TEAL)
-	objective = text(top, "RESTORE THE SIGNAL   0 / 3", 25)
-	text(top, "DEPARTMENT OF NO · AFTER HOURS", 12, Color("b3b5c0"))
+	objective = text(top, "LIGHT UP THE LANE   0 / 3", 25)
+	text(top, "KAVEH LANE · DUSK", 12, Color("dbc1a4"))
 	stats = Label.new()
 	stats.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
 	stats.position = Vector2(32, -82)
 	stats.add_theme_font_size_override("font_size", 24)
 	hud.add_child(stats)
-	var controls := Label.new()
+	controls = Label.new()
 	controls.text = "WASD  Move   /   SHIFT  Sprint   /   CTRL  Crouch   /   LMB  Fire   /   R  Reload   /   E  Interact   /   ESC  Pause"
 	controls.add_theme_font_size_override("font_size", 14)
 	controls.modulate = Color("b3b5c0")
@@ -63,6 +65,7 @@ func _ready() -> void:
 	prompt.position = Vector2(-300, -140)
 	prompt.size = Vector2(600, 40)
 	prompt.add_theme_font_size_override("font_size", 22)
+	prompt.add_theme_font_override("font", preload("res://assets/fonts/vazirmatn/Vazirmatn.ttf"))
 	prompt.modulate = TEAL
 	hud.add_child(prompt)
 	menu = PanelContainer.new()
@@ -78,21 +81,26 @@ func _ready() -> void:
 	style.set_border_width_all(1)
 	style.content_margin_left = 34
 	style.content_margin_right = 34
-	style.content_margin_top = 28
-	style.content_margin_bottom = 28
+	style.content_margin_top = 22
+	style.content_margin_bottom = 22
 	menu.add_theme_stylebox_override("panel", style)
 	var column := VBoxContainer.new()
-	column.add_theme_constant_override("separation", 12)
+	column.add_theme_constant_override("separation", 9)
 	menu.add_child(column)
 	text(column, "AN OPEN-SOURCE RESISTANCE GAME", 13, TEAL)
 	heading = text(column, "DICTATOR POOF", 40)
-	text(column, "01  /  BREAK THE BLACKOUT", 18, Color("e6bb7d"))
-	description = text(column, "Three blocked relays. One very insecure regime.\nRestore the broadcast. Outrun the bureaucracy.\n\nA darkly comic FPS with fictional combatants.\nModerate blood; no dismemberment.", 17, Color("c1c6d0"))
+	text(column, "01  /  A NIGHT ON KAVEH LANE", 18, Color("e6bb7d"))
+	description = text(column, "Friends have laid out a rug. The street is dark.\nRestore three power boxes around the lane,\nthen return to the speaker beside your friends.\n\nEvade or fight the patrols. Bring back the light.", 17, Color("c1c6d0"))
 	start_button = Button.new()
-	start_button.text = "CLOCK IN. CAUSE PROBLEMS."
+	start_button.text = "STEP INTO THE LANE"
 	start_button.custom_minimum_size.y = 48
 	start_button.pressed.connect(func(): game.start_or_resume())
 	column.add_child(start_button)
+	replay_button = Button.new()
+	replay_button.text = "REPLAY THE NIGHT"
+	replay_button.pressed.connect(func(): game.restart_mission())
+	column.add_child(replay_button)
+	replay_button.hide()
 	blood_button = CheckButton.new()
 	blood_button.text = "Blood effects"
 	blood_button.button_pressed = game.blood_enabled
@@ -136,18 +144,19 @@ func show_menu(state: String) -> void:
 	menu.visible = true
 	hud.visible = false
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	replay_button.visible = game.victory
 	match state:
 		"pause":
 			heading.text = "TAKE A BREATH"
 			description.text = "Mission paused.\nYour progress is safe for this session."
 			start_button.text = "RESUME"
 		"won":
-			heading.text = "SIGNAL RESTORED"
-			description.text = "The blackout is broken. The city can hear you.\n\nTime: %.0f seconds  /  Guards defeated: %d\nThank you for playing this early prototype." % [game.run_time, game.guards_defeated]
-			start_button.text = "PLAY AGAIN"
+			heading.text = "THE LANE IS ALIVE"
+			description.text = "Windows glow. Friends begin to dance.\nTonight, there is room to breathe.\n\nStay for the gathering, or play the night again."
+			start_button.text = "JOIN YOUR FRIENDS"
 		"lost":
 			heading.text = "TRY AGAIN"
-			description.text = "Use cover to break the guards' line of sight.\nTheir visors brighten just before they fire.\nRestoring a relay recovers 25 health."
+			description.text = "Use planters and the fountain to break sight.\nPatrol visors brighten just before they fire.\nRestoring a power box recovers 25 health."
 			start_button.text = "RESTART MISSION"
 	start_button.grab_focus()
 
@@ -155,15 +164,21 @@ func hide_menu() -> void:
 	menu.hide()
 	hud.show()
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	replay_button.hide()
 
 func update() -> void:
 	if not is_instance_valid(game.player):
 		return
 	var reload_text := "RELOADING" if game.player.reload_left > 0 else "%02d / 12" % game.player.ammo
 	stats.text = "HEALTH  %03d     /     AMMO  %s" % [game.player.health, reload_text]
-	objective.text = "RESTORE THE SIGNAL   %d / 3" % game.relays_online
+	objective.text = "LIGHT UP THE LANE   %d / 3" % game.relays_online
 	if game.relays_online == 3:
-		objective.text = "REACH THE UPLINK  /  BROADCAST"
+		objective.text = "RETURN TO YOUR FRIENDS  /  SOUTH COURTYARD"
+	if game.victory:
+		objective.text = "TONIGHT, WE LIVE"
+	controls.text = "WASD  Move   /   E  Speak with friends   /   ESC  Pause" if game.victory else "WASD  Move   /   SHIFT  Sprint   /   CTRL  Crouch   /   LMB  Fire   /   R  Reload   /   E  Interact   /   ESC  Pause"
+	stats.visible = not game.victory
+	crosshair.visible = not game.victory
 	prompt.text = game.interaction_prompt()
 	crosshair.text = "×" if game.hit_marker > 0 else "+"
 	crosshair.modulate = Color("f4cd8a") if game.hit_marker > 0 else Color.WHITE
