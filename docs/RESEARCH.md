@@ -17,7 +17,7 @@ read in this session. Editions and translations still need identifying.
 - **All the Shah's Men — Stephen Kinzer.**
 - **The Blind Owl — Sadegh Hedayat.**
 - **History of the Iranian Constitutional Revolution — Ahmad Kasravi.**
-- **A Look at the Shah — Abbas Milan.i**
+- **A Look at the Shah — Abbas Milan.**
 - **Zoroastrians: Their Religious Beliefs and Practices — Mary Boyce.**
 - Additional filenames concern Babak Khorramdin, ancient Iranian history,
   and works titled Soghoot-e Behesht and Tavallod-e Digar. Identify authors
