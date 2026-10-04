@@ -31,17 +31,17 @@ without making their suffering a punchline. Sexual violence stays off-screen.
 
 Let characters have their own views on the Pahlavi era, religion, the West,
 and Iran's future. Satire targets abusive power. Love of Iran is expressed
-through people and places, not claims that every Iranian thinks alike.
+through people and places.
 
-Future places: a private party, a rooftop escape, a shuttered cafe, a transit
+Future places: a private party, a bar, a rooftop escape, a shuttered cafe, a transit
 stop, a workplace, and a street protest. Add weapon variety after encounters
-feel good; improvised game items need no real-world construction instructions.
+feel good.
 
 ## Words and references
 
 Use native Persian vocabulary rather than Arabic loanwords wherever Persian
 is spoken or written. Review uncertain words with the creator. The opening
-uses زن، زندگی، آزادی, کوچهٔ کاوه, نان, شاهنامه, and کنار هم.
+uses زن، زندگی، آزادی, کوچه کاوه, نان, شاهنامه, and کنار هم.
 English remains available for controls and gameplay instructions.
 
 The creator particularly loves the Shahnameh. Other requested references
@@ -50,9 +50,3 @@ constitutional history, and Zoroastrian traditions. See [RESEARCH.md](RESEARCH.m
 for sources and the book list. Depict a specific story rather than treating
 every historical interpretation as settled fact.
 
-## Making it together
-
-Build one visible improvement, play it, and let the creator change something
-small. Explain only the code needed for that change. Keep documentation short.
-The next useful choice is which home, character, or piece of street art should
-feel most personal.

@@ -43,7 +43,7 @@ func _ready() -> void:
 	banner(Vector3(0, 4.6, -23.3))
 	var street_name := persian(self, Vector3(0, 3.2, -23.25), "کوچهٔ کاوه", Color("f0dbab"), 62)
 	street_name.pixel_size = 0.012
-	for data in [Vector3(-15.39, 0.15, 13), Vector3(15.39, 0.15, -1)]:
+	for data in [Vector3(-15.39, 0.15, 15), Vector3(15.39, 0.15, -1)]:
 		var wall := GraffitiWall.instantiate()
 		wall.position = data
 		wall.rotation_degrees.y = 90 if data.x < 0 else -90
