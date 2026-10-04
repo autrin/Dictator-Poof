@@ -1,5 +1,7 @@
 extends Node3D
-## An after-hours censorship office. Original primitive art, no external assets.
+## An after-hours censorship office with original geometry and a Persian wall scene.
+
+const GraffitiWall := preload("res://scenes/graffiti_wall.tscn")
 
 const SAND := Color("81766f")
 const DARK := Color("30394a")
@@ -72,6 +74,13 @@ func _ready() -> void:
 	PoofShapes.label(self, Vector3(0, 2.25, 13), "Find the three amber relay terminals", Color("c0bcb0"), 22)
 	PoofShapes.label(self, Vector3(-9, 3.3, -22.9), "PERMISSION REQUIRED\nTO REQUEST PERMISSION", Color("d9c69b"), 25)
 	PoofShapes.label(self, Vector3(9, 3.3, -22.9), "EMPLOYEE OF THE MONTH:\nTHE SURVEILLANCE CAMERA", Color("d9c69b"), 24)
+	# A decorative wall skin between windows, outside the navigable floor.
+	# Edit its lettering and materials visually in scenes/graffiti_wall.tscn.
+	var graffiti := GraffitiWall.instantiate()
+	graffiti.position = Vector3(-15.42, 0.15, 13)
+	graffiti.rotation_degrees.y = 90.0
+	add_child(graffiti)
+	lamp(Vector3(-14.7, 3.35, 13), Color("ffd5a0"))
 
 func lamp(at: Vector3, color: Color) -> void:
 	PoofShapes.box(self, at, Vector3(0.18, 0.45, 0.18), color, false, 1.5)

@@ -45,7 +45,10 @@ func run() -> void:
 	check(guards.size() == 3, "three fictional guards spawn")
 	var initial_z: float = game.player.position.z
 	Input.action_press("forward")
-	await create_timer(0.25).timeout
+	# Count simulated movement steps: font/texture startup can consume a
+	# wall-clock timer before a quarter-second of physics has actually run.
+	for tick in range(ceili(Engine.physics_ticks_per_second * 0.25) + 1):
+		await physics_frame
 	Input.action_release("forward")
 	check(game.player.position.z < initial_z - 0.7, "WASD moves the player through actual physics")
 	game.pause_run()

@@ -66,6 +66,7 @@ implemented. There are no real-person likenesses in this prototype.
 ## Learn and contribute
 
 - [How the code works](docs/LEARNING.md)
+- [first wall: edit and preview Persian graffiti](docs/FIRST_WALL.md)
 - [Creative direction and next milestones](docs/DESIGN.md)
 - [Research notes and source links](docs/RESEARCH.md)
 - [Contribution guide](CONTRIBUTING.md)
@@ -89,4 +90,5 @@ Original code, procedural geometry, and generated tones in this repository
 are under the [MIT license](LICENSE). Godot is a separate MIT-licensed dependency;
 see [Godot license and third-party notices](https://godotengine.org/license/).
 Research articles are linked for reference and remain under their own licenses.
-There are no downloaded models, photos, voices, fonts, or music in this prototype.
+The graffiti wall bundles Vazirmatn under the SIL Open Font License;
+see [font credits and license](assets/fonts/vazirmatn/README.md).
