@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 title: "Dictator Poof"
-message: "If you use or build on this project, please cite the founder and contributors."
+message: "For distribution attribution requirements, see NOTICE. This metadata supports academic citation and identifies the project founder; credit contributors as appropriate."
 authors:
   - family-names: "Hakimi"
     given-names: "Autrin"

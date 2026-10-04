@@ -4,11 +4,49 @@ Founded and directed by Autrin Hakimi.
 
 Copyright (C) 2026 Autrin Hakimi and Dictator Poof contributors.
 
-When you redistribute this project or a substantial portion of it, preserve
-this notice and the copyright and license notices required by GPL-3.0-or-later.
-If you distribute a modified version, identify that you changed it and do not
-present it as the official Dictator Poof release.
+Unless a file states otherwise, the original source code, documentation,
+and original procedural art in this repository are licensed under the GNU
+General Public License as published by the Free Software Foundation, either
+version 3 of the License, or (at your option) any later version.
+SPDX-License-Identifier: GPL-3.0-or-later
+
+This project is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See LICENSE for the full license text.
+
+Redistributions must comply with the GPL, including preserving applicable
+copyright, license, and warranty notices. Modified distributions must carry
+prominent notices stating that they were changed and giving a relevant date.
+Distribution of executable versions also requires compliance with the GPL's
+Corresponding Source requirements. See LICENSE, sections 4 through 6.
+
+Bundled third-party assets have separate terms; see THIRD_PARTY_NOTICES.md.
+The project name and branding are addressed separately in TRADEMARKS.md.
 
 Contributors are credited in repository history and in CONTRIBUTORS.md when
 they request inclusion. This notice recognizes the project's founder without
 claiming that the founder authored every contribution.
+
+Additional attribution term under GNU GPL version 3, section 7(b)
+
+For original material in this repository released by Autrin Hakimi, preserve
+the following reasonable copyright and author attribution notices in copies
+and distributed modified versions containing that material, including
+separately named games:
+
+  Copyright (C) 2026 Autrin Hakimi and Dictator Poof contributors.
+  Original Dictator Poof project: Autrin Hakimi and contributors.
+
+Keep these notices with the covered material and in any Appropriate Legal
+Notices displayed by works containing it. Accompanying license or credits
+files may carry the notices for distributions of executable versions.
+The placement and presentation may change, and attribution may be adapted
+to accurately identify the retained original material and distinguish it
+from later contributions. Do not remove credit for retained original material.
+
+This term does not require a particular game name, logo, hyperlink, advertising
+credit, or citation in research papers. Separate releases and commercial
+distribution are permitted when the GPL and this attribution term are met.
+It does not claim authorship of later contributions or imply endorsement.
+It applies only to material the licensor has authority to license; third-party
+materials remain subject to their own terms. The GPL text in LICENSE is unchanged.

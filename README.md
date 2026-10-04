@@ -44,11 +44,17 @@ in `player.gd`, and patrol behavior in `guard.gd`.
 ## License and project identity
 
 Original source code is licensed under [GPL-3.0-or-later](LICENSE). The
-project was founded and is directed by **Autrin**. Keep the copyright, license,
-and founder notices in copies and substantial distributions. Modified releases
-must use a distinct name and branding; see [TRADEMARKS.md](TRADEMARKS.md).
+project was founded and is directed by **Autrin Hakimi**. Original documentation
+and procedural art use the same license unless otherwise identified. Preserve
+applicable copyright, license, and warranty notices when redistributing; see
+[NOTICE](NOTICE) for scope and distribution requirements, including the
+mandatory preservation of copyright and author attribution under GPLv3
+section 7(b). Separate releases under different names are allowed, but must
+retain credit for Autrin Hakimi and contributors in their accompanying notices.
+Avoid implying official
+endorsement of modified releases; see [TRADEMARKS.md](TRADEMARKS.md).
 Contributors are welcome and credited in [CONTRIBUTORS.md](CONTRIBUTORS.md).
-For formal reuse credit, see [CITATION.cff](CITATION.cff).
+For optional reuse credit, see [CITATION.cff](CITATION.cff).
 
 ## Checks
 
@@ -71,3 +77,5 @@ Bundled Persian font: [Vazirmatn, SIL OFL 1.1](assets/fonts/vazirmatn/OFL.txt),
 by the Vazirmatn Project Authors. [Source and credits](assets/fonts/vazirmatn/README.md).
 The existing face image in `assets/textures/faces/` is separate from these
 original assets; its provenance/license needs recording before distribution.
+See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the asset inventory
+and release requirements, including Godot engine attribution for exported games.
