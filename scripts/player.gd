@@ -95,7 +95,7 @@ func reload() -> void:
 		game.play_tone(260.0, 0.09, 0.15)
 
 func shoot() -> void:
-	if not game.active or fire_left > 0.0 or reload_left > 0.0:
+	if not game.active or game.victory or fire_left > 0.0 or reload_left > 0.0:
 		return
 	if ammo <= 0:
 		reload()
@@ -118,7 +118,7 @@ func shoot() -> void:
 	game.tracer(weapon.global_position - camera.global_basis.z * 0.2, to, Color("f6d995"))
 
 func take_damage(amount: int) -> void:
-	if not game.active:
+	if not game.active or game.victory:
 		return
 	health = maxi(0, health - amount)
 	game.hurt_flash = 0.28

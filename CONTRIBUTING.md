@@ -1,6 +1,6 @@
 # Contributing
 
-Use Godot 4.6.2 or newer and GDScript. Keep changes small and describe the
+Use Godot 4.7.2 Standard and GDScript. Keep changes small and describe the
 player-facing behavior they change. Open a branch and pull request rather
 than changing the default branch directly.
 
@@ -16,3 +16,12 @@ that an image, voice, song, or post found online is reusable. Keep real-world
 research in `docs/RESEARCH.md`, with dates and sources. Clearly identify
 fictional satire. Avoid publishing private identifying details from a
 contributor's personal account without their explicit agreement.
+
+Use the creator's configured Git identity for authorized commits. Do not add
+AI author, committer, or co-author attribution. Check the commits
+being published before a push; do not rewrite history without a request.
+
+The code is GPL-3.0-or-later. Keep the copyright, license, and founder notices
+when redistributing it. See [TRADEMARKS.md](TRADEMARKS.md) for the separate
+rules for the Dictator Poof name and official branding. Contributors may ask
+to be listed in [CONTRIBUTORS.md](CONTRIBUTORS.md).

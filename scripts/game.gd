@@ -17,13 +17,16 @@ var guards_defeated := 0
 var run_time := 0.0
 var active := false
 var ended := false
+var victory := false
+var beat_left := 0.0
+var beat := 0
 var started := false
 var blood_enabled := true
 var sound_enabled := true
 var sensitivity := 0.002
 var hit_marker := 0.0
 var hurt_flash := 0.0
-var notification := ""
+var message_text := ""
 var notification_left := 0.0
 var effects: Node3D
 var sound_cache: Dictionary = {}
@@ -68,6 +71,9 @@ func build_run() -> void:
 	hurt_flash = 0.0
 	notification_left = 0.0
 	ended = false
+	victory = false
+	beat_left = 0.0
+	beat = 0
 	world = WorldScript.new()
 	world.game = self
 	add_child(world)
@@ -87,7 +93,7 @@ func build_run() -> void:
 		world.add_child(guard)
 
 func build_navigation() -> void:
-	# The office is flat, so a small A* grid is simpler than a baked navigation mesh.
+	# The neighborhood is flat; use the actual static geometry as blocked cells.
 	navigation.region = Rect2i(-15, -23, 31, 47)
 	navigation.cell_size = Vector2.ONE
 	navigation.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_ONLY_IF_NO_OBSTACLES
@@ -111,14 +117,19 @@ func chase_path(from: Vector3, to: Vector3) -> PackedVector2Array:
 
 func start_or_resume() -> void:
 	# Button signals run outside the physics step, so rebuilding here is safe.
-	if ended:
+	if ended and not victory:
 		build_run()
 	started = true
 	active = true
 	hud.hide_menu()
+	player.weapon.visible = not victory
+
+func restart_mission() -> void:
+	build_run()
+	start_or_resume()
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("pause") and not event.is_echo() and started and not ended:
+	if event.is_action_pressed("pause") and not event.is_echo() and started and (not ended or victory):
 		if active:
 			pause_run()
 		else:
@@ -139,6 +150,16 @@ func _process(delta: float) -> void:
 		hit_marker = maxf(0.0, hit_marker - delta)
 		hurt_flash = maxf(0.0, hurt_flash - delta)
 		notification_left = maxf(0.0, notification_left - delta)
+		if victory:
+			beat_left -= delta
+			if beat_left <= 0.0:
+				beat_left = 0.32
+				# An original placeholder melody for the gathering.
+				var notes := [293.66, 349.23, 392.0, 440.0, 392.0, 349.23, 293.66, 261.63]
+				play_tone(notes[beat % notes.size()], 0.24, 0.10)
+				if beat % 2 == 0:
+					play_tone(73.42, 0.09, 0.12)
+				beat += 1
 	# HUD queries are performed in the physics tick, where raycasts are safe.
 
 func _physics_process(_delta: float) -> void:
@@ -157,23 +178,41 @@ func near_and_visible(target: Node3D) -> bool:
 	return result.is_empty() or target.is_ancestor_of(result.collider)
 
 func interaction_prompt() -> String:
+	if notification_left > 0.0:
+		return message_text
+	for friend in world.neighbors:
+		if near_and_visible(friend):
+			return "[E]  Speak with a friend"
+	if victory:
+		return "The lane is yours. Stay a while."
 	for relay in relays:
 		if not relay.online and near_and_visible(relay.node):
-			return "[E]  Unblock relay  /  +25 health"
+			return "[E]  Restore neighborhood power  /  +25 health"
 	if near_and_visible(broadcast):
-		return "[E]  Broadcast without permission" if relays_online == 3 else "Uplink locked  /  Restore all three relays"
-	return notification if notification_left > 0.0 else ""
+		return "[E]  Bring the gathering to life" if relays_online == 3 else "Restore the three power boxes, then come back here"
+	return message_text if notification_left > 0.0 else ""
 
 func interact() -> void:
+	if not active or (ended and not victory):
+		return
+	for friend in world.neighbors:
+		if near_and_visible(friend):
+			var words: String = "بیا کنار ما. امشب زنده‌ایم!" if victory else str(friend.get_meta("line"))
+			message_text = "%s: %s" % [friend.get_meta("name"), words]
+			notification_left = 5.0
+			return
+	if victory:
+		return
 	for relay in relays:
 		if not relay.online and near_and_visible(relay.node):
 			relay.online = true
 			relays_online += 1
 			relay.screen.material_override = PoofShapes.material(Color("81dbc8"), 1.0)
-			relay.label.text = "ONLINE"
+			relay.label.text = "POWER RESTORED"
 			relay.label.modulate = Color("81dbc8")
 			player.health = mini(100, player.health + 25)
-			notification = ["Your freedom request has been... approved?", "Censorship.exe has stopped responding.", "All relays online. Management is unavailable."][relays_online - 1]
+			world.restore_district(relays.find(relay))
+			message_text = ["A window lights up. Someone is still awake.", "More light. The lane feels less alone.", "The power is back. Return to your friends by the rug."][relays_online - 1]
 			notification_left = 4.0
 			play_tone(640.0, 0.2, 0.18)
 			if relays_online == 3:
@@ -187,6 +226,10 @@ func finish(won: bool) -> void:
 		return
 	active = false
 	ended = true
+	victory = won
+	if won:
+		world.celebrate()
+		player.weapon.hide()
 	hud.show_menu("won" if won else "lost")
 
 func tracer(from: Vector3, to: Vector3, color: Color) -> void:
