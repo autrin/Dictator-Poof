@@ -31,13 +31,13 @@ music. It is not a finished realistic city or a completed historical campaign.
 ## Make it yours
 
 Open `scenes/graffiti_wall.tscn`, select **Slogan**, and change **Modulate**
-in the Inspector. Save, open `scenes/graffiti_preview.tscn`, and press **F6**
-for a quiet preview. Ctrl+Z undoes your edit. Both the game and preview use
-the same wall scene. Keep Persian text in reading order; do not reverse it.
+in the Inspector. Save, open `scenes/graffiti_preview.tscn`. Keep Persian text in reading order; do not reverse it.
 
 The neighborhood is built in `scripts/world.gd`. Start with its **BRICK**,
 **PLASTER**, and **TEAL** colors. Mission state lives in `game.gd`, movement
 in `player.gd`, and patrol behavior in `guard.gd`.
+
+The greatest source of inspiration for this project comes from *[docs/Iran WORLDBUILDING.md](docs/IRAN%20WORLDBUILDING.md)*.
 
 [Story and creative direction](docs/STORY.md) · [Iran references](docs/RESEARCH.md)
 
