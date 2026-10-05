@@ -47,7 +47,9 @@ For other contributions, the neighborhood is built in `scripts/world.gd`.
 Mission state lives in `scripts/game.gd`, movement in `scripts/player.gd`,
 and patrol behavior in `scripts/guard.gd`.
 
-The greatest source of inspiration for this project comes from *[docs/Iran WORLDBUILDING.md](docs/IRAN%20WORLDBUILDING.md)*.
+## [docs/Iran WORLDBUILDING.md](docs/IRAN%20WORLDBUILDING.md)
+
+Use **[docs/Iran WORLDBUILDING.md](docs/IRAN%20WORLDBUILDING.md)** as the greatest source of inspiration and ideas for this project.
 
 [Story and creative direction](docs/STORY.md) · [Iran references](docs/RESEARCH.md)
 
