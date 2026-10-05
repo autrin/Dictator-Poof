@@ -28,8 +28,13 @@ The menu offers sound, blood, and sensitivity settings. The neighborhood is
 still a stylized prototype: simple characters, geometry, and synthesized
 music. It is not a finished realistic city or a completed historical campaign.
 
-## Make it yours
+## Contribute
 
+To contribute, fork this repository, create a branch in your fork, and submit
+a pull request to this repository. Collaborators with write access may create
+a branch here directly. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+Example:
 Open `scenes/graffiti_wall.tscn`, select **Slogan**, and change **Modulate**
 in the Inspector. Save, open `scenes/graffiti_preview.tscn`. Keep Persian text in reading order; do not reverse it.
 

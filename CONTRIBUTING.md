@@ -1,8 +1,10 @@
 # Contributing
 
 Use Godot 4.7.2 Standard and GDScript. Keep changes small and describe the
-player-facing behavior they change. Open a branch and pull request rather
-than changing the default branch directly.
+player-facing behavior they change. Fork this repository, create a branch in
+your fork, and submit a pull request to this repository. Collaborators with
+write access may create a branch here directly. Do not change the default
+branch directly.
 
 Run the import and integration commands in the README. Manually verify any
 changes to movement, input, menus, aiming, or lighting. Include the Godot
