@@ -34,13 +34,18 @@ To contribute, fork this repository, create a branch in your fork, and submit
 a pull request to this repository. Collaborators with write access may create
 a branch here directly. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-Example:
-Open `scenes/graffiti_wall.tscn`, select **Slogan**, and change **Modulate**
-in the Inspector. Save, open `scenes/graffiti_preview.tscn`. Keep Persian text in reading order; do not reverse it.
+Example contribution: add another graffiti slogan.
+Open `scenes/graffiti_wall.tscn`, duplicate the **Slogan** node, and give the
+new node a descriptive name. Edit its **Text** in the Inspector, then adjust
+its position and font size so both slogans fit on the wall without overlapping.
+Keep the Persian language and right-to-left settings, and enter Persian text
+in reading order; do not reverse it. You can write in other languages, as well. Save, open `scenes/graffiti_preview.tscn`,
+and press **F6** to check the result. Include the slogan's meaning and any
+historical source in your pull request.
 
-The neighborhood is built in `scripts/world.gd`. Start with its **BRICK**,
-**PLASTER**, and **TEAL** colors. Mission state lives in `game.gd`, movement
-in `player.gd`, and patrol behavior in `guard.gd`.
+For other contributions, the neighborhood is built in `scripts/world.gd`.
+Mission state lives in `scripts/game.gd`, movement in `scripts/player.gd`,
+and patrol behavior in `scripts/guard.gd`.
 
 The greatest source of inspiration for this project comes from *[docs/Iran WORLDBUILDING.md](docs/IRAN%20WORLDBUILDING.md)*.
 
