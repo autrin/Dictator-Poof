@@ -73,16 +73,16 @@ What it actually feels like, which matters more for a game than the political an
 **Islamic Republic (1979–present)**
 - 1981–85 — 7,900+ political prisoners executed (vs. fewer than 100 political executions 1971–79 under the Shah).
 - 1988 — Khomeini's fatwa triggers the mass execution of political prisoners; estimates up to 30,000, including children as young as 13.
-- 2009 — Green Movement. Disputed election. Mass protests, crushed.
+- 2009 — Green Movement. Disputed election. Mass protests, crushed. The Islamic Republic killed a lot of people.
 - 2017–18 — Economic protests spread across small cities and towns.
-- Nov 2019 — "Bloody November." Fuel price protests. **~1,500 killed under a near-total national internet blackout.** This is the template: shutdown first, massacre under cover of it.
+- Nov 2019 — "Bloody November." Fuel price protests. **1,500+ killed under a near-total national internet blackout.** This is the template: shutdown first, massacre under cover of it.
 - Jan 2020 — IRGC shoots down Ukrainian flight PS752, killing 176, then lies about it for days.
-- Sept 2022 — Mahsa (Jina) Amini dies in morality police custody. **Woman, Life, Freedom** erupts nationwide. Internet shut down again. Thousands killed, ~19,000 arrested. The most serious challenge the regime has faced.
+- Sept 2022 — Mahsa (Jina) Amini dies in morality police custody. **Woman, Life, Freedom** erupts nationwide. Internet shut down again. 5-10 thousands killed, ~19,000 arrested. One of the most serious challenges the regime has faced.
 - Jun 2025 — "Twelve-Day War." Israeli/US strikes on nuclear infrastructure. ~22,000 centrifuges destroyed per FDD estimates.
-- **Jan 8 – late May 2026 — The 88-day national internet blackout. The longest documented nationwide internet disruption ever recorded anywhere. Islamic Republic killed ~40,000 people in 2 days.** See Section 5.
+- **Jan 8 – late May 2026 — The 88-day national internet blackout. The longest documented nationwide internet disruption ever recorded anywhere. Islamic Republic killed ~40,000 people in 2 days.** People had a few cities in control for some time and Trump promised support. See Section 5 for internet details.
 - Feb 28, 2026 — Operation Epic Fury begins. Supreme Leader Khamenei killed on the opening day. Strait of Hormuz closed. Hezbollah and the Houthis drawn in.
-- Mar 2026 — War ongoing. Expert consensus: regime weakened but surviving. Casualty figures contested (see Section 7).
-- May 26, 2026 — Partial internet restoration begins. What returns is not the internet — it's a whitelist.
+- Mar 2026 — War ongoing. Expert consensus: regime weakened but surviving. Casualty figures contested.
+- May 26, 2026 — Partial internet restoration begins. What returned was not the internet — it was a whitelist. The internet is actually a filternet.
 
 ---
 
@@ -467,7 +467,6 @@ Real counterarguments encountered, and the real responses. Build NPCs out of the
 - Say "the Islamic Republic," "the regime," "the IRGC." Not "Iran" when you mean the government.
 - Use Persian terms with transliteration and translation on first use.
 - Verify any Shahnameh or classical verse against Ganjoor before shipping it.
-- Use documented casualty figures and cite the monitor.
 - Hold Pahlavi-era history honestly — achievements *and* SAVAK.
 - Keep grief and defiance in the same frame.
 - Write Persian that favors Persian-root vocabulary over Arabic loanwords.
@@ -476,7 +475,7 @@ Real counterarguments encountered, and the real responses. Build NPCs out of the
 - Don't fabricate verses, translations, or quotes and attribute them to a real source. This is the one unrecoverable error.
 - Don't flatten Iranians into victims. They have fought, repeatedly, at enormous cost.
 - Don't treat "reformists" as a good-faith alternative within this project's frame.
-- Don't use the unverified high casualty figures.
+- Don't use the unverified low casualty figures.
 - Don't write Iranian culture as generic "Middle Eastern." Persian is its own language family branch, its own calendar, its own literary canon, its own new year.
 - Don't present Islam-the-faith and the Islamic Republic-the-state as the same object, even though this project is sharply critical of the latter's legal foundation.
 - Don't write Nowruz, Yalda, Chaharshanbe Suri, or Mehregan as quaint folklore. They are 3,000-year-old observances that a state has actively tried to suppress.
