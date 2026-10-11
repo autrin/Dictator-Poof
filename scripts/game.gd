@@ -197,7 +197,7 @@ func interact() -> void:
 		return
 	for friend in world.neighbors:
 		if near_and_visible(friend):
-			var words: String = "بیا کنار ما. امشب زنده‌ایم!" if victory else str(friend.get_meta("line"))
+			var words: String = str(friend.get_meta("line"))
 			message_text = "%s: %s" % [friend.get_meta("name"), words]
 			notification_left = 5.0
 			return

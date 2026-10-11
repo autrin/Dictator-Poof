@@ -34,7 +34,17 @@ func run() -> void:
 	await settle()
 	game.sound_enabled = false
 	check(not game.active and game.relays.size() == 3, "title screen and three neighborhood power boxes load")
-	check(game.world.neighbors.size() == 4 and not game.world.celebration, "friends wait in the unlit courtyard")
+	check(game.world.neighbors.size() == 6 and not game.world.celebration, "six friends wait in the unlit courtyard")
+	var expected_slogans := [
+		"جاوید شاه",
+		"این آخرین پیامه / هدف خود نظامه",
+		"این آخرین نبرده / پهلوی برمی‌گرده",
+		"خامنه‌ای قاتله، ولایتش باطله",
+		"توپ، تانک، فشفشه / آخوند باید گم بشه",
+		"هر خیابون سنگره / هر جوون یه رهبره",
+	]
+	for i in range(expected_slogans.size()):
+		check(game.world.neighbors[i].get_meta("line") == expected_slogans[i], "friend %d has the assigned slogan" % (i + 1))
 	for relay in game.relays:
 		var approach: Vector3 = relay.node.position + Vector3(0, 0, 2)
 		check(not game.chase_path(Vector3(0, 0, 18), approach).is_empty(), "power box approach is connected to the starting courtyard")
@@ -58,7 +68,7 @@ func run() -> void:
 	var friend: Node3D = game.world.neighbors[0]
 	await position_player(friend.global_position + Vector3(0, 0.05, -2), friend.global_position + Vector3(0, 1.1, 0))
 	game.interact()
-	check(game.message_text.contains(str(friend.get_meta("name"))) and game.relays_online == 0, "talking to a friend shows Persian dialogue without advancing power objectives")
+	check(game.message_text == "%s: %s" % [friend.get_meta("name"), expected_slogans[0]] and game.relays_online == 0, "talking to a friend shows their slogan without advancing power objectives")
 	game.pause_run()
 	var health: int = game.player.health
 	game.player.take_damage(20)
@@ -114,6 +124,9 @@ func run() -> void:
 		check(not other.visible and other.collision_layer == 0, "patrols leave the celebration")
 	game.start_or_resume()
 	check(game.active and game.victory and not game.player.weapon.visible, "join friends allows peaceful exploration without restarting")
+	await position_player(friend.global_position + Vector3(0, 0.05, -2), friend.global_position + Vector3(0, 1.1, 0))
+	game.interact()
+	check(game.message_text == "%s: %s" % [friend.get_meta("name"), expected_slogans[0]], "friend keeps their slogan during the celebration")
 	var celebration_ammo: int = game.player.ammo
 	game.player.shoot()
 	game.player.take_damage(100)

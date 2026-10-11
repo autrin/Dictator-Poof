@@ -260,14 +260,23 @@ func build_gathering() -> void:
 	var caption := persian(speaker, Vector3(0, 2.2, 0), "کنار هم", Color("f0dbab"), 40)
 	caption.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	gathering_light = lamp(Vector3(0, 4, 20), Color("ffd299"), 0.2, 11)
-	for i in range(4):
+	var friend_names := ["آوا", "بهار", "نیما", "کیان", "رها", "آرش"]
+	var slogans := [
+		"جاوید شاه",
+		"این آخرین پیامه / هدف خود نظامه",
+		"این آخرین نبرده / پهلوی برمی‌گرده",
+		"خامنه‌ای قاتله، ولایتش باطله",
+		"توپ، تانک، فشفشه / آخوند باید گم بشه",
+		"هر خیابون سنگره / هر جوون یه رهبره",
+	]
+	for i in range(slogans.size()):
 		var person := Node3D.new()
-		person.position = Vector3(-2.7 + i * 1.8, 0, 1)
-		person.set_meta("name", ["آوا", "بهار", "نیما", "کیان"][i])
-		person.set_meta("line", ["چراغ‌ها را روشن کن. ما همین‌جا می‌مانیم.", "نترس. کنار هم هستیم.", "این کوچه خانهٔ ماست.", "امشب را از ما نمی‌گیرند."][i])
+		person.position = Vector3(-3.0 + i * 1.2, 0, 1)
+		person.set_meta("name", friend_names[i])
+		person.set_meta("line", slogans[i])
 		gathering.add_child(person)
 		rounded(person, Vector3(0, 1.48, 0), Vector3(0.3, 0.38, 0.3), Color("b88869"))
-		rounded(person, Vector3(0, 1.0, 0), Vector3(0.47, 0.7, 0.3), [TEAL, Color("b86b59"), Color("c9a259"), Color("707db0")][i])
+		rounded(person, Vector3(0, 1.0, 0), Vector3(0.47, 0.7, 0.3), [TEAL, Color("b86b59"), Color("c9a259"), Color("707db0"), Color("aa727d"), Color("6f9271")][i])
 		for side in [-1, 1]:
 			rounded(person, Vector3(side * 0.12, 0.37, 0), Vector3(0.16, 0.75, 0.18), Color("354352"))
 			rounded(person, Vector3(side * 0.29, 0.98, 0), Vector3(0.14, 0.64, 0.14), PLASTER)
