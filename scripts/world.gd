@@ -2,6 +2,7 @@ extends Node3D
 ## Kaveh Lane: an outdoor neighborhood, restored one pool of light at a time.
 
 const GraffitiWall := preload("res://scenes/graffiti_wall.tscn")
+const ParkEncounter := preload("res://scripts/park_encounter.gd")
 const PersianFont := preload("res://assets/fonts/vazirmatn/Vazirmatn.ttf")
 const BRICK := Color("a57559")
 const PLASTER := Color("c3aa88")
@@ -15,6 +16,7 @@ var district_windows: Array[MeshInstance3D] = []
 var festoon_bulbs: Array[MeshInstance3D] = []
 var neighbors: Array[Node3D] = []
 var gathering: Node3D
+var park_encounter: Node3D
 var gathering_light: OmniLight3D
 var elapsed := 0.0
 
@@ -51,6 +53,10 @@ func _ready() -> void:
 	for i in range(3):
 		power_box(POWER_POINTS[i], i)
 	build_gathering()
+	park_encounter = ParkEncounter.new()
+	park_encounter.game = game
+	park_encounter.position = Vector3(7, 0, 11)
+	add_child(park_encounter)
 	string_lights(-14.0)
 	string_lights(8.0)
 	string_lights(19.0)

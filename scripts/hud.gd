@@ -61,9 +61,11 @@ func _ready() -> void:
 	hud.add_child(crosshair)
 	prompt = Label.new()
 	prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	prompt.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	prompt.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	prompt.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
-	prompt.position = Vector2(-300, -140)
-	prompt.size = Vector2(600, 40)
+	prompt.position = Vector2(-450, -165)
+	prompt.size = Vector2(900, 80)
 	prompt.add_theme_font_size_override("font_size", 22)
 	prompt.add_theme_font_override("font", preload("res://assets/fonts/vazirmatn/Vazirmatn.ttf"))
 	prompt.modulate = TEAL
