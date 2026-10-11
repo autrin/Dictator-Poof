@@ -18,6 +18,7 @@ func run() -> void:
 	root.add_child(game)
 	await physics_frame
 	await process_frame
+	game.set_language("en", false)
 	game.sound_enabled = false
 	game.start_or_resume()
 	var park: Node3D = game.world.park_encounter
@@ -31,6 +32,10 @@ func run() -> void:
 	check(park.civilians[1].rotation.z < -0.1 and park.officers[1].get_node("Left arm").position.y > 1.4, "officer grabs toward a woman's hair while she recoils")
 	check(park.civilians[0].rotation.z > 0.1 and park.officers[0].get_node("Left arm").position.y > 1.0, "man recoils from the officer's raised arm")
 	park._process(8.0)
-	check(park.completed and game.message_text.contains("ون"), "attempted forced loading into the van completes the scene")
+	check(park.completed and game.message_text.contains("van"), "attempted forced loading into the van completes the scene")
+	game.set_language("fa", false)
+	check(game.message_text.contains("ون") and park.park_sign.text == "پارک", "switching during dialogue translates the current line and park signs")
+	game.set_language("en", false)
+	check(game.message_text.contains("van") and park.van_sign.text == "MORALITY POLICE", "switching back restores English dialogue and van lettering")
 	print("RESULT: ", failures, " failure(s)")
 	quit(0 if failures == 0 else 1)

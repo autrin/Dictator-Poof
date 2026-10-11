@@ -32,19 +32,12 @@ func run() -> void:
 	game = load("res://scenes/main.tscn").instantiate()
 	root.add_child(game)
 	await settle()
+	game.set_language("en", false)
 	game.sound_enabled = false
 	check(not game.active and game.relays.size() == 3, "title screen and three neighborhood power boxes load")
 	check(game.world.neighbors.size() == 6 and not game.world.celebration, "six friends wait in the unlit courtyard")
-	var expected_slogans := [
-		"جاوید شاه",
-		"این آخرین پیامه / هدف خود نظامه",
-		"این آخرین نبرده / پهلوی برمی‌گرده",
-		"خامنه‌ای قاتله، ولایتش باطله",
-		"توپ، تانک، فشفشه / آخوند باید گم بشه",
-		"هر خیابون سنگره / هر جوون یه رهبره",
-	]
-	for i in range(expected_slogans.size()):
-		check(game.world.neighbors[i].get_meta("line") == expected_slogans[i], "friend %d has the assigned slogan" % (i + 1))
+	for i in range(6):
+		check(game.world.neighbors[i].get_meta("line") == game.localize("friend_line_%d" % i), "friend %d has the assigned slogan" % (i + 1))
 	for relay in game.relays:
 		var approach: Vector3 = relay.node.position + Vector3(0, 0, 2)
 		check(not game.chase_path(Vector3(0, 0, 18), approach).is_empty(), "power box approach is connected to the starting courtyard")
@@ -68,7 +61,11 @@ func run() -> void:
 	var friend: Node3D = game.world.neighbors[0]
 	await position_player(friend.global_position + Vector3(0, 0.05, -2), friend.global_position + Vector3(0, 1.1, 0))
 	game.interact()
-	check(game.message_text == "%s: %s" % [friend.get_meta("name"), expected_slogans[0]] and game.relays_online == 0, "talking to a friend shows their slogan without advancing power objectives")
+	check(game.message_text == "Ava: Long live the Shah" and game.relays_online == 0, "talking to a friend shows their English slogan without advancing power objectives")
+	game.set_language("fa", false)
+	check(game.message_text == "آوا: جاوید شاه" and game.world.neighbors[0].get_meta("line") == "جاوید شاه", "switching during dialogue immediately shows the Persian line")
+	game.set_language("en", false)
+	check(game.message_text == "Ava: Long live the Shah" and game.world.neighbors[0].get_meta("line") == "Long live the Shah", "switching back immediately restores English")
 	game.pause_run()
 	var health: int = game.player.health
 	game.player.take_damage(20)
@@ -118,7 +115,7 @@ func run() -> void:
 	check(game.player.health == 100, "relay healing respects the health cap")
 	await position_player(game.broadcast.position + Vector3(0, 0.05, 2), game.broadcast.position + Vector3(0, 1.1, 0))
 	game.interact()
-	check(game.ended and game.victory and not game.active and game.hud.heading.text == "THE LANE IS ALIVE", "restored power and return to friends unlock victory")
+	check(game.ended and game.victory and not game.active and game.hud.heading.text == game.localize("won_heading"), "restored power and return to friends unlock victory")
 	check(game.world.celebration and game.world.gathering_light.light_energy > 2.0, "victory lights the courtyard gathering")
 	for other in guards:
 		check(not other.visible and other.collision_layer == 0, "patrols leave the celebration")
@@ -126,7 +123,7 @@ func run() -> void:
 	check(game.active and game.victory and not game.player.weapon.visible, "join friends allows peaceful exploration without restarting")
 	await position_player(friend.global_position + Vector3(0, 0.05, -2), friend.global_position + Vector3(0, 1.1, 0))
 	game.interact()
-	check(game.message_text == "%s: %s" % [friend.get_meta("name"), expected_slogans[0]], "friend keeps their slogan during the celebration")
+	check(game.message_text == "Ava: Long live the Shah", "friend keeps their slogan during the celebration")
 	var celebration_ammo: int = game.player.ammo
 	game.player.shoot()
 	game.player.take_damage(100)

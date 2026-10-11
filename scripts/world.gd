@@ -15,6 +15,7 @@ var district_lights: Array[OmniLight3D] = []
 var district_windows: Array[MeshInstance3D] = []
 var festoon_bulbs: Array[MeshInstance3D] = []
 var neighbors: Array[Node3D] = []
+var localized_labels: Array[Dictionary] = []
 var gathering: Node3D
 var park_encounter: Node3D
 var gathering_light: OmniLight3D
@@ -40,16 +41,17 @@ func _ready() -> void:
 	# These small trees frame the street without covering its walkable lanes.
 	for at in [Vector3(-13.6, 0, 2), Vector3(13.6, 0, -15), Vector3(-13.6, 0, -21)]:
 		tree(at)
-	shop(-1, 5.0, "نان", Color("9d493b"))
-	shop(1, -11.0, "شاهنامه", TEAL)
+	shop(-1, 5.0, "bread_shop", Color("9d493b"))
+	shop(1, -11.0, "book_shop", TEAL)
 	banner(Vector3(0, 4.6, -23.3))
-	var street_name := persian(self, Vector3(0, 3.2, -23.25), "کوچهٔ کاوه", Color("f0dbab"), 62)
+	var street_name := localized_label(self, Vector3(0, 3.2, -23.25), "lane_name", Color("f0dbab"), 62)
 	street_name.pixel_size = 0.012
 	for data in [Vector3(-15.39, 0.15, 15), Vector3(15.39, 0.15, -1)]:
 		var wall := GraffitiWall.instantiate()
 		wall.position = data
 		wall.rotation_degrees.y = 90 if data.x < 0 else -90
 		add_child(wall)
+		register_label(wall.get_node("Slogan") as Label3D, "graffiti")
 	for i in range(3):
 		power_box(POWER_POINTS[i], i)
 	build_gathering()
@@ -60,6 +62,7 @@ func _ready() -> void:
 	string_lights(-14.0)
 	string_lights(8.0)
 	string_lights(19.0)
+	apply_language()
 
 func build_sky() -> void:
 	var sky_material := ProceduralSkyMaterial.new()
@@ -188,7 +191,7 @@ func rounded(parent: Node3D, at: Vector3, size: Vector3, color: Color) -> MeshIn
 	parent.add_child(result)
 	return result
 
-func shop(side: int, z: float, title: String, cloth: Color) -> void:
+func shop(side: int, z: float, title_key: String, cloth: Color) -> void:
 	var root := Node3D.new()
 	root.position = Vector3(side * 15.1, 0, z)
 	root.rotation_degrees.y = -side * 90.0
@@ -203,7 +206,7 @@ func shop(side: int, z: float, title: String, cloth: Color) -> void:
 			else:
 				PoofShapes.box(root, Vector3(-1.5 + i * 0.48, y + 0.27, 0.38), Vector3(0.3, 0.46, 0.2), [TEAL, Color("943e3d"), Color("c29855")][i % 3])
 	PoofShapes.box(root, Vector3(0, 3.5, 0.3), Vector3(4.8, 0.7, 0.3), cloth)
-	persian(root, Vector3(0, 3.48, 0.48), title, Color("ffdfad"), 52)
+	localized_label(root, Vector3(0, 3.48, 0.48), title_key, Color("ffdfad"), 52)
 	for i in range(10):
 		var awning := PoofShapes.box(root, Vector3(-2.25 + i * 0.5, 3.0, 0.9), Vector3(0.5, 0.1, 1.8), cloth if i % 2 == 0 else PLASTER)
 		awning.rotation.x = 0.13
@@ -215,7 +218,7 @@ func banner(at: Vector3) -> void:
 	for angle in [0.0, PI / 2.0]:
 		var motif := PoofShapes.box(self, at + Vector3(0, 0.1, 0.045), Vector3(0.14, 1.05, 0.035), Color("e5b864"))
 		motif.rotation.z = angle + PI / 4.0
-	persian(self, at + Vector3(0, -0.65, 0.06), "کاوه", Color("f5db9c"), 36)
+	localized_label(self, at + Vector3(0, -0.65, 0.06), "banner", Color("f5db9c"), 36)
 
 func persian(parent: Node3D, at: Vector3, words: String, color: Color, size: int) -> Label3D:
 	var label := PoofShapes.label(parent, at, words, color, size)
@@ -225,6 +228,31 @@ func persian(parent: Node3D, at: Vector3, words: String, color: Color, size: int
 	label.outline_size = 2
 	label.double_sided = false
 	return label
+
+func localized_label(parent: Node3D, at: Vector3, key: String, color: Color, size: int) -> Label3D:
+	var label := persian(parent, at, game.localize(key), color, size)
+	register_label(label, key)
+	return label
+
+func register_label(label: Label3D, key: String) -> void:
+	localized_labels.append({"label": label, "key": key})
+
+func apply_language() -> void:
+	for entry in localized_labels:
+		var label: Label3D = entry.label
+		label.text = game.localize(entry.key)
+		label.language = game.language
+		label.text_direction = TextServer.DIRECTION_RTL if game.language == "fa" else TextServer.DIRECTION_LTR
+		if entry.key == "graffiti":
+			label.font_size = 96 if game.language == "fa" else 70
+	for i in range(neighbors.size()):
+		neighbors[i].set_meta("name", game.localize("friend_name_%d" % i))
+		neighbors[i].set_meta("line", game.localize("friend_line_%d" % i))
+	for i in range(game.relays.size()):
+		if game.relays[i].online:
+			game.relays[i].label.text = game.localize("power_restored")
+	if is_instance_valid(park_encounter):
+		park_encounter.apply_language()
 
 func lamp(at: Vector3, color: Color, energy: float, reach: float) -> OmniLight3D:
 	PoofShapes.box(self, at, Vector3(0.18, 0.3, 0.18), color, false, 0.5)
@@ -242,7 +270,7 @@ func power_box(at: Vector3, index: int) -> void:
 	add_child(root)
 	PoofShapes.box(root, Vector3(0, 0.7, 0), Vector3(0.9, 1.4, 0.45), Color("44565b"), true)
 	var screen := PoofShapes.box(root, Vector3(0, 1.0, 0.25), Vector3(0.62, 0.45, 0.04), Color("f0b86c"), false, 0.8)
-	var caption := PoofShapes.label(root, Vector3(0, 2.1, 0), ["01 / BREAD SHOP", "02 / SHAHNAMEH", "03 / NORTH GATE"][index], Color("f0b86c"), 25)
+	var caption := localized_label(root, Vector3(0, 2.1, 0), "relay_sign_%d" % index, Color("f0b86c"), 25)
 	caption.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	caption.pixel_size = 0.008
 	game.relays.append({"node": root, "screen": screen, "label": caption, "online": false})
@@ -263,23 +291,16 @@ func build_gathering() -> void:
 	PoofShapes.box(speaker, Vector3(0, 0.8, 0), Vector3(0.75, 1.6, 0.55), Color("292936"), true)
 	game.broadcast_screen = PoofShapes.box(speaker, Vector3(0, 1.1, 0.3), Vector3(0.45, 0.3, 0.04), Color("785e59"), false, 0.3)
 	game.broadcast = speaker
-	var caption := persian(speaker, Vector3(0, 2.2, 0), "کنار هم", Color("f0dbab"), 40)
+	var caption := localized_label(speaker, Vector3(0, 2.2, 0), "speaker_sign", Color("f0dbab"), 40)
 	caption.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	gathering_light = lamp(Vector3(0, 4, 20), Color("ffd299"), 0.2, 11)
-	var friend_names := ["آوا", "بهار", "نیما", "کیان", "رها", "آرش"]
-	var slogans := [
-		"جاوید شاه",
-		"این آخرین پیامه / هدف خود نظامه",
-		"این آخرین نبرده / پهلوی برمی‌گرده",
-		"خامنه‌ای قاتله، ولایتش باطله",
-		"توپ، تانک، فشفشه / آخوند باید گم بشه",
-		"هر خیابون سنگره / هر جوون یه رهبره",
-	]
-	for i in range(slogans.size()):
+	for i in range(6):
 		var person := Node3D.new()
 		person.position = Vector3(-3.0 + i * 1.2, 0, 1)
-		person.set_meta("name", friend_names[i])
-		person.set_meta("line", slogans[i])
+		person.set_meta("name", game.localize("friend_name_%d" % i))
+		person.set_meta("line", game.localize("friend_line_%d" % i))
+		person.set_meta("name_key", "friend_name_%d" % i)
+		person.set_meta("line_key", "friend_line_%d" % i)
 		gathering.add_child(person)
 		rounded(person, Vector3(0, 1.48, 0), Vector3(0.3, 0.38, 0.3), Color("b88869"))
 		rounded(person, Vector3(0, 1.0, 0), Vector3(0.47, 0.7, 0.3), [TEAL, Color("b86b59"), Color("c9a259"), Color("707db0"), Color("aa727d"), Color("6f9271")][i])
@@ -287,7 +308,7 @@ func build_gathering() -> void:
 			rounded(person, Vector3(side * 0.12, 0.37, 0), Vector3(0.16, 0.75, 0.18), Color("354352"))
 			rounded(person, Vector3(side * 0.29, 0.98, 0), Vector3(0.14, 0.64, 0.14), PLASTER)
 		neighbors.append(person)
-	var words := persian(gathering, Vector3(0, 2.8, 1.0), "زن، زندگی، آزادی", Color("f4dba9"), 34)
+	var words := localized_label(gathering, Vector3(0, 2.8, 1.0), "gathering_sign", Color("f4dba9"), 34)
 	words.rotation.y = PI
 
 func string_lights(z: float) -> void:

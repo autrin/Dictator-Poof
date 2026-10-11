@@ -5,6 +5,7 @@ const PlayerScript := preload("res://scripts/player.gd")
 const GuardScript := preload("res://scripts/guard.gd")
 const WorldScript := preload("res://scripts/world.gd")
 const HudScript := preload("res://scripts/hud.gd")
+const Locale := preload("res://scripts/localization.gd")
 
 var player: CharacterBody3D
 var world: Node3D
@@ -27,7 +28,9 @@ var sensitivity := 0.002
 var hit_marker := 0.0
 var hurt_flash := 0.0
 var message_text := ""
+var message_key := ""
 var notification_left := 0.0
+var language := "en"
 var effects: Node3D
 var sound_cache: Dictionary = {}
 var navigation := AStarGrid2D.new()
@@ -43,7 +46,7 @@ func _ready() -> void:
 func configure_input() -> void:
 	var keys := {"forward": KEY_W, "back": KEY_S, "left": KEY_A, "right": KEY_D,
 		"jump": KEY_SPACE, "sprint": KEY_SHIFT, "reload": KEY_R, "interact": KEY_E,
-		"pause": KEY_ESCAPE, "crouch": KEY_CTRL}
+		"pause": KEY_ESCAPE, "crouch": KEY_CTRL, "language": KEY_F2}
 	for action: String in keys:
 		if not InputMap.has_action(action):
 			InputMap.add_action(action)
@@ -70,6 +73,8 @@ func build_run() -> void:
 	hit_marker = 0.0
 	hurt_flash = 0.0
 	notification_left = 0.0
+	message_key = ""
+	message_text = ""
 	ended = false
 	victory = false
 	beat_left = 0.0
@@ -129,6 +134,10 @@ func restart_mission() -> void:
 	start_or_resume()
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("language") and not event.is_echo():
+		set_language("fa" if language == "en" else "en")
+		get_viewport().set_input_as_handled()
+		return
 	if event.is_action_pressed("pause") and not event.is_echo() and started and (not ended or victory):
 		if active:
 			pause_run()
@@ -143,6 +152,36 @@ func _notification(what: int) -> void:
 func pause_run() -> void:
 	active = false
 	hud.show_menu("pause")
+
+func localize(key: String) -> String:
+	return Locale.text(language, key)
+
+func set_language(value: String, persist: bool = true) -> void:
+	if value != "en" and value != "fa":
+		return
+	language = value
+	refresh_message()
+	if is_instance_valid(world):
+		world.apply_language()
+		for child in world.get_children():
+			if child.has_method("refresh_language"):
+				child.refresh_language()
+	if is_instance_valid(hud):
+		hud.apply_language()
+	if persist:
+		save_settings()
+
+func notify(key: String, duration: float) -> void:
+	message_key = key
+	notification_left = duration
+	refresh_message()
+
+func refresh_message() -> void:
+	if message_key.begins_with("friend_line_"):
+		var suffix := message_key.trim_prefix("friend_line_")
+		message_text = "%s: %s" % [localize("friend_name_" + suffix), localize(message_key)]
+	elif message_key != "":
+		message_text = localize(message_key)
 
 func _process(delta: float) -> void:
 	if active:
@@ -182,14 +221,14 @@ func interaction_prompt() -> String:
 		return message_text
 	for friend in world.neighbors:
 		if near_and_visible(friend):
-			return "[E]  Speak with a friend"
+			return localize("prompt_friend")
 	if victory:
-		return "The lane is yours. Stay a while."
+		return localize("prompt_victory")
 	for relay in relays:
 		if not relay.online and near_and_visible(relay.node):
-			return "[E]  Restore neighborhood power  /  +25 health"
+			return localize("prompt_relay")
 	if near_and_visible(broadcast):
-		return "[E]  Bring the gathering to life" if relays_online == 3 else "Restore the three power boxes, then come back here"
+		return localize("prompt_gather") if relays_online == 3 else localize("prompt_need_power")
 	return message_text if notification_left > 0.0 else ""
 
 func interact() -> void:
@@ -197,9 +236,7 @@ func interact() -> void:
 		return
 	for friend in world.neighbors:
 		if near_and_visible(friend):
-			var words: String = str(friend.get_meta("line"))
-			message_text = "%s: %s" % [friend.get_meta("name"), words]
-			notification_left = 5.0
+			notify(str(friend.get_meta("line_key")), 5.0)
 			return
 	if victory:
 		return
@@ -208,12 +245,11 @@ func interact() -> void:
 			relay.online = true
 			relays_online += 1
 			relay.screen.material_override = PoofShapes.material(Color("81dbc8"), 1.0)
-			relay.label.text = "POWER RESTORED"
+			relay.label.text = localize("power_restored")
 			relay.label.modulate = Color("81dbc8")
 			player.health = mini(100, player.health + 25)
 			world.restore_district(relays.find(relay))
-			message_text = ["A window lights up. Someone is still awake.", "More light. The lane feels less alone.", "The power is back. Return to your friends by the rug."][relays_online - 1]
-			notification_left = 4.0
+			notify("relay_message_%d" % (relays_online - 1), 4.0)
 			play_tone(640.0, 0.2, 0.18)
 			if relays_online == 3:
 				broadcast_screen.material_override = PoofShapes.material(Color("81dbc8"), 1.0)
@@ -281,6 +317,8 @@ func play_tone(frequency: float, duration: float, volume: float) -> void:
 func load_settings() -> void:
 	var config := ConfigFile.new()
 	if config.load("user://settings.cfg") == OK:
+		var saved_language := str(config.get_value("preferences", "language", "en"))
+		language = saved_language if saved_language == "en" or saved_language == "fa" else "en"
 		blood_enabled = bool(config.get_value("preferences", "blood", true))
 		sound_enabled = bool(config.get_value("preferences", "sound", true))
 		sensitivity = clampf(float(config.get_value("preferences", "sensitivity", 0.002)), 0.0005, 0.006)
@@ -290,6 +328,7 @@ func save_settings() -> void:
 	config.set_value("preferences", "blood", blood_enabled)
 	config.set_value("preferences", "sound", sound_enabled)
 	config.set_value("preferences", "sensitivity", sensitivity)
+	config.set_value("preferences", "language", language)
 	var result := config.save("user://settings.cfg")
 	if result != OK:
 		push_warning("Could not save preferences: %s" % error_string(result))

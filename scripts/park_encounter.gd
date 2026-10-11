@@ -6,6 +6,8 @@ const UNIFORM := Color("626b4e")
 
 var game: Node3D
 var van: Node3D
+var park_sign: Label3D
+var van_sign: Label3D
 var civilians: Array[Node3D] = []
 var officers: Array[Node3D] = []
 var elapsed := 0.0
@@ -14,16 +16,6 @@ var completed := false
 var shown_beat := -1
 
 const BEAT_TIMES := [2.3, 5.2, 8.2, 11.1, 14.1, 17.1, 20.1]
-const BEAT_LINES := [
-	"گشت ارشاد: شما کی هستید؟ چه نسبتی با هم دارید؟",
-	"گشت ارشاد: روسری‌هاتون رو درست کنید. موهاتون رو بپوشونید.",
-	"گشت ارشاد: تتو ممنوعه! با زن نامحرم چرا می‌گردی؟",
-	"دوست: ما فقط داریم توی پارک قدم می‌زنیم!",
-	"دختر (گریه‌کنان): ولم کنید! کمک!",
-	"پسر: به سرم نزنید! بذارید بریم!",
-	"دوست‌ها: نه! ما رو سوار ون نکنید!",
-]
-
 func _ready() -> void:
 	build_park()
 	build_van()
@@ -37,6 +29,14 @@ func _ready() -> void:
 		officer.position = Vector3(4.0 + (i % 2) * 0.6, 0, 5.0 + (i / 2) * 0.5)
 		officer.visible = false
 		officers.append(officer)
+	apply_language()
+
+func apply_language() -> void:
+	for entry in [{"label": park_sign, "key": "park_sign"}, {"label": van_sign, "key": "van_sign"}]:
+		var label: Label3D = entry.label
+		label.text = game.localize(entry.key)
+		label.language = game.language
+		label.text_direction = TextServer.DIRECTION_RTL if game.language == "fa" else TextServer.DIRECTION_LTR
 
 func build_park() -> void:
 	PoofShapes.box(self, Vector3(-0.6, 0.012, 0), Vector3(8.7, 0.025, 7.3), Color("43634b"))
@@ -51,10 +51,9 @@ func build_park() -> void:
 		PoofShapes.box(self, at + Vector3(0, 0.9, 0), Vector3(0.2, 1.8, 0.2), Color("514334"))
 		var crown := sphere(self, at + Vector3(0, 2.1, 0), Vector3(1.45, 1.5, 1.45), Color("45634c"))
 		crown.name = "Park tree"
-	var sign := PoofShapes.label(self, Vector3(-0.6, 2.5, -3.3), "پارک", Color("d7c69d"), 40)
-	sign.font = PersianFont
-	sign.text_direction = TextServer.DIRECTION_RTL
-	sign.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	park_sign = PoofShapes.label(self, Vector3(-0.6, 2.5, -3.3), "", Color("d7c69d"), 40)
+	park_sign.font = PersianFont
+	park_sign.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 
 func build_van() -> void:
 	van = Node3D.new()
@@ -72,11 +71,10 @@ func build_van() -> void:
 	PoofShapes.box(van, Vector3(0, 1.68, -2.26), Vector3(2.1, 0.7, 0.04), Color("283f49"))
 	for x in [-0.92, 0.92]:
 		PoofShapes.box(van, Vector3(x, 0.72, -2.28), Vector3(0.37, 0.22, 0.06), Color("f4e8b2"))
-	var title := PoofShapes.label(van, Vector3(-1.34, 1.16, 0.05), "گشت ارشاد", Color("f0e5ae"), 35)
-	title.font = PersianFont
-	title.text_direction = TextServer.DIRECTION_RTL
-	title.rotation.y = -PI / 2.0
-	title.pixel_size = 0.006
+	van_sign = PoofShapes.label(van, Vector3(-1.34, 1.16, 0.05), "", Color("f0e5ae"), 35)
+	van_sign.font = PersianFont
+	van_sign.rotation.y = -PI / 2.0
+	van_sign.pixel_size = 0.006
 
 func make_person(clothes: Color, woman: bool, officer: bool) -> Node3D:
 	var person := Node3D.new()
@@ -172,7 +170,6 @@ func _process(delta: float) -> void:
 	for i in range(BEAT_TIMES.size()):
 		if elapsed >= BEAT_TIMES[i] and shown_beat < i:
 			shown_beat = i
-			game.message_text = BEAT_LINES[i]
-			game.notification_left = 3.1
+			game.notify("park_beat_%d" % i, 3.1)
 	if elapsed >= 23.2:
 		completed = true

@@ -45,6 +45,13 @@ func _ready() -> void:
 	PoofShapes.box(visual, Vector3(0.26, 1.04, -0.4), Vector3(0.14, 0.15, 0.62), Color("181f2b"))
 	bark = game.world.persian(self, Vector3(0, 2.65, 0), "", Color("f9d7a0"), 24)
 	bark.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	refresh_language()
+
+func refresh_language() -> void:
+	bark.language = game.language
+	bark.text_direction = TextServer.DIRECTION_RTL if game.language == "fa" else TextServer.DIRECTION_LTR
+	if bark.text != "":
+		bark.text = game.localize("guard_%d" % (guard_index % 3))
 
 func _physics_process(delta: float) -> void:
 	if not alive or not game.active:
@@ -78,7 +85,7 @@ func _physics_process(delta: float) -> void:
 		if visible:
 			attack_left -= delta
 		visor.material_override.albedo_color = Color("fff1c2") if attack_left < 0.4 else Color("ed8575")
-		bark.text = ["بایست!", "برگرد!", "همین‌جا بمان!"][guard_index % 3]
+		bark.text = game.localize("guard_%d" % (guard_index % 3))
 		if attack_left <= 0.0 and visible:
 			attack_left = 2.1
 			game.tracer(global_position + Vector3(0, 1.25, 0), game.player.camera.global_position, Color("ff726e"))
