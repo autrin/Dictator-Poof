@@ -36,7 +36,7 @@ func _ready() -> void:
 	for at in [Vector3(-4, 0, 10), Vector3(4, 0, 7), Vector3(-5, 0, -5), Vector3(5, 0, -12)]:
 		planter(at)
 	# These small trees frame the street without covering its walkable lanes.
-	for at in [Vector3(-13.6, 0, 2), Vector3(13.6, 0, -12), Vector3(-13.6, 0, -21)]:
+	for at in [Vector3(-13.6, 0, 2), Vector3(13.6, 0, -15), Vector3(-13.6, 0, -21)]:
 		tree(at)
 	shop(-1, 5.0, "نان", Color("9d493b"))
 	shop(1, -11.0, "شاهنامه", TEAL)
