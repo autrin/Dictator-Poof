@@ -1,6 +1,8 @@
 # Dictator Poof
-![Game Screenshot](game-sc.png)
+![Game Screenshot](docs/screenshots/kaveh-lane.png)
 **A night on Kaveh Lane. Bring back the light.**
+![Morality Police Screenshot](docs/screenshots/morality%20police.png)
+![Shahnameh Bookshop and Women Life Freedom Screenshot](docs/screenshots/Shahnameh%20bookshop%20and%20woman%20life%20freedom.png)
 
 A first-person resistance game set in a fictional Iranian neighborhood.
 The playable opening is now outdoors: brick homes, balconies, shops, Persian
