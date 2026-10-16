@@ -55,7 +55,7 @@ func build_house() -> void:
 	PoofShapes.box(self, Vector3(0, 0.34, -6.2), Vector3(5.8, 0.68, 2.3), BRICK, true)
 	PoofShapes.box(self, Vector3(0, 3.5, -6.0), Vector3(6.2, 0.26, 2.7), WOOD)
 	for x in [-3.0, 3.0]:
-		PoofShapes.box(self, Vector3(x, 1.75, -5.3), Vector3(0.28, 3.5, 0.28), PLASTER)
+		PoofShapes.box(self, Vector3(x, 1.75, -5.3), Vector3(0.28, 3.5, 0.28), PLASTER, true)
 		PoofShapes.box(self, Vector3(x, 3.55, -5.3), Vector3(0.53, 0.2, 0.53), TILE)
 	PoofShapes.box(self, Vector3(0, 0.2, -1.1), Vector3(2.3, 0.4, 1.45), TILE, true)
 	PoofShapes.box(self, Vector3(0, 0.415, -1.1), Vector3(1.95, 0.025, 1.1), Color("497e88"))
