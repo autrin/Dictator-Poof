@@ -13,6 +13,10 @@ rug near your starting point. Each restored box lights nearby homes and heals
 25 health. Evade or fight the patrols. After winning, choose **Join your
 friends** to explore the lit street, or **Replay the night** to start again.
 
+The north passage leads to a private courtyard house. Guests dance, share wine,
+and joke together. Speak with the host to hear why the gathering must stay
+private. A patrol entering the house breaks up the party.
+
 ## Play
 
 Import `project.godot` into **Godot 4.7.2 Standard**, then press **F5**.
@@ -23,11 +27,12 @@ No .NET SDK or export is needed.
 | WASD / mouse | Move / look |
 | Shift / Ctrl / Space | Sprint / crouch / jump |
 | Left click / R | Fire / reload |
-| E | Use a power box, speak to a friend, or start the gathering |
+| E | Use a power box, speak to a friend or party guest, or start the gathering |
+| F2 | Switch between English and Persian during play |
 | Esc | Pause / resume |
 
-The menu offers sound, blood, and sensitivity settings. The neighborhood is
-still a stylized prototype: simple characters, geometry, and synthesized
+The menu offers language, sound, blood, and sensitivity settings. The neighborhood is
+still a stylized prototype: procedural characters, geometry, and synthesized
 music. It is not a finished realistic city or a completed historical campaign.
 
 ## Contribute
@@ -47,7 +52,8 @@ historical source in your pull request.
 
 For other contributions, the neighborhood is built in `scripts/world.gd`.
 Mission state lives in `scripts/game.gd`, movement in `scripts/player.gd`,
-and patrol behavior in `scripts/guard.gd`.
+and patrol behavior in `scripts/guard.gd`. See [the party house notes](docs/PARTY_HOUSE.md)
+for the new scene and reusable character model.
 
 ## [docs/Iran WORLDBUILDING.md](docs/IRAN%20WORLDBUILDING.md)
 

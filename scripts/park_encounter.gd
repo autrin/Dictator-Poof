@@ -2,6 +2,7 @@ extends Node3D
 ## A short, player-triggered park encounter on Kaveh Lane.
 
 const PersianFont := preload("res://assets/fonts/vazirmatn/Vazirmatn.ttf")
+const PersonVisual := preload("res://scripts/person_visual.gd")
 const UNIFORM := Color("626b4e")
 
 var game: Node3D
@@ -21,11 +22,11 @@ func _ready() -> void:
 	build_van()
 	var colors := [Color("527b8c"), Color("ae6d75"), Color("b39457"), Color("716b9b")]
 	for i in range(4):
-		var person := make_person(colors[i], i % 2 == 1, false)
+		var person := make_person(colors[i], i % 2 == 1, false, i)
 		person.position = Vector3(-3.1 + i * 0.65, 0, 1.0 + i * 0.55)
 		civilians.append(person)
 	for i in range(4):
-		var officer := make_person(UNIFORM, false, true)
+		var officer := make_person(UNIFORM, false, true, i)
 		officer.position = Vector3(4.0 + (i % 2) * 0.6, 0, 5.0 + (i / 2) * 0.5)
 		officer.visible = false
 		officers.append(officer)
@@ -76,31 +77,15 @@ func build_van() -> void:
 	van_sign.rotation.y = -PI / 2.0
 	van_sign.pixel_size = 0.006
 
-func make_person(clothes: Color, woman: bool, officer: bool) -> Node3D:
+func make_person(clothes: Color, woman: bool, officer: bool, index: int) -> Node3D:
 	var person := Node3D.new()
 	person.name = "Officer" if officer else ("Woman friend" if woman else "Man friend")
 	add_child(person)
-	sphere(person, Vector3(0, 1.53, 0), Vector3(0.32, 0.38, 0.32), Color("b48969"))
-	sphere(person, Vector3(0, 1.76, -0.03), Vector3(0.34, 0.19, 0.34), Color("292b2b"))
-	PoofShapes.box(person, Vector3(0, 1.0, 0), Vector3(0.48, 0.73, 0.3), clothes)
-	for side in [-1, 1]:
-		var arm := PoofShapes.box(person, Vector3(side * 0.33, 1.03, 0), Vector3(0.16, 0.63, 0.16), clothes)
-		arm.name = "Left arm" if side < 0 else "Right arm"
-		PoofShapes.box(person, Vector3(side * 0.14, 0.34, 0), Vector3(0.18, 0.68, 0.2), Color("39424a"))
-	if woman:
-		# Loose scarf and visible hair make the shouted order legible in the scene.
-		PoofShapes.box(person, Vector3(0, 1.55, 0.17), Vector3(0.36, 0.42, 0.16), Color("292b2b"))
-		PoofShapes.box(person, Vector3(0.05, 1.76, 0), Vector3(0.45, 0.11, 0.37), clothes.lightened(0.18))
-	elif officer:
+	PersonVisual.build(person, clothes, Color("b48969"),
+		[Color("292b2b"), Color("4c3731"), Color("25252b"), Color("614235")][index],
+		index % 5, woman, not woman and not officer)
+	if officer:
 		PoofShapes.box(person, Vector3(0, 1.82, 0), Vector3(0.44, 0.14, 0.4), UNIFORM.darkened(0.3))
-	else:
-		# A visible tattoo on the forearm is mentioned by the officer.
-		PoofShapes.box(person, Vector3(0.33, 0.88, -0.09), Vector3(0.13, 0.15, 0.025), Color("273d48"))
-	if not officer:
-		for side in [-1, 1]:
-			var tear := sphere(person, Vector3(side * 0.105, 1.45, -0.16), Vector3(0.055, 0.13, 0.025), Color("8bcad1"))
-			tear.name = "Tear left" if side < 0 else "Tear right"
-			tear.visible = false
 	return person
 
 func sphere(parent: Node3D, at: Vector3, size: Vector3, color: Color) -> MeshInstance3D:

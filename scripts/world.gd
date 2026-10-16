@@ -3,11 +3,15 @@ extends Node3D
 
 const GraffitiWall := preload("res://scenes/graffiti_wall.tscn")
 const ParkEncounter := preload("res://scripts/park_encounter.gd")
+const PartyHouse := preload("res://scripts/party_house.gd")
+const PersonVisual := preload("res://scripts/person_visual.gd")
 const PersianFont := preload("res://assets/fonts/vazirmatn/Vazirmatn.ttf")
 const BRICK := Color("a57559")
 const PLASTER := Color("c3aa88")
 const TEAL := Color("287f81")
 const WOOD := Color("50372e")
+const NORTH_EDGE := -50.0
+const SOUTH_EDGE := 24.0
 const POWER_POINTS := [Vector3(-11, 0, 7), Vector3(11, 0, -5), Vector3(-9, 0, -17)]
 var game: Node3D
 var celebration := false
@@ -18,22 +22,26 @@ var neighbors: Array[Node3D] = []
 var localized_labels: Array[Dictionary] = []
 var gathering: Node3D
 var park_encounter: Node3D
+var party_house: Node3D
 var gathering_light: OmniLight3D
 var elapsed := 0.0
 
 func _ready() -> void:
 	build_sky()
-	PoofShapes.box(self, Vector3(0, -0.3, 0), Vector3(32, 0.6, 48), Color("71675f"), true)
+	var center_z := (NORTH_EDGE + SOUTH_EDGE) / 2.0
+	var street_length := SOUTH_EDGE - NORTH_EDGE
+	PoofShapes.box(self, Vector3(0, -0.3, center_z), Vector3(32, 0.6, street_length), Color("71675f"), true)
 	for x in [-13.7, 13.7]:
-		PoofShapes.box(self, Vector3(x, 0.025, 0), Vector3(3.5, 0.05, 47.8), Color("b7a58a"))
-	for z in range(-23, 24, 2):
+		PoofShapes.box(self, Vector3(x, 0.025, center_z), Vector3(3.5, 0.05, street_length - 0.2), Color("b7a58a"))
+	for z in range(int(NORTH_EDGE) + 1, int(SOUTH_EDGE), 2):
 		PoofShapes.box(self, Vector3(0, 0.006, z), Vector3(31, 0.01, 0.025), Color("8f8170"))
 	for x in range(-14, 15, 2):
-		PoofShapes.box(self, Vector3(x, 0.007, 0), Vector3(0.022, 0.01, 48), Color("8f8170"))
+		PoofShapes.box(self, Vector3(x, 0.007, center_z), Vector3(0.022, 0.01, street_length), Color("8f8170"))
 	for side in [-1, 1]:
-		for i in range(6):
-			build_home(side, -20.0 + i * 8.0, i)
-	build_end_wall(-24.0)
+		for i in range(7):
+			build_home(side, -28.0 + i * 8.0, i)
+	build_north_passage()
+	build_end_wall(NORTH_EDGE + 1.0)
 	build_end_wall(24.0)
 	build_fountain()
 	for at in [Vector3(-4, 0, 10), Vector3(4, 0, 7), Vector3(-5, 0, -5), Vector3(5, 0, -12)]:
@@ -44,7 +52,7 @@ func _ready() -> void:
 	shop(-1, 5.0, "bread_shop", Color("9d493b"))
 	shop(1, -11.0, "book_shop", TEAL)
 	banner(Vector3(0, 4.6, -23.3))
-	var street_name := localized_label(self, Vector3(0, 3.2, -23.25), "lane_name", Color("f0dbab"), 62)
+	var street_name := localized_label(self, Vector3(0, 3.6, -23.25), "lane_name", Color("f0dbab"), 62)
 	street_name.pixel_size = 0.012
 	for data in [Vector3(-15.39, 0.15, 15), Vector3(15.39, 0.15, -1)]:
 		var wall := GraffitiWall.instantiate()
@@ -59,10 +67,18 @@ func _ready() -> void:
 	park_encounter.game = game
 	park_encounter.position = Vector3(7, 0, 11)
 	add_child(park_encounter)
+	party_house = PartyHouse.new()
+	party_house.game = game
+	party_house.position = Vector3(0, 0, -40)
+	add_child(party_house)
 	string_lights(-14.0)
+	string_lights(-29.0)
 	string_lights(8.0)
 	string_lights(19.0)
 	apply_language()
+
+func navigation_bounds() -> Rect2i:
+	return Rect2i(-15, int(NORTH_EDGE) + 1, 31, int(SOUTH_EDGE - NORTH_EDGE) - 1)
 
 func build_sky() -> void:
 	var sky_material := ProceduralSkyMaterial.new()
@@ -156,6 +172,14 @@ func build_end_wall(z: float) -> void:
 	for x in [-3.1, 3.1]:
 		PoofShapes.box(facing, Vector3(x, 2.2, 0), Vector3(0.2, 4.4, 0.2), TEAL)
 		lamp(facing.position + Vector3(x, 3, 0), Color("ffd0a0"), 0.7, 5)
+
+func build_north_passage() -> void:
+	# Keep a broad, walkable opening into the new block.
+	for side in [-1, 1]:
+		PoofShapes.box(self, Vector3(side * 10, 3, -24), Vector3(12, 6, 1), BRICK, true)
+		PoofShapes.box(self, Vector3(side * 4.05, 2.1, -24), Vector3(0.24, 4.2, 0.75), TEAL)
+	PoofShapes.box(self, Vector3(0, 5.3, -24), Vector3(8, 1.4, 1), PLASTER, true)
+	arch(self, Vector3(0, 3.5, -23.4), 3.7)
 
 func build_fountain() -> void:
 	PoofShapes.box(self, Vector3(0, 0.4, 0), Vector3(5, 0.8, 5), TEAL, true)
@@ -253,6 +277,8 @@ func apply_language() -> void:
 			game.relays[i].label.text = game.localize("power_restored")
 	if is_instance_valid(park_encounter):
 		park_encounter.apply_language()
+	if is_instance_valid(party_house):
+		party_house.apply_language()
 
 func lamp(at: Vector3, color: Color, energy: float, reach: float) -> OmniLight3D:
 	PoofShapes.box(self, at, Vector3(0.18, 0.3, 0.18), color, false, 0.5)
@@ -302,11 +328,10 @@ func build_gathering() -> void:
 		person.set_meta("name_key", "friend_name_%d" % i)
 		person.set_meta("line_key", "friend_line_%d" % i)
 		gathering.add_child(person)
-		rounded(person, Vector3(0, 1.48, 0), Vector3(0.3, 0.38, 0.3), Color("b88869"))
-		rounded(person, Vector3(0, 1.0, 0), Vector3(0.47, 0.7, 0.3), [TEAL, Color("b86b59"), Color("c9a259"), Color("707db0"), Color("aa727d"), Color("6f9271")][i])
-		for side in [-1, 1]:
-			rounded(person, Vector3(side * 0.12, 0.37, 0), Vector3(0.16, 0.75, 0.18), Color("354352"))
-			rounded(person, Vector3(side * 0.29, 0.98, 0), Vector3(0.14, 0.64, 0.14), PLASTER)
+		PersonVisual.build(person,
+			[TEAL, Color("b86b59"), Color("c9a259"), Color("707db0"), Color("aa727d"), Color("6f9271")][i],
+			[Color("b88869"), Color("d1a487"), Color("a6755f")][i % 3],
+			[Color("272329"), Color("613d31"), Color("3b302e"), Color("82513a")][i % 4], i % 5)
 		neighbors.append(person)
 	var words := localized_label(gathering, Vector3(0, 2.8, 1.0), "gathering_sign", Color("f4dba9"), 34)
 	words.rotation.y = PI

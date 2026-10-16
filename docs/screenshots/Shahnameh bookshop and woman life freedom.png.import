@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://3pcj74v4luyr"
-path="res://.godot/imported/game-sc.png-7a465ca78538ee533f397f71a7bafc20.ctex"
+uid="uid://clr27kj0cmow6"
+path="res://.godot/imported/Shahnameh bookshop and woman life freedom.png-56c616cfe3d3537b602285d0e25c1765.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://game-sc.png"
-dest_files=["res://.godot/imported/game-sc.png-7a465ca78538ee533f397f71a7bafc20.ctex"]
+source_file="res://docs/screenshots/Shahnameh bookshop and woman life freedom.png"
+dest_files=["res://.godot/imported/Shahnameh bookshop and woman life freedom.png-56c616cfe3d3537b602285d0e25c1765.ctex"]
 
 [params]
 

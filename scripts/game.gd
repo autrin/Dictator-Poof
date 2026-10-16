@@ -99,7 +99,7 @@ func build_run() -> void:
 
 func build_navigation() -> void:
 	# The neighborhood is flat; use the actual static geometry as blocked cells.
-	navigation.region = Rect2i(-15, -23, 31, 47)
+	navigation.region = world.navigation_bounds()
 	navigation.cell_size = Vector2.ONE
 	navigation.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_ONLY_IF_NO_OBSTACLES
 	navigation.update()
@@ -108,14 +108,15 @@ func build_navigation() -> void:
 		var at: Vector3 = geometry.global_position
 		if at.y + size.y / 2.0 < 0.4 or at.y - size.y / 2.0 > 2.0:
 			continue
-		for x in range(-15, 16):
-			for z in range(-23, 24):
+		for x in range(navigation.region.position.x, navigation.region.end.x):
+			for z in range(navigation.region.position.y, navigation.region.end.y):
 				if absf(x - at.x) <= size.x / 2.0 + 0.38 and absf(z - at.z) <= size.z / 2.0 + 0.38:
 					navigation.set_point_solid(Vector2i(x, z))
 
 func chase_path(from: Vector3, to: Vector3) -> PackedVector2Array:
-	var start := Vector2i(clampi(roundi(from.x), -15, 15), clampi(roundi(from.z), -23, 23))
-	var goal := Vector2i(clampi(roundi(to.x), -15, 15), clampi(roundi(to.z), -23, 23))
+	var bounds := navigation.region
+	var start := Vector2i(clampi(roundi(from.x), bounds.position.x, bounds.end.x - 1), clampi(roundi(from.z), bounds.position.y, bounds.end.y - 1))
+	var goal := Vector2i(clampi(roundi(to.x), bounds.position.x, bounds.end.x - 1), clampi(roundi(to.z), bounds.position.y, bounds.end.y - 1))
 	if navigation.is_point_solid(start) or navigation.is_point_solid(goal):
 		return PackedVector2Array()
 	return navigation.get_point_path(start, goal)
@@ -222,6 +223,9 @@ func interaction_prompt() -> String:
 	for friend in world.neighbors:
 		if near_and_visible(friend):
 			return localize("prompt_friend")
+	for guest in world.party_house.guests:
+		if near_and_visible(guest):
+			return localize("party_prompt")
 	if victory:
 		return localize("prompt_victory")
 	for relay in relays:
@@ -237,6 +241,10 @@ func interact() -> void:
 	for friend in world.neighbors:
 		if near_and_visible(friend):
 			notify(str(friend.get_meta("line_key")), 5.0)
+			return
+	for guest in world.party_house.guests:
+		if near_and_visible(guest):
+			notify(str(guest.get_meta("line_key")), 6.0)
 			return
 	if victory:
 		return
