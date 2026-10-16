@@ -58,7 +58,7 @@ func _ready() -> void:
 	stats.add_theme_font_size_override("font_size", 24)
 	hud.add_child(stats)
 	controls = Label.new()
-	controls.text = "WASD  Move   /   SHIFT  Sprint   /   CTRL  Crouch   /   LMB  Fire   /   R  Reload   /   E  Interact   /   ESC  Pause"
+	controls.text = game.localize("controls")
 	controls.add_theme_font_size_override("font_size", 14)
 	controls.modulate = Color("b3b5c0")
 	controls.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
@@ -212,7 +212,7 @@ func hide_menu() -> void:
 func update() -> void:
 	if not is_instance_valid(game.player):
 		return
-	var reload_text: String = game.localize("reloading") if game.player.reload_left > 0 else "%02d / 12" % game.player.ammo
+	var reload_text: String = game.localize("holstered") if not game.player.gun_drawn else game.localize("reloading") if game.player.reload_left > 0 else "%02d / 12" % game.player.ammo
 	stats.text = game.localize("stats") % [game.player.health, reload_text]
 	objective.text = game.localize("objective_power") % game.relays_online
 	if game.relays_online == 3:

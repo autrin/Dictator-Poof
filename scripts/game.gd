@@ -45,7 +45,7 @@ func _ready() -> void:
 
 func configure_input() -> void:
 	var keys := {"forward": KEY_W, "back": KEY_S, "left": KEY_A, "right": KEY_D,
-		"jump": KEY_SPACE, "sprint": KEY_SHIFT, "reload": KEY_R, "interact": KEY_E,
+		"jump": KEY_SPACE, "sprint": KEY_SHIFT, "reload": KEY_R, "interact": KEY_E, "holster": KEY_H,
 		"pause": KEY_ESCAPE, "crouch": KEY_CTRL, "language": KEY_F2}
 	for action: String in keys:
 		if not InputMap.has_action(action):
@@ -128,7 +128,7 @@ func start_or_resume() -> void:
 	started = true
 	active = true
 	hud.hide_menu()
-	player.weapon.visible = not victory
+	player.update_viewmodel()
 
 func restart_mission() -> void:
 	build_run()
@@ -273,7 +273,7 @@ func finish(won: bool) -> void:
 	victory = won
 	if won:
 		world.celebrate()
-		player.weapon.hide()
+		player.set_gun_drawn(false)
 	hud.show_menu("won" if won else "lost")
 
 func tracer(from: Vector3, to: Vector3, color: Color) -> void:
