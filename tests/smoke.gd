@@ -44,6 +44,13 @@ func run() -> void:
 	check(game.navigation.is_point_solid(Vector2i(0, 0)), "navigation excludes central obstacle")
 	check(game.chase_path(Vector3(0, 0, 6), Vector3(0, 0, -6)).size() > 2, "pursuers can route around central obstacle")
 	game.start_or_resume()
+	check(InputMap.has_action("holster") and game.player.weapon.visible, "H holsters a drawn gun")
+	game.player.set_gun_drawn(false)
+	var holstered_ammo: int = game.player.ammo
+	game.player.shoot()
+	check(game.player.empty_hands.visible and not game.player.weapon.visible and game.player.ammo == holstered_ammo, "holstered hands show and cannot fire")
+	game.player.set_gun_drawn(true)
+	check(game.player.weapon.visible and not game.player.empty_hands.visible, "drawing restores the gun")
 	var guards: Array[Node] = []
 	for child in game.world.get_children():
 		if child is CharacterBody3D:
@@ -120,7 +127,7 @@ func run() -> void:
 	for other in guards:
 		check(not other.visible and other.collision_layer == 0, "patrols leave the celebration")
 	game.start_or_resume()
-	check(game.active and game.victory and not game.player.weapon.visible, "join friends allows peaceful exploration without restarting")
+	check(game.active and game.victory and not game.player.weapon.visible and game.player.empty_hands.visible, "join friends allows peaceful exploration with visible hands")
 	await position_player(friend.global_position + Vector3(0, 0.05, -2), friend.global_position + Vector3(0, 1.1, 0))
 	game.interact()
 	check(game.message_text == "Ava: Long live the Shah", "friend keeps their slogan during the celebration")

@@ -27,6 +27,7 @@ No .NET SDK or export is needed.
 | WASD / mouse | Move / look |
 | Shift / Ctrl / Space | Sprint / crouch / jump |
 | Left click / R | Fire / reload |
+| H | Holster or draw the gun; see your hands when holstered |
 | E | Use a power box, speak to a friend or party guest, or start the gathering |
 | F2 | Switch between English and Persian during play |
 | Esc | Pause / resume |
