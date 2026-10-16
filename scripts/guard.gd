@@ -2,6 +2,11 @@ extends CharacterBody3D
 ## Fictional armed combatant with line-of-sight checks and telegraphed fire.
 ## Intentionally simple AI: no navigation mesh or sophisticated pathfinding yet.
 
+const FACE_DIRECTORY := "res://assets/textures/faces/"
+const FACE_EXTENSIONS := ["jpg", "jpeg", "png", "webp"]
+
+static var face_picture_paths := PackedStringArray()
+
 var game: Node3D
 var health := 100
 var alive := true
@@ -133,15 +138,28 @@ func take_damage(amount: int, point: Vector3) -> void:
 		# Bodies stay in the level; no smoke or disappearing death effect.
 
 func add_face_picture() -> void:
+	if face_picture_paths.is_empty():
+		for file_name in ResourceLoader.list_directory(FACE_DIRECTORY):
+			if file_name.get_extension().to_lower() in FACE_EXTENSIONS:
+				face_picture_paths.append(FACE_DIRECTORY + file_name)
+		face_picture_paths.sort()
+	if face_picture_paths.is_empty():
+		push_warning("No enemy face images found in %s" % FACE_DIRECTORY)
+		return
+
+	var picture_path := face_picture_paths[guard_index % face_picture_paths.size()]
+	var picture := load(picture_path) as Texture2D
+	if picture == null:
+		push_warning("Could not load enemy face image: %s" % picture_path)
+		return
+
 	var face := MeshInstance3D.new()
 	var quad := QuadMesh.new()
 	quad.size = Vector2(0.70, 0.70)
 	face.mesh = quad
 
 	var material := StandardMaterial3D.new()
-	material.albedo_texture = load(
-		"res://assets/textures/faces/A_Kh_face.jpg"
-	) as Texture2D
+	material.albedo_texture = picture
 	material.roughness = 1.0
 	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	face.material_override = material
