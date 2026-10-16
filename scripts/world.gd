@@ -220,7 +220,7 @@ func shop(side: int, z: float, title_key: String, cloth: Color) -> void:
 	root.position = Vector3(side * 15.1, 0, z)
 	root.rotation_degrees.y = -side * 90.0
 	add_child(root)
-	PoofShapes.box(root, Vector3(0, 1.6, 0), Vector3(4.4, 3.2, 0.3), WOOD)
+	PoofShapes.box(root, Vector3(0, 1.6, 0), Vector3(4.4, 3.2, 0.3), WOOD, true)
 	PoofShapes.box(root, Vector3(0, 1.6, 0.18), Vector3(3.9, 2.8, 0.05), Color("252d37"))
 	for y in [0.6, 1.35, 2.1]:
 		PoofShapes.box(root, Vector3(0, y, 0.33), Vector3(3.8, 0.08, 0.6), PLASTER)
@@ -309,7 +309,7 @@ func build_gathering() -> void:
 	PoofShapes.box(gathering, Vector3(0, 0.045, 0), Vector3(6.6, 0.02, 3.1), Color("bf875e"))
 	PoofShapes.box(gathering, Vector3(0, 0.055, 0), Vector3(5.9, 0.01, 2.4), Color("823e43"))
 	for x in [-2.5, 2.5]:
-		PoofShapes.box(gathering, Vector3(x, 0.2, 0), Vector3(1.0, 0.4, 0.75), TEAL)
+		PoofShapes.box(gathering, Vector3(x, 0.2, 0), Vector3(1.0, 0.4, 0.75), TEAL, true)
 	# Finish here, returning to the friends you started beside.
 	var speaker := Node3D.new()
 	speaker.position = Vector3(-4, 0, 19)

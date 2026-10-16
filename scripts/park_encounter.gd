@@ -46,10 +46,10 @@ func build_park() -> void:
 		PoofShapes.box(self, Vector3(x, 0.25, -2.7), Vector3(0.25, 0.5, 0.25), Color("544336"))
 		for offset in [-0.28, 0.28]:
 			PoofShapes.box(self, Vector3(x + offset, 0.95, -2.7), Vector3(0.22, 1.2, 0.22), Color("544336"))
-		PoofShapes.box(self, Vector3(x, 0.65, -2.7), Vector3(1.6, 0.17, 0.5), Color("8c6946"))
-		PoofShapes.box(self, Vector3(x, 1.05, -2.95), Vector3(1.6, 0.65, 0.14), Color("8c6946"))
+		PoofShapes.box(self, Vector3(x, 0.65, -2.7), Vector3(1.6, 0.17, 0.5), Color("8c6946"), true)
+		PoofShapes.box(self, Vector3(x, 1.05, -2.95), Vector3(1.6, 0.65, 0.14), Color("8c6946"), true)
 	for at in [Vector3(-4.4, 0, 2.7), Vector3(3.3, 0, -2.8)]:
-		PoofShapes.box(self, at + Vector3(0, 0.9, 0), Vector3(0.2, 1.8, 0.2), Color("514334"))
+		PoofShapes.box(self, at + Vector3(0, 0.9, 0), Vector3(0.2, 1.8, 0.2), Color("514334"), true)
 		var crown := sphere(self, at + Vector3(0, 2.1, 0), Vector3(1.45, 1.5, 1.45), Color("45634c"))
 		crown.name = "Park tree"
 	park_sign = PoofShapes.label(self, Vector3(-0.6, 2.5, -3.3), "", Color("d7c69d"), 40)
@@ -61,6 +61,19 @@ func build_van() -> void:
 	van.name = "Morality police van"
 	van.position = Vector3(4.7, 0, 7.0)
 	add_child(van)
+	var van_body := AnimatableBody3D.new()
+	van_body.name = "Van collider"
+	# The van root moves during the encounter, so its child collider follows it.
+	van_body.sync_to_physics = false
+	van_body.collision_layer = 1
+	van_body.collision_mask = 0
+	van.add_child(van_body)
+	var van_collision := CollisionShape3D.new()
+	var van_shape := BoxShape3D.new()
+	van_shape.size = Vector3(2.55, 2.1, 4.5)
+	van_collision.shape = van_shape
+	van_collision.position.y = 1.13
+	van_body.add_child(van_collision)
 	PoofShapes.box(van, Vector3(0, 1.13, 0), Vector3(2.55, 2.1, 4.5), Color("deded8"))
 	PoofShapes.box(van, Vector3(0, 2.16, 0.55), Vector3(2.5, 0.16, 3.15), Color("f3f1e9"))
 	for side in [-1, 1]:
@@ -85,6 +98,7 @@ func make_person(clothes: Color, woman: bool, officer: bool, index: int) -> Node
 		[Color("292b2b"), Color("4c3731"), Color("25252b"), Color("614235")][index],
 		index % 5, woman, not woman and not officer)
 	if officer:
+		(person.get_node("Body collider") as AnimatableBody3D).collision_layer = 0
 		PoofShapes.box(person, Vector3(0, 1.82, 0), Vector3(0.44, 0.14, 0.4), UNIFORM.darkened(0.3))
 	return person
 
@@ -135,6 +149,7 @@ func _process(delta: float) -> void:
 	for i in range(officers.size()):
 		var officer := officers[i]
 		officer.visible = elapsed >= 2.2
+		(officer.get_node("Body collider") as AnimatableBody3D).collision_layer = 1 if officer.visible else 0
 		var arrival := Vector3(3.6 + (i % 2) * 0.55, 0, 2.5 + (i / 2) * 0.5)
 		var approach := Vector3(-3.1 + i * 0.65 + 0.5, 0, -0.1 + i * 0.55)
 		var pursuit := civilians[i].position + Vector3(0.46, 0, 0.05)

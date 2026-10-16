@@ -66,6 +66,10 @@ func run() -> void:
 	Input.action_release("forward")
 	check(game.player.position.z < initial_z - 0.7, "WASD moves the player through actual physics")
 	var friend: Node3D = game.world.neighbors[0]
+	var collision_friend: Node3D = game.world.neighbors[2]
+	await position_player(collision_friend.global_position + Vector3(0, 0.05, -2), collision_friend.global_position + Vector3(0, 1.1, 0))
+	var person_hit: KinematicCollision3D = game.player.move_and_collide(Vector3(0, 0, 2))
+	check(person_hit != null and person_hit.get_collider() == collision_friend.get_node("Body collider"), "player cannot walk through a friend")
 	await position_player(friend.global_position + Vector3(0, 0.05, -2), friend.global_position + Vector3(0, 1.1, 0))
 	game.interact()
 	check(game.message_text == "Ava: Long live the Shah" and game.relays_online == 0, "talking to a friend shows their English slogan without advancing power objectives")

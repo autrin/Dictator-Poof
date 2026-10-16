@@ -3,6 +3,20 @@ extends RefCounted
 
 static func build(parent: Node3D, clothes: Color, skin: Color, hair: Color, style: int, scarf: bool = false, tattoo: bool = false) -> void:
 	# All pieces belong to the character root so existing scene animation can move it.
+	var body := AnimatableBody3D.new()
+	body.name = "Body collider"
+	# The character root is animated directly; keep this child at the root's transform.
+	body.sync_to_physics = false
+	body.collision_layer = 1
+	body.collision_mask = 0
+	parent.add_child(body)
+	var collision := CollisionShape3D.new()
+	var capsule_shape := CapsuleShape3D.new()
+	capsule_shape.radius = 0.28
+	capsule_shape.height = 1.7
+	collision.shape = capsule_shape
+	collision.position.y = 0.9
+	body.add_child(collision)
 	sphere(parent, "Pelvis", Vector3(0, 0.83, 0), Vector3(0.42, 0.27, 0.29), clothes.darkened(0.14))
 	sphere(parent, "Torso", Vector3(0, 1.13, 0), Vector3(0.49, 0.72, 0.32), clothes)
 	sphere(parent, "Neck", Vector3(0, 1.51, 0), Vector3(0.16, 0.2, 0.15), skin)

@@ -23,12 +23,28 @@ func run() -> void:
 	game.start_or_resume()
 	var park: Node3D = game.world.park_encounter
 	check(park != null and not park.started and park.civilians.size() == 4 and park.officers.size() == 4, "park scene starts with four walking friends and four officers")
+	game.player.position = park.van.global_position + Vector3(0, 0.05, 4)
+	await physics_frame
+	var van_hit: KinematicCollision3D = game.player.move_and_collide(Vector3(0, 0, -4))
+	check(van_hit != null and van_hit.get_collider() == park.van.get_node("Van collider"), "player cannot walk through the van")
+	game.player.position = park.civilians[0].global_position + Vector3(0, 0.05, 1.5)
+	await physics_frame
+	var civilian_hit: KinematicCollision3D = game.player.move_and_collide(Vector3(0, 0, -1.5))
+	check(civilian_hit != null and civilian_hit.get_collider() == park.civilians[0].get_node("Body collider"), "player cannot walk through a park civilian")
 	game.player.position = park.global_position + Vector3(0, 0.05, 0)
 	await process_frame
 	await process_frame
 	check(park.started, "approaching the park triggers the encounter")
 	park._process(15.5)
 	check(park.officers[0].visible and park.van.position.z < 4.0, "officers emerge from the arriving van")
+	await physics_frame
+	await physics_frame
+	game.player.set_physics_process(false)
+	game.player.position = park.van.global_position + Vector3(0, 0.05, 4)
+	await physics_frame
+	var arrived_van_hit: KinematicCollision3D = game.player.move_and_collide(Vector3(0, 0, -4))
+	check(arrived_van_hit != null and arrived_van_hit.get_collider() == park.van.get_node("Van collider"), "player cannot walk through the van after it arrives")
+	game.player.set_physics_process(true)
 	check(park.civilians[1].rotation.z < -0.1 and park.officers[1].get_node("Left arm").position.y > 1.4, "officer grabs toward a woman's hair while she recoils")
 	check(park.civilians[0].rotation.z > 0.1 and park.officers[0].get_node("Left arm").position.y > 1.0, "man recoils from the officer's raised arm")
 	park._process(8.0)
