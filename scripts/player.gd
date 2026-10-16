@@ -38,6 +38,8 @@ func _ready() -> void:
 	flashlight.spot_range = 24.0
 	flashlight.spot_angle = 35.0
 	flashlight.shadow_enabled = true
+	flashlight.shadow_bias = 0.05
+	flashlight.shadow_normal_bias = 2.0
 	camera.add_child(flashlight)
 	weapon = Node3D.new()
 	camera.add_child(weapon)

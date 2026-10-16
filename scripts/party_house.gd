@@ -33,7 +33,8 @@ func _ready() -> void:
 
 func build_house() -> void:
 	name = "Private courtyard party house"
-	PoofShapes.box(self, Vector3(0, -0.015, 0), Vector3(16, 0.03, 16), Color("c6b18d"))
+	# Keep the courtyard surface above the street ground and its painted seams.
+	PoofShapes.box(self, Vector3(0, 0.015, 0), Vector3(16, 0.03, 16), Color("c6b18d"))
 	# The small entrance opens directly toward the lane; the walls shield the party.
 	for side in [-1, 1]:
 		PoofShapes.box(self, Vector3(side * 4.9, 1.9, 7.5), Vector3(6.2, 3.8, 0.55), PLASTER, true)
