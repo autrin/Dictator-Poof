@@ -32,7 +32,11 @@ No .NET SDK or export is needed.
 | F2 | Switch between English and Persian during play |
 | Esc | Pause / resume |
 
-The menu offers language, sound, blood, and sensitivity settings. The neighborhood is
+Entering the lane starts a short flourish followed by looping background music.
+Adjust it with **Music volume**; **Sound** mutes music and effects.
+See [music credit](docs/MUSIC.md).
+
+The menu offers language, sound, music volume, blood, and sensitivity settings. The neighborhood is
 still a stylized prototype: procedural characters, geometry, and synthesized
 music. It is not a finished realistic city or a completed historical campaign.
 

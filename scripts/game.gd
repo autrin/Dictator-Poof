@@ -6,6 +6,7 @@ const GuardScript := preload("res://scripts/guard.gd")
 const WorldScript := preload("res://scripts/world.gd")
 const HudScript := preload("res://scripts/hud.gd")
 const Locale := preload("res://scripts/localization.gd")
+const BackgroundMusic := preload("res://scripts/background_music.gd")
 
 var player: CharacterBody3D
 var world: Node3D
@@ -23,7 +24,15 @@ var beat_left := 0.0
 var beat := 0
 var started := false
 var blood_enabled := true
-var sound_enabled := true
+var sound_enabled := true:
+	set(value):
+		sound_enabled = value
+		update_music_mix()
+var music_volume := 0.55:
+	set(value):
+		music_volume = clampf(value, 0.0, 1.0)
+		update_music_mix()
+var music: AudioStreamPlayer
 var sensitivity := 0.002
 var hit_marker := 0.0
 var hurt_flash := 0.0
@@ -38,6 +47,9 @@ var navigation := AStarGrid2D.new()
 func _ready() -> void:
 	load_settings()
 	configure_input()
+	music = BackgroundMusic.new()
+	add_child(music)
+	update_music_mix()
 	build_run()
 	hud = HudScript.new()
 	hud.game = self
@@ -60,6 +72,8 @@ func configure_input() -> void:
 		InputMap.action_add_event("fire", click)
 
 func build_run() -> void:
+	if is_instance_valid(music):
+		music.stop()
 	if is_instance_valid(world):
 		world.free()
 	if is_instance_valid(player):
@@ -127,6 +141,7 @@ func start_or_resume() -> void:
 		build_run()
 	started = true
 	active = true
+	music.start_or_resume()
 	hud.hide_menu()
 	player.update_viewmodel()
 
@@ -152,7 +167,12 @@ func _notification(what: int) -> void:
 
 func pause_run() -> void:
 	active = false
+	music.stream_paused = true
 	hud.show_menu("pause")
+
+func update_music_mix() -> void:
+	if is_instance_valid(music):
+		music.set_mix(sound_enabled, music_volume)
 
 func localize(key: String) -> String:
 	return Locale.text(language, key)
@@ -270,6 +290,7 @@ func finish(won: bool) -> void:
 		return
 	active = false
 	ended = true
+	music.stream_paused = true
 	victory = won
 	if won:
 		world.celebrate()
@@ -329,12 +350,14 @@ func load_settings() -> void:
 		language = saved_language if saved_language == "en" or saved_language == "fa" else "en"
 		blood_enabled = bool(config.get_value("preferences", "blood", true))
 		sound_enabled = bool(config.get_value("preferences", "sound", true))
+		music_volume = float(config.get_value("preferences", "music_volume", 0.55))
 		sensitivity = clampf(float(config.get_value("preferences", "sensitivity", 0.002)), 0.0005, 0.006)
 
 func save_settings() -> void:
 	var config := ConfigFile.new()
 	config.set_value("preferences", "blood", blood_enabled)
 	config.set_value("preferences", "sound", sound_enabled)
+	config.set_value("preferences", "music_volume", music_volume)
 	config.set_value("preferences", "sensitivity", sensitivity)
 	config.set_value("preferences", "language", language)
 	var result := config.save("user://settings.cfg")
