@@ -2,6 +2,7 @@ extends RefCounted
 ## All text visible to players. English is the default; Persian remains selectable.
 
 const STRINGS := {
+	"music_volume": ["Music volume", "بلندی موسیقی"],
 	"brand": ["DICTATOR POOF", "دیکتاتور پوف"],
 	"tagline": ["AN OPEN-SOURCE RESISTANCE GAME", "بازی مقاومت متن‌باز"],
 	"chapter": ["01  /  A NIGHT ON KAVEH LANE", "۰۱  /  شبی در کوچهٔ کاوه"],

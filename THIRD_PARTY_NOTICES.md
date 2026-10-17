@@ -16,15 +16,16 @@ the font. The font remains under the OFL rather than the project's GPL.
 
 ## Face photograph: unresolved
 
-- File: `assets/textures/faces/A_Kh_face.jpg`
+- Files: In `assets/textures/`
 - Used by: `scripts/guard.gd`, in `add_face_picture()`.
 - Creator, source URL, permission, and license: not recorded.
 
-No license or redistribution permission is asserted for this file. Before
-distributing a build or repository containing it, record its source, creator,
-license or permission, and required attribution, or replace/remove the image
-and update its game references. Being publicly accessible is not evidence of
-permission. Screenshots containing it also need review before distribution.
+## Char-Mezrabe Esfahan
+
+Synthesized opening excerpt by Hassan Radmard:
+[score on MuseScore](https://musescore.com/user/3051666/scores/5604485).
+Asset: `assets/audio/esfahan_opening.wav`. The supplied source lists
+**All rights reserved**; obtain permission before distributing this arrangement.
 
 ## Godot engine in exported games
 

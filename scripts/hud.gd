@@ -23,6 +23,8 @@ var hud_title: Label
 var hud_place: Label
 var sensitivity_label: Label
 var sound_button: CheckButton
+var music_label: Label
+var music_slider: HSlider
 var language_label: Label
 var language_picker: OptionButton
 var quit_button: Button
@@ -139,6 +141,16 @@ func _ready() -> void:
 		game.sound_enabled = enabled
 		game.save_settings())
 	column.add_child(sound_button)
+	music_label = text(column, "", 14, Color("b3b5c0"))
+	music_slider = HSlider.new()
+	music_slider.min_value = 0.0
+	music_slider.max_value = 1.0
+	music_slider.step = 0.01
+	music_slider.value = game.music_volume
+	music_slider.value_changed.connect(func(value: float):
+		game.music_volume = value
+		game.save_settings())
+	column.add_child(music_slider)
 	var language_row := HBoxContainer.new()
 	language_row.add_theme_constant_override("separation", 16)
 	column.add_child(language_row)
@@ -180,6 +192,7 @@ func apply_language() -> void:
 	blood_button.text = game.localize("blood")
 	sensitivity_label.text = game.localize("sensitivity")
 	sound_button.text = game.localize("sound")
+	music_label.text = game.localize("music_volume")
 	language_label.text = game.localize("language")
 	language_picker.select(1 if game.language == "fa" else 0)
 	hint.text = game.localize("hint")

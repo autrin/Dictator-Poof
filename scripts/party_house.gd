@@ -153,7 +153,7 @@ func _process(delta: float) -> void:
 		if music_left <= 0.0:
 			music_left = 0.38
 			var notes := [220.0, 261.63, 293.66, 329.63, 293.66, 261.63, 246.94, 196.0]
-			game.play_tone(notes[music_beat % notes.size()], 0.26, 0.045)
+			game.play_tone(notes[music_beat % notes.size()], 0.26, 0.845)
 			music_beat += 1
 	if not raided:
 		for child in game.world.get_children():
