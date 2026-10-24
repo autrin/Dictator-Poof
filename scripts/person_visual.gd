@@ -23,10 +23,19 @@ static func build(parent: Node3D, clothes: Color, skin: Color, hair: Color, styl
 	sphere(parent, "Head", Vector3(0, 1.72, 0), Vector3(0.265, 0.34, 0.27), skin)
 	for side in [-1, 1]:
 		sphere(parent, "Ear", Vector3(side * 0.139, 1.72, 0), Vector3(0.046, 0.08, 0.045), skin)
-		var upper_arm := capsule(parent, "Left arm" if side < 0 else "Right arm", Vector3(side * 0.26, 1.24, 0), 0.075, 0.34, clothes)
-		upper_arm.rotation.z = side * 0.12
-		var forearm := capsule(upper_arm, "Forearm", Vector3(side * 0.03, -0.28, -0.015), 0.055, 0.29, skin)
-		sphere(forearm, "Left hand" if side < 0 else "Right hand", Vector3(side * 0.01, -0.19, -0.01), Vector3(0.08, 0.16, 0.055), skin)
+		var upper_arm := Node3D.new()
+		upper_arm.name = "Left arm" if side < 0 else "Right arm"
+		upper_arm.set_meta("part", str(upper_arm.name))
+		upper_arm.position = Vector3(side * 0.235, 1.43, 0)
+		upper_arm.rotation.z = side * 0.1
+		parent.add_child(upper_arm)
+		capsule(upper_arm, "Sleeve", Vector3(0, -0.16, 0), 0.075, 0.34, clothes)
+		var forearm := Node3D.new()
+		forearm.name = "Forearm"
+		forearm.position = Vector3(0, -0.32, 0)
+		upper_arm.add_child(forearm)
+		capsule(forearm, "Skin", Vector3(0, -0.145, 0), 0.055, 0.29, skin)
+		sphere(forearm, "Left hand" if side < 0 else "Right hand", Vector3(0, -0.33, 0), Vector3(0.08, 0.14, 0.055), skin)
 		capsule(parent, "Thigh", Vector3(side * 0.1, 0.69, 0), 0.093, 0.47, clothes.darkened(0.18))
 		capsule(parent, "Shin", Vector3(side * 0.1, 0.3, 0.01), 0.067, 0.44, clothes.darkened(0.23))
 		sphere(parent, "Shoe", Vector3(side * 0.1, 0.065, -0.065), Vector3(0.14, 0.13, 0.28), Color("302e34"))
@@ -40,6 +49,38 @@ static func build(parent: Node3D, clothes: Color, skin: Color, hair: Color, styl
 	for side in [-1, 1]:
 		var tear := sphere(parent, "Tear left" if side < 0 else "Tear right", Vector3(side * 0.061, 1.705, -0.133), Vector3(0.019, 0.05, 0.013), Color("8bcad1"))
 		tear.visible = false
+	remember_pose(parent)
+
+static func remember_pose(parent: Node3D) -> void:
+	var rest: Dictionary = {}
+	for part in parent.get_children():
+		if part is Node3D and not part is PhysicsBody3D:
+			rest[part] = part.transform
+	parent.set_meta("standing_pose", rest)
+
+static func stand(parent: Node3D) -> void:
+	var rest: Dictionary = parent.get_meta("standing_pose")
+	for part: Node3D in rest:
+		part.transform = rest[part]
+	for side in ["Left", "Right"]:
+		parent.get_node(side + " arm/Forearm").rotation = Vector3.ZERO
+	var collision: CollisionShape3D = parent.get_node("Body collider").get_child(0)
+	collision.shape.height = 1.7
+	collision.position.y = 0.9
+
+static func walk_pose(parent: Node3D, phase: float, amount: float) -> void:
+	var rest: Dictionary = parent.get_meta("standing_pose")
+	for part: Node3D in rest:
+		var original: Transform3D = rest[part]
+		var kind: String = part.get_meta("part", "")
+		var side := -1.0 if original.origin.x < 0 else 1.0
+		var swing := sin(phase) * side * 0.32 * amount
+		if kind in ["Thigh", "Shin", "Shoe"]:
+			var hip := Vector3(original.origin.x, 0.9, 0)
+			part.position = hip + Basis(Vector3.RIGHT, swing) * (original.origin - hip)
+			part.rotation.x = swing
+		elif kind in ["Left arm", "Right arm"]:
+			part.rotation.x = -swing * 0.75
 
 static func build_hair(parent: Node3D, hair: Color, style: int, scarf: bool) -> void:
 	sphere(parent, "Hair crown", Vector3(0, 1.855, 0.025), Vector3(0.278, 0.13, 0.275), hair)
@@ -77,7 +118,7 @@ static func tailored_torso(parent: Node3D, color: Color) -> void:
 				var r: Vector3 = rings[pair.x]
 				var angle: float = pair.y * TAU / 16
 				points.append(Vector3(cos(angle) * r.x, r.y, sin(angle) * r.z))
-			for index in [0, 1, 2, 0, 2, 3]:
+			for index in [0, 2, 1, 0, 3, 2]:
 				surface.add_vertex(points[index])
 	surface.generate_normals()
 	var mesh := MeshInstance3D.new()
@@ -88,8 +129,9 @@ static func tailored_torso(parent: Node3D, color: Color) -> void:
 
 static func sit(parent: Node3D) -> void:
 	# Bend at hips and knees; feet remain on the floor.
-	for child in parent.get_children():
-		if child is MeshInstance3D:
+	stand(parent)
+	for child: Node3D in parent.get_meta("standing_pose"):
+		if child is Node3D and not child is PhysicsBody3D:
 			if child.get_meta("part", "") == "Thigh":
 				child.position.y = 0.54
 				child.position.z = -0.2

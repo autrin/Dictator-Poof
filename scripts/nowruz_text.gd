@@ -1,5 +1,11 @@
 extends RefCounted
 const STRINGS := {
+	"scene_wait": ["Let the scene unfold. Keep the path clear for your family.", "بگذار صحنه پیش برود. راه را برای خانواده باز نگه دار."],
+	"family_boarding": ["Dad: Come on, everyone. Let's get in the car.", "بابا: بیایید بچه‌ها، سوار ماشین شویم."],
+	"family_driving": ["The family sets off. Look around from the back seat.", "خانواده راه می‌افتد. از صندلی عقب اطرافت را ببین."],
+	"patrol_arriving": ["Sister: That green-striped van... the morality patrol is stopping here.", "خواهر: آن ون با خط سبز... گشت ارشاد دارد اینجا می‌ایستد."],
+	"patrol_ready": ["The officers approach your sister. Stay beside her.", "مأموران به خواهرت نزدیک می‌شوند. کنارش بمان."],
+	"patrol_speaker": ["MORALITY POLICE", "گشت ارشاد"],
 	"nowruz_chapter": ["NOWRUZ / THE FIRST VISIT", "نوروز / اولین دیدار"],
 	"nowruz_description": ["Morning light through the blinds. Family in the next room.\nOpen the house to spring, collect pastries, and spend the new year with your grandparents.\nOutside, a morality patrol interrupts the journey.", "نور صبح از لای پرده‌ها. خانواده در اتاق کناری.\nپنجره را رو به بهار باز کن، شیرینی بگیر و سال نو را کنار پدربزرگ و مادربزرگ بگذران.\nبیرون، گشت ارشاد راهتان را می‌گیرد."],
 	"nowruz_start": ["WAKE UP", "بیدار شو"],

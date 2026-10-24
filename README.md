@@ -12,8 +12,12 @@ at outdoor tables and carries four real Persian literary titles with original
 cover designs and short descriptions. Story text supports English and Persian.
 
 Ramadan is reserved for a later chapter. The Nowruz café serves during the day.
-Travel uses short fades, meals are staged interactions, and Hokm is one
-four-player partnership hand. Progress lasts for the current session.
+The family walks to the car and into the houses; trips use a moving back-seat
+view. A marked patrol van arrives and two uniformed officers approach before
+the bakery confrontation. Relatives eat at the table while a cook works at
+the counter. Interiors include original patterned carpets, tilework, curtains,
+ceramics, and chandeliers. Hokm is one four-player partnership hand. Progress
+lasts for the current session.
 
 Choose **Kaveh Lane / Night Mission** on the title screen for the original mission:
 
@@ -69,7 +73,10 @@ historical source in your pull request.
 The family chapter lives in [nowruz.gd](scripts/nowruz.gd), with shared
 [café](scripts/book_cafe.gd), [furniture](scripts/domestic_props.gd), and
 [Hokm rules](scripts/hokm_rules.gd). The night neighborhood is built in
-[world.gd](scripts/world.gd). Mission state lives in [game.gd](scripts/game.gd),
+[world.gd](scripts/world.gd). [Nowruz choreography](scripts/nowruz_life.gd)
+coordinates arrivals; [actor motion](scripts/actor_motion.gd) follows authored
+routes with swept collision. The two encounters share [patrol art](scripts/patrol_visual.gd).
+Mission state lives in [game.gd](scripts/game.gd),
 movement in [player.gd](scripts/player.gd), and patrol behavior in
 [guard.gd](scripts/guard.gd). See [the party house notes](docs/PARTY_HOUSE.md)
 for the new scene and reusable character model.

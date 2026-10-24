@@ -4,6 +4,8 @@ const Props := preload("res://scripts/domestic_props.gd")
 const Person := preload("res://scripts/person_visual.gd")
 const Cafe := preload("res://scripts/book_cafe.gd")
 const DayRules := preload("res://scripts/day_rules.gd")
+const Life := preload("res://scripts/nowruz_life.gd")
+const Decor := preload("res://scripts/home_decor.gd")
 const Hokm := preload("res://scripts/hokm.gd")
 const SUNSET_MINUTE := 18 * 60 + 20
 const STEPS := ["wake", "blinds", "tv", "family", "car", "stop", "scarf", "pastry", "grandma", "sal", "help", "lunch", "cards", "home", "visits", "done"]
@@ -30,6 +32,8 @@ var bird_left := 4.0
 var labels: Array[Dictionary] = []
 var serving: Node3D
 var transition_left := 0.0
+var life: Node
+var speaker: Label3D
 
 func _ready() -> void:
 	build_light()
@@ -52,33 +56,39 @@ func _ready() -> void:
 	sister = person(Vector3(2, 0, 1), Color("427b88"), 1)
 	scarf = Person.sphere(sister, "Covering scarf", Vector3(0, 1.82, 0.035), Vector3(0.32, 0.21, 0.31), Color("bd8393"))
 	scarf.hide()
+	Person.remember_pose(sister)
 	family.append(sister)
 	family.append(person(Vector3(3.5, 0, 1.5), Color("ab6652"), 3))
 	family.append(person(Vector3(4.7, 0, 0.8), Color("75644f"), 0))
-	officer = person(Vector3(-7.2, 0, -16.7), Color("39463e"), 0)
-	officer.rotation.y = PI
-	set_officer_visible(true)
-	for i in range(7):
-		var relative := person(Vector3(-4.5 + (i % 4) * 2.5, 0, -46.5 + (i / 4) * 5), [Color("9c654c"), Color("527572"), Color("8c6e82")][i % 3], i % 5)
+	for i in range(6):
+		var relative := person(Vector3(-1 + (i % 3), 0, -42.5 + (-1.0 if i < 3 else 1.0)), [Color("9c654c"), Color("527572"), Color("8c6e82")][i % 3], i % 5)
+		relative.rotation.y = PI if i < 3 else 0
 		relatives.append(relative)
-		Props.chair(self, relative.position)
+		Props.chair(self, relative.position, relative.rotation.y)
 		Person.sit(relative)
+	life = Life.new()
+	life.chapter = self
+	add_child(life)
+	speaker = label_at(officer, Vector3(0, 2.2, 0), "patrol_speaker")
+	speaker.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	speaker.pixel_size = 0.003
+	speaker.hide()
 	# All chapter actions point to real, reachable objects.
 	target("wake", Vector3(-4.7, 0, 3))
 	target("blinds", Vector3(-3.6, 0, -3.9))
 	target("tv", Vector3(5.8, 0, -1.4))
 	target("family", Vector3(2, 0, 1))
-	target("car", Vector3(3.8, 0, -9))
+	target("car", Vector3(7.1, 0, -7.3))
 	target("stop", Vector3(-7.3, 0, -15))
 	target("scarf", Vector3(-7.3, 0, -15))
 	target("pastry", Vector3(-10, 0, -16))
-	target("grandma", Vector3(-3.5, 0, -17.5))
+	target("grandma", Vector3(-1.9, 0, -17.3))
 	target("sal", Vector3(0, 0, -46))
 	target("help", Vector3(5, 0, -44))
-	target("lunch", Vector3(0, 0, -42.5))
+	target("lunch", Vector3(2, 0, -42.5))
 	target("cards", Vector3(-2.7, 0, -43.5))
-	target("home", Vector3(3.8, 0, -36))
-	target("visits", Vector3(3.8, 0, -9))
+	target("home", Vector3(7.1, 0, -34.3))
+	target("visits", Vector3(7.1, 0, -7.3))
 	target("done", Vector3(0, 0, -42.5))
 	for key in ["family", "stop", "scarf"]:
 		targets[key].queue_free()
@@ -92,6 +102,8 @@ func _ready() -> void:
 	for mesh in find_children("*", "MeshInstance3D", true, false):
 		if mesh.mesh is BoxMesh and mesh.mesh.size.length() > 5:
 			var material := mesh.material_override as StandardMaterial3D
+			if material.albedo_texture != null:
+				continue
 			material.albedo_texture = texture
 			material.uv1_triplanar = true
 			material.uv1_world_triplanar = true
@@ -137,6 +149,7 @@ func build_home(at: Vector3, grandparents: bool) -> void:
 	for x in [-6.7, -1.8, 1.9]:
 		PoofShapes.box(room, Vector3(x, 1.6, -4.97), Vector3(0.09, 1.6, 0.14), Props.WOOD, true)
 	PoofShapes.box(room, Vector3(0, 3.1, 0), Vector3(14.2, 0.16, 10.2), Color("efe1c4"), true)
+	Decor.furnish(room, grandparents)
 	Props.rug(room, Vector3(1, 0.035, 0), Vector2(6, 6))
 	Props.haftseen(room, Vector3(0, 0, -2))
 	for x in [-5.7, 5.7]:
@@ -262,13 +275,46 @@ func build_car() -> void:
 	car = Node3D.new()
 	add_child(car)
 	car.position = Vector3(5.5, 0, -9)
-	PoofShapes.box(car, Vector3(0, 0.58, 0), Vector3(1.75, 0.63, 3.7), Color("dfd9c7"), true)
-	PoofShapes.box(car, Vector3(0, 1.12, 0.1), Vector3(1.5, 0.63, 1.85), Color("53696d"), true)
-	PoofShapes.box(car, Vector3(0, 1.47, 0.1), Vector3(1.55, 0.08, 1.9), Color("dfd9c7"))
+	car.name = "Family car"
+	var body := AnimatableBody3D.new()
+	body.name = "Car collider"
+	body.sync_to_physics = false
+	body.collision_layer = 1
+	body.collision_mask = 0
+	car.add_child(body)
+	var collision := CollisionShape3D.new()
+	var bounds := BoxShape3D.new()
+	bounds.size = Vector3(1.75, 1.5, 3.7)
+	collision.shape = bounds
+	collision.position.y = 0.9
+	body.add_child(collision)
+	PoofShapes.box(car, Vector3(0, 0.58, 0), Vector3(1.75, 0.63, 3.7), Color("dfd9c7"))
+	PoofShapes.box(car, Vector3(0, 1.62, 0.1), Vector3(1.65, 0.08, 2.1), Color("dfd9c7"))
+	for x in [-0.78, 0.78]:
+		for z in [-0.95, 0.15, 1.1]:
+			PoofShapes.box(car, Vector3(x, 1.24, z), Vector3(0.06, 0.72, 0.06), Color("dfd9c7"))
+		for z in [-0.4, 0.68]:
+			PoofShapes.box(car, Vector3(x, 0.91, z), Vector3(0.06, 0.11, 0.93), Color("d4cbb7"))
+	for z in [-0.98, 1.13]:
+		var glass := PoofShapes.box(car, Vector3(0, 1.26, z), Vector3(1.5, 0.61, 0.015), Color(0.48, 0.67, 0.68, 0.16))
+		glass.material_override.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	PoofShapes.box(car, Vector3(0, 0.99, -0.8), Vector3(1.4, 0.13, 0.3), Color("444b49"))
+	var steering := MeshInstance3D.new()
+	var ring := TorusMesh.new()
+	ring.inner_radius = 0.14
+	ring.outer_radius = 0.17
+	steering.mesh = ring
+	steering.material_override = PoofShapes.material(Color("303634"))
+	steering.position = Vector3(-0.4, 1.09, -0.65)
+	steering.rotation.x = 0.9
+	car.add_child(steering)
+	var wheels: Array[Node3D] = []
 	for x in [-0.85, 0.85]:
 		for z in [-1.15, 1.15]:
 			var wheel := Props.round_shape(car, Vector3(x, 0.35, z), 0.32, 0.17, Color("303334"))
 			wheel.rotation.z = PI / 2
+			wheels.append(wheel)
+	car.set_meta("wheels", wheels)
 	for x in [-0.58, 0.58]:
 		PoofShapes.box(car, Vector3(x, 0.72, -1.86), Vector3(0.35, 0.2, 0.04), Color("eee5b8"))
 
@@ -293,7 +339,7 @@ func label_at(parent: Node3D, at: Vector3, key: String) -> Label3D:
 	return label
 
 func movement_locked() -> bool:
-	return stage == 0 or transition_left > 0 or (is_instance_valid(cards) and cards.visible)
+	return stage == 0 or life.trip_phase == "driving" or transition_left > 0 or (is_instance_valid(cards) and cards.visible)
 
 func spawn_player() -> void:
 	game.player.position = Vector3(-4.7, 0.55, 3.3)
@@ -306,6 +352,8 @@ func objective() -> String:
 	return game.localize("action_" + STEPS[stage])
 
 func prompt() -> String:
+	if life.busy():
+		return game.localize("scene_wait")
 	if stage == 0:
 		return game.localize("action_wake")
 	if stage < STEPS.size() - 1 and game.near_and_visible(targets[STEPS[stage]]):
@@ -313,7 +361,7 @@ func prompt() -> String:
 	return cafe.prompt()
 
 func interact() -> void:
-	if transition_left > 0 or (is_instance_valid(cards) and cards.visible):
+	if life.busy() or transition_left > 0 or (is_instance_valid(cards) and cards.visible):
 		return
 	if stage == 0 or (stage < STEPS.size() - 1 and game.near_and_visible(targets[STEPS[stage]])):
 		advance()
@@ -322,56 +370,53 @@ func interact() -> void:
 
 func advance() -> void:
 	var step: String = STEPS[stage]
+	if life.busy():
+		return
 	if step in ["car", "grandma", "home", "visits"]:
-		transition_left = 0.7
+		life.begin_trip("bakery" if step == "car" else step)
+		return
 	game.notify("line_" + step, 12)
 	match step:
 		"wake":
 			teleport(Vector3(-3.1, 0.05, 2), Vector3(-3.6, 1.6, -4))
 		"blinds":
 			blinds.hide()
-		"car":
-			rules.minute = 9 * 60
-			car.position = Vector3(-3.5, 0, -18.7)
-			move_family(Vector3(-7.3, 0, -15))
-			teleport(Vector3(-6, 0.05, -12.6), Vector3(-7.3, 1.5, -15))
+		"family":
+			life.walk_to_car(true)
 		"stop":
-			set_officer_visible(true)
+			speaker.show()
+			game.player.camera.look_at(officer.global_position + Vector3(0, 1.65, 0))
 		"scarf":
+			speaker.hide()
 			scarf.show()
 			sister.rotation.z = 0.045
 		"pastry":
 			pastry_box.show()
-			pastry_box.position = sister.position + Vector3(0, 0.92, -0.3)
-		"grandma":
-			rules.minute = 10 * 60
-			car.position = Vector3(5.5, 0, -36)
-			move_family(Vector3(3, 0, -45))
-			pastry_box.position = Vector3(0.6, 0.9, -45.8)
-			teleport(Vector3(3.5, 0.05, -40.5), Vector3(0, 1.1, -46))
+			pastry_box.reparent(sister)
+			pastry_box.position = Vector3(0, 0.92, -0.3)
+			for i in range(life.officers.size()):
+				life.motion.walk(life.officers[i], [Vector3(-6 + i, 0, -18), Vector3(-7 + i, 0, -23)], 1.3)
 		"sal":
 			rules.minute = 11 * 60
 			game.play_tone(660, 0.6, 0.12)
 		"help":
 			rules.minute = 13 * 60
-			serving.show()
+			life.start_cooking()
+			return
 		"lunch":
-			rules.minute = 17 * 60
+			life.eating = true
+			rules.minute = 14 * 60
 		"cards":
+			life.eating = false
+			rules.minute = 17 * 60
 			cards = Hokm.new()
 			cards.game = game
 			game.hud.add_child(cards)
 			cards.finished.connect(finish_cards)
 			return
-		"home":
-			rules.minute = 20 * 60
-			car.position = Vector3(5.5, 0, -9)
-			move_family(Vector3(2, 0, 1))
-			teleport(Vector3(3.5, 0.05, -7), Vector3(1, 1, -10))
-		"visits":
-			rules.minute = 21 * 60
-			move_family(Vector3(3, 0, -45))
-			teleport(Vector3(3.5, 0.05, -40.5), Vector3(0, 1, -42.5))
+	complete_step()
+
+func complete_step() -> void:
 	stage = mini(stage + 1, STEPS.size() - 1)
 	update_time()
 	apply_language()
@@ -382,10 +427,6 @@ func finish_cards() -> void:
 	update_time()
 	apply_language()
 	game.notify("line_cards_done", 10)
-
-func move_family(at: Vector3) -> void:
-	for i in range(family.size()):
-		family[i].position = at + Vector3(i * 1.1, 0, 0.5 if i > 0 else 0)
 
 func teleport(at: Vector3, look: Vector3) -> void:
 	game.player.position = at
@@ -403,19 +444,15 @@ func update_time() -> void:
 	sky_mat.sky_horizon_color = Color("596379") if night else Color("eed8ae")
 	cafe.refresh_service()
 
-func set_officer_visible(value: bool) -> void:
-	officer.visible = value
-	officer.get_node("Body collider").collision_layer = 1 if value else 0
-
 func drink() -> void:
 	if movement_locked():
 		return
 	var at: Vector3 = game.player.global_position
 	var in_public := at.z < -5 and at.z > -39
 	# The bakery patrol witnesses public consumption; walls still block its view.
-	var witnessed := in_public and at.distance_to(Vector3(-7.2, 0, -16.7)) < 9
+	var witnessed := in_public and officer.visible and at.distance_to(officer.global_position) < 9
 	if witnessed:
-		var query := PhysicsRayQueryParameters3D.create(at + Vector3(0, 1.5, 0), Vector3(-7.2, 1.5, -16.7), 1, [game.player.get_rid()])
+		var query := PhysicsRayQueryParameters3D.create(at + Vector3(0, 1.5, 0), officer.global_position + Vector3(0, 1.5, 0), 1, [game.player.get_rid()])
 		var hit := get_world_3d().direct_space_state.intersect_ray(query)
 		witnessed = hit.is_empty() or officer.is_ancestor_of(hit.collider)
 	var result: String = rules.consume(in_public, witnessed)
@@ -432,6 +469,9 @@ func apply_language() -> void:
 		marker.text = "◇  " + objective()
 		marker.position = targets[STEPS[stage]].position + Vector3(0, 2.25, 0)
 		marker.visible = stage > 0 and stage < 15
+	if is_instance_valid(life):
+		life.van.get_node("Patrol sign").text = game.localize("van_sign")
+		life.van.get_node("Patrol sign right").text = game.localize("van_sign")
 	if is_instance_valid(cafe):
 		cafe.refresh_language()
 	if is_instance_valid(cards):
@@ -442,8 +482,8 @@ func _process(delta: float) -> void:
 		return
 	transition_left = maxf(0, transition_left - delta)
 	elapsed += delta
-	for i in range(relatives.size()):
-		relatives[i].rotation.y = sin(elapsed * 0.6 + i) * 0.08
+	if is_instance_valid(marker):
+		marker.position = targets[STEPS[stage]].global_position + Vector3(0, 2.25, 0)
 	bird_left -= delta
 	if bird_left <= 0 and rules.minute < SUNSET_MINUTE and game.player.position.z > -15:
 		bird_left = 7

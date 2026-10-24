@@ -18,8 +18,12 @@ appears in Kaveh Lane. Ramadan restrictions are disabled during this chapter;
 the separate service/enforcement rules are groundwork for a later story.
 
 This is an authored fictional day, without an assigned historical year or
-verified equinox timetable. Scene fades stand in for driving, meal preparation
-uses short interactions, and the evening visit reuses Grandma's house. Hokm
+verified equinox timetable. Family members follow authored walking routes and
+ride in the moving car, with the player looking around from the back seat.
+The patrol arrives by van and approaches on foot; its dialogue identifies the
+visible officer. Cooking and eating use short character animations, and the
+evening visit reuses Grandma's house. These are choreographed scenes rather
+than a traffic or cooking simulation. Hokm
 uses four players, partnerships, suit-following and trump, ending at seven
 tricks for one team; a full seven-point match is not implemented. Progress is
 session-only. The character models and environments remain stylized.

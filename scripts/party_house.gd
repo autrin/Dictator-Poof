@@ -176,8 +176,8 @@ func _process(delta: float) -> void:
 			person.position = home + Vector3(sin(elapsed * 1.5 + i) * (0.18 if i > 0 else 0.03), absf(sin(elapsed * 4.2 + i)) * (0.06 if i > 0 else 0.015), cos(elapsed * 1.2 + i) * 0.12)
 			person.rotation.y = sin(elapsed * 0.8 + i) * (0.55 if i > 0 else 0.1)
 			person.rotation.z = sin(elapsed * 3.8 + i) * (0.12 if i > 0 else 0.025)
-			var left_arm := person.get_node("Left arm") as MeshInstance3D
-			var right_arm := person.get_node("Right arm") as MeshInstance3D
+			var left_arm := person.get_node("Left arm") as Node3D
+			var right_arm := person.get_node("Right arm") as Node3D
 			left_arm.rotation.z = -0.4 + sin(elapsed * 3.8 + i) * 0.38 if i > 0 else -0.12
 			right_arm.rotation.z = 0.4 + sin(elapsed * 3.8 + i + PI) * 0.38 if i > 0 else 0.12
 			if held_cups.has(i):

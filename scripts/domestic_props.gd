@@ -55,19 +55,14 @@ static func cup(parent: Node3D, at: Vector3) -> Node3D:
 	return root
 
 static func rug(parent: Node3D, at: Vector3, size: Vector2) -> void:
-	PoofShapes.box(parent, at, Vector3(size.x, 0.012, size.y), Color("7e383b"))
-	PoofShapes.box(parent, at + Vector3(0, 0.008, 0), Vector3(size.x - 0.18, 0.006, size.y - 0.18), Color("c39362"))
-	PoofShapes.box(parent, at + Vector3(0, 0.013, 0), Vector3(size.x - 0.36, 0.006, size.y - 0.36), Color("354f59"))
-	for z in [-1, 0, 1]:
-		var diamond := PoofShapes.box(parent, at + Vector3(0, 0.019, z * size.y * 0.24), Vector3(0.52, 0.005, 0.52), Color("c39362"))
-		diamond.rotation.y = PI / 4
-		for side in [-1, 1]:
-			var petal := PoofShapes.box(parent, at + Vector3(side * 0.45, 0.019, z * size.y * 0.24), Vector3(0.2, 0.005, 0.2), Color("ad7160"))
-			petal.rotation.y = PI / 4
-	for i in range(int(size.y / 0.25)):
-		for side in [-1, 1]:
-			var knot := PoofShapes.box(parent, at + Vector3(side * (size.x / 2 - 0.15), 0.02, -size.y / 2 + 0.2 + i * 0.25), Vector3(0.06, 0.005, 0.07), Color("563e38"))
-			knot.rotation.y = PI / 4
+	var carpet := MeshInstance3D.new()
+	var plane := PlaneMesh.new()
+	plane.size = size
+	carpet.mesh = plane
+	carpet.position = at
+	carpet.material_override = PoofShapes.material(Color.WHITE)
+	parent.add_child(carpet)
+	carpet.material_override.albedo_texture = load("res://assets/textures/interiors/nowruz_carpet.svg")
 
 static func surface_texture() -> NoiseTexture2D:
 	var texture := NoiseTexture2D.new()

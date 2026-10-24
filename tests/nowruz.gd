@@ -1,6 +1,7 @@
 extends SceneTree
 var failures := 0
 var game: Node3D
+var ride_checked := false
 const Rules := preload("res://scripts/day_rules.gd")
 const HokmRules := preload("res://scripts/hokm_rules.gd")
 
@@ -24,6 +25,29 @@ func approach(target: Node3D, offset: Vector3) -> void:
 	game.player.velocity = Vector3.ZERO
 	game.player.camera.look_at(target.global_position + Vector3(0, 1.1, 0))
 	await settle()
+
+func wait_scene() -> void:
+	for frame in range(3600):
+		await physics_frame
+		if game.world.life.trip_phase == "driving" and not ride_checked:
+			ride_checked = true
+			var car_at: Vector3 = game.world.car.position
+			var player_at: Vector3 = game.player.position
+			game.pause_run()
+			await create_timer(0.4).timeout
+			check(game.world.car.position == car_at and game.player.position == player_at, "pause freezes the car and its passenger")
+			game.start_or_resume()
+			await create_timer(0.4).timeout
+			check(game.world.car.position.distance_to(car_at) > 0.5, "the car travels continuously after resume")
+			check(game.player.position.distance_to(game.world.car.position) < 1.5, "back-seat viewpoint follows the moving car")
+			var phase: int = game.world.stage
+			game.interact()
+			check(game.world.stage == phase, "repeated interaction cannot skip a moving scene")
+		if not game.world.life.busy() and not game.world.life.family_busy():
+			return
+	for actor in game.world.life.motion.routes:
+		print("Blocked actor: ", actor.position, " heading to ", game.world.life.motion.routes[actor].points)
+	check(false, "scene finishes without blocked routes: " + game.world.life.trip_phase)
 
 func run() -> void:
 	var rules := Rules.new()
@@ -93,6 +117,29 @@ func run() -> void:
 			await settle()
 		game.notification_left = 0
 		game.interact()
+		if step == 3:
+			var start_at: Vector3 = game.world.sister.position
+			await create_timer(0.4).timeout
+			check(game.world.sister.position.distance_to(start_at) > 0.1, "family visibly walks toward the car")
+		if step in [4, 8, 13, 14]:
+			game.world.teleport(game.world.car.position + Vector3(2, 0.05, 2), game.world.car.position)
+		await wait_scene()
+		if step == 4:
+			check(game.world.life.patrol_phase == "ready" and game.world.life.officers.all(func(actor): return actor.visible), "both uniformed officers approach before the confrontation")
+			check(game.world.life.van.position.z > -24, "marked patrol van arrives at the bakery")
+			var car_body: Node3D = game.world.car.get_node("Car collider")
+			check(car_body.global_position.is_equal_approx(game.world.car.global_position), "moving car collision follows the parked vehicle")
+		if step == 5:
+			check(game.world.speaker.is_visible_in_tree(), "officer dialogue has a visible label over the officer")
+			var officer_head: Vector3 = game.world.officer.global_position + Vector3(0, 1.65, 0)
+			check(not game.player.camera.is_position_behind(officer_head), "the speaking officer is in front of the camera")
+		if step == 10:
+			check(game.world.serving.visible and game.world.life.spoon.visible, "cooking finishes before lunch is served")
+		if step == 11:
+			var arm: Node3D = game.world.relatives[0].get_node("Right arm/Forearm")
+			var before: float = arm.rotation.x
+			await create_timer(0.4).timeout
+			check(game.world.life.eating and not is_equal_approx(before, arm.rotation.x), "seated relatives lift their utensils during lunch")
 		if step == 12:
 			check(is_instance_valid(game.world.cards), "Hokm opens from the table")
 			if is_instance_valid(game.world.cards):
@@ -152,7 +199,7 @@ func run() -> void:
 			print("Door collision: ", doorway, " ", door_hit.get_collider().get_path(), " ", door_hit.get_position())
 		check(door_hit == null, "house doorway admits the full player capsule")
 	game.world.rules.minute = 600
-	game.world.teleport(Vector3(-6.5, 0.05, -14), Vector3(-7.2, 1.5, -16.7))
+	game.world.teleport(game.world.officer.position + Vector3(0, 0.05, 2), game.world.officer.position)
 	await settle()
 	game.world.drink()
 	check(game.world.rules.citations == 0, "Nowruz drinking does not trigger Ramadan enforcement")
@@ -163,6 +210,21 @@ func run() -> void:
 	check(game.world.rules.detained and game.world.stage == 15, "detention preserves chapter progress")
 	game.restart_mission()
 	check(game.world.stage == 0 and game.world.rules.citations == 0, "restart resets story and enforcement state")
+	game.world.life.trip = "bakery"
+	game.world.life.board()
+	await settle()
+	game.restart_mission()
+	await settle()
+	check(game.world.life.trip == "" and game.player.collision_layer == 2 and game.player.empty_hands.visible, "restart during driving restores player and chapter state")
+	var walker: Node3D = game.world.person(Vector3(16, 0, -28), Color("527572"), 0)
+	game.world.teleport(Vector3(16, 0.05, -30), Vector3(16, 1.5, -28))
+	game.world.life.motion.walk(walker, [Vector3(16, 0, -32)])
+	await create_timer(3).timeout
+	check(walker.position.z > -29.5, "walking actors stop for a player blocking their route")
+	game.world.teleport(Vector3(18, 0.05, -30), Vector3(16, 1.5, -28))
+	await create_timer(3).timeout
+	check(not game.world.life.motion.busy(walker), "walking resumes when the player clears the route")
+	walker.queue_free()
 	game.start_night()
 	await settle()
 	check(not game.story_mode and game.relays.size() == 3, "original night mission remains available")
