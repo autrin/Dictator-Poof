@@ -30,9 +30,16 @@ session-only. The character models and environments remain stylized.
 
 ## Kaveh Lane
 
-The original night mission remains a separate title-screen choice.
+After the dinner visit, your aunt points you to a note your cousin left on the
+blue Kaveh Lane gate. He went ahead to the courtyard gathering. The note warns
+that armed guards have cut the power and are firing on people, and identifies
+a pistol case beside the gate. Reading it does not end the family visit: taking
+the case and entering the lane is a separate interaction. The family stays
+indoors while you go to your friends. This fictional raid connects the two
+chapters; the original night mission is also available from the title screen.
 
-Dusk in a fictional Iranian neighborhood. Someone has spread a rug in the
+Night follows the family visit; the standalone mission starts at dusk.
+In this fictional Iranian neighborhood, someone has spread a rug in the
 courtyard. Friends have brought music and are waiting for you. The street's
 power is out, and patrols still pass through.
 

@@ -1,4 +1,5 @@
 extends Node3D
+var late_night := false
 ## Kaveh Lane: an outdoor neighborhood, restored one pool of light at a time.
 
 const GraffitiWall := preload("res://scenes/graffiti_wall.tscn")
@@ -89,9 +90,9 @@ func navigation_bounds() -> Rect2i:
 func build_sky() -> void:
 	var sky_material := ProceduralSkyMaterial.new()
 	sky_material.sky_top_color = Color("172944")
-	sky_material.sky_horizon_color = Color("9d7781")
+	sky_material.sky_horizon_color = Color("3c506b") if late_night else Color("9d7781")
 	sky_material.ground_bottom_color = Color("292634")
-	sky_material.ground_horizon_color = Color("9d7781")
+	sky_material.ground_horizon_color = sky_material.sky_horizon_color
 	sky_material.sun_angle_max = 12.0
 	var sky := Sky.new()
 	sky.sky_material = sky_material
@@ -100,15 +101,15 @@ func build_sky() -> void:
 	settings.sky = sky
 	settings.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	settings.ambient_light_color = Color("b4c6de")
-	settings.ambient_light_energy = 0.28
+	settings.ambient_light_energy = 0.20 if late_night else 0.28
 	settings.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	var environment := WorldEnvironment.new()
 	environment.environment = settings
 	add_child(environment)
 	var sun := DirectionalLight3D.new()
 	sun.rotation_degrees = Vector3(-22, -32, 0)
-	sun.light_color = Color("ffd0a0")
-	sun.light_energy = 0.32
+	sun.light_color = Color("adc5e5") if late_night else Color("ffd0a0")
+	sun.light_energy = 0.10 if late_night else 0.32
 	sun.shadow_enabled = true
 	sun.shadow_bias = 0.08
 	sun.shadow_normal_bias = 2.0

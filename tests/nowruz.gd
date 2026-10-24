@@ -158,6 +158,10 @@ func run() -> void:
 		check(game.world.stage == step + 1, "reachable story interaction: " + game.world.STEPS[step])
 		if game.world.stage != step + 1:
 			break
+		if step == 0:
+			await approach(game.world.targets.done, Vector3(-1.5, 0.05, 0))
+			game.interact()
+			check(game.story_mode and game.world.stage == 1, "the lane gate cannot skip the family chapter")
 	check(game.world.stage == 15, "whole chapter reaches the return visit")
 	check(game.world.cafe.is_open(), "café opens after the family evening")
 	var cafe: Node3D = game.world.cafe
@@ -208,8 +212,51 @@ func run() -> void:
 	check(game.world.rules.citations == 1, "visible bakery patrol witnesses public consumption")
 	game.world.drink()
 	check(game.world.rules.detained and game.world.stage == 15, "detention preserves chapter progress")
+	game.world.rules.ramadan = false
+	await approach(game.world.targets.done, Vector3(-1.5, 0.05, 0))
+	game.interact()
+	check(game.story_mode and game.world.stage == 16 and game.message_key == "line_done", "the reachable gate introduces the raid before committing to combat")
+	for language in ["en", "fa"]:
+		game.set_language(language, false)
+		check(game.message_text == game.localize("line_done") and game.world.prompt().contains(game.localize("action_lane")), "gate briefing and armed departure switch to " + language)
+	var old_chapter: Node3D = game.world
+	game.interact()
+	game.interact()
+	check(game.world == old_chapter and old_chapter.leaving, "departure queues one transition without freeing the interacting player")
+	game.pause_run()
+	await settle()
+	check(game.world == old_chapter and not old_chapter.leaving, "pausing before departure keeps the visit available")
+	game.start_or_resume()
+	# Trigger through the player's real physics input path, not a direct scene swap.
+	Input.action_press("interact")
+	await physics_frame
+	await physics_frame
+	Input.action_release("interact")
+	await settle()
+	check(not game.story_mode and game.active and game.relays.size() == 3, "the completed visit leads into the playable Kaveh Lane mission")
+	check(game.player.gun_drawn and game.player.weapon.visible and game.player.ammo == game.player.MAGAZINE, "collecting the case supplies a visible loaded pistol")
+	check(game.message_key == "lane_arrival", "arrival explains the mission and weapon controls")
+	check(game.hud.hud_title.text == game.localize("hud_title") and game.hud.hud_place.text == game.localize("lane_night_place") and game.world.late_night, "night arrival replaces the family chapter title and preserves the time of day")
+	var faces := {}
+	var guards: Array = game.world.get_children().filter(func(child): return child is CharacterBody3D and child.get_script() == game.GuardScript)
+	for guard in guards:
+		for mesh in guard.visual.get_children():
+			if mesh is MeshInstance3D and mesh.mesh is QuadMesh:
+				var material: StandardMaterial3D = mesh.material_override
+				if material.albedo_texture != null:
+					faces[material.albedo_texture.resource_path] = true
+	check(guards.size() == 3 and faces.size() == 3, "three combat guards retain distinct uploaded face textures")
+	game.player.set_gun_drawn(false)
+	check(game.player.empty_hands.visible and not game.player.weapon.visible, "holstering remains available after the story transition")
+	game.story_mode = true
 	game.restart_mission()
 	check(game.world.stage == 0 and game.world.rules.citations == 0, "restart resets story and enforcement state")
+	game.world.stage = 16
+	await approach(game.world.targets.lane, Vector3(-1.5, 0.05, 0))
+	game.interact()
+	game.restart_mission()
+	await settle()
+	check(game.story_mode and game.world.stage == 0, "no queued departure survives a chapter restart")
 	game.world.life.trip = "bakery"
 	game.world.life.board()
 	await settle()

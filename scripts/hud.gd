@@ -212,7 +212,7 @@ func apply_language() -> void:
 	tagline.text = game.localize("tagline")
 	chapter.text = game.localize("chapter")
 	hud_title.text = game.localize("hud_title")
-	hud_place.text = game.localize("hud_place")
+	hud_place.text = game.localize("lane_night_place" if game.late_night else "hud_place")
 	replay_button.text = game.localize("story_restart" if game.story_mode else "replay")
 	blood_button.text = game.localize("blood")
 	sensitivity_label.text = game.localize("sensitivity")

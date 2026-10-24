@@ -19,7 +19,11 @@ the counter. Interiors include original patterned carpets, tilework, curtains,
 ceramics, and chandeliers. Hokm is one four-player partnership hand. Progress
 lasts for the current session.
 
-Choose **Kaveh Lane / Night Mission** on the title screen for the original mission:
+After the dinner visit, read your cousin’s note on the blue **Kaveh Lane** gate
+across the street. Collect the pistol case and enter the original armed mission,
+including the guards with your face pictures. You can stay with family or at the
+café until you choose to leave. **Kaveh Lane / Night Mission** on the title screen
+also starts that mission directly.
 
 Restore the three amber power boxes, then return to the speaker beside the
 rug near your starting point. Each restored box lights nearby homes and heals

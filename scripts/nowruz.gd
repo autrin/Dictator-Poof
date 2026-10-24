@@ -8,7 +8,7 @@ const Life := preload("res://scripts/nowruz_life.gd")
 const Decor := preload("res://scripts/home_decor.gd")
 const Hokm := preload("res://scripts/hokm.gd")
 const SUNSET_MINUTE := 18 * 60 + 20
-const STEPS := ["wake", "blinds", "tv", "family", "car", "stop", "scarf", "pastry", "grandma", "sal", "help", "lunch", "cards", "home", "visits", "done"]
+const STEPS := ["wake", "blinds", "tv", "family", "car", "stop", "scarf", "pastry", "grandma", "sal", "help", "lunch", "cards", "home", "visits", "done", "lane"]
 var game: Node3D
 var rules := DayRules.new()
 var stage := 0
@@ -34,6 +34,7 @@ var serving: Node3D
 var transition_left := 0.0
 var life: Node
 var speaker: Label3D
+var leaving := false
 
 func _ready() -> void:
 	build_light()
@@ -47,6 +48,7 @@ func _ready() -> void:
 	build_garden()
 	build_bakery()
 	build_car()
+	build_lane_gate()
 	cafe = Cafe.new()
 	cafe.game = game
 	cafe.rules = rules
@@ -89,7 +91,8 @@ func _ready() -> void:
 	target("cards", Vector3(-2.7, 0, -43.5))
 	target("home", Vector3(7.1, 0, -34.3))
 	target("visits", Vector3(7.1, 0, -7.3))
-	target("done", Vector3(0, 0, -42.5))
+	target("done", Vector3(21.2, 0, -29))
+	target("lane", Vector3(21.2, 0, -29))
 	for key in ["family", "stop", "scarf"]:
 		targets[key].queue_free()
 		targets[key] = sister
@@ -318,6 +321,38 @@ func build_car() -> void:
 	for x in [-0.58, 0.58]:
 		PoofShapes.box(car, Vector3(x, 0.72, -1.86), Vector3(0.35, 0.2, 0.04), Color("eee5b8"))
 
+func build_lane_gate() -> void:
+	# A lit street gate marks the scene boundary; its note introduces the raid.
+	var gate := Node3D.new()
+	gate.name = "Kaveh Lane gate"
+	add_child(gate)
+	gate.position = Vector3(21.7, 0, -29)
+	gate.rotation.y = -PI / 2
+	PoofShapes.box(gate, Vector3(0, 1.3, 0), Vector3(2.4, 2.6, 0.16), Color("315e69"), true)
+	for x in [-1.3, 1.3]:
+		PoofShapes.box(gate, Vector3(x, 1.5, 0), Vector3(0.2, 3, 0.35), Color("d0b187"), true)
+	for x in [-0.9, -0.3, 0.3, 0.9]:
+		PoofShapes.box(gate, Vector3(x, 1.25, 0.1), Vector3(0.04, 2.2, 0.04), Color("ad9566"))
+	PoofShapes.box(gate, Vector3(0, 2.78, 0), Vector3(2.6, 0.35, 0.25), Color("24424e"))
+	var sign := label_at(gate, Vector3(0, 2.8, 0.14), "lane_sign")
+	sign.pixel_size = 0.003
+	PoofShapes.box(gate, Vector3(0, 1.5, 0.13), Vector3(0.4, 0.5, 0.02), Props.CREAM)
+	for i in range(5):
+		PoofShapes.box(gate, Vector3(0, 1.64 - i * 0.07, 0.145), Vector3(0.28, 0.014, 0.005), Color("4d514b"))
+	PoofShapes.box(gate, Vector3(0.3, 1.03, 0.14), Vector3(0.07, 0.2, 0.07), Color("b39760"))
+	# Closed equipment case: collected at the cut into the armed mission.
+	PoofShapes.box(gate, Vector3(-0.8, 0.25, 0.42), Vector3(0.65, 0.5, 0.55), Props.WOOD, true)
+	PoofShapes.box(gate, Vector3(-0.8, 0.57, 0.42), Vector3(0.56, 0.14, 0.37), Color("333c3e"))
+	for x in [-0.99, -0.61]:
+		PoofShapes.box(gate, Vector3(x, 0.57, 0.61), Vector3(0.055, 0.06, 0.025), Color("b39760"))
+	var lamp := OmniLight3D.new()
+	lamp.position = Vector3(0, 2.5, 0.65)
+	lamp.light_color = Color("ffe0aa")
+	lamp.light_energy = 0.9
+	lamp.omni_range = 5
+	gate.add_child(lamp)
+	PoofShapes.box(gate, lamp.position, Vector3(0.22, 0.18, 0.16), Color("ffe0aa"), false, 1.2)
+
 func target(key: String, at: Vector3) -> void:
 	var node := Node3D.new()
 	node.position = at
@@ -356,14 +391,14 @@ func prompt() -> String:
 		return game.localize("scene_wait")
 	if stage == 0:
 		return game.localize("action_wake")
-	if stage < STEPS.size() - 1 and game.near_and_visible(targets[STEPS[stage]]):
+	if game.near_and_visible(targets[STEPS[stage]]):
 		return "[E]  " + objective()
 	return cafe.prompt()
 
 func interact() -> void:
-	if life.busy() or transition_left > 0 or (is_instance_valid(cards) and cards.visible):
+	if leaving or life.busy() or transition_left > 0 or (is_instance_valid(cards) and cards.visible):
 		return
-	if stage == 0 or (stage < STEPS.size() - 1 and game.near_and_visible(targets[STEPS[stage]])):
+	if stage == 0 or game.near_and_visible(targets[STEPS[stage]]):
 		advance()
 	else:
 		cafe.interact()
@@ -371,6 +406,11 @@ func interact() -> void:
 func advance() -> void:
 	var step: String = STEPS[stage]
 	if life.busy():
+		return
+	if step == "lane":
+		leaving = true
+		# Interaction runs inside player physics; rebuild only after that stack exits.
+		game.call_deferred("finish_visit", get_instance_id())
 		return
 	if step in ["car", "grandma", "home", "visits"]:
 		life.begin_trip("bakery" if step == "car" else step)
@@ -466,9 +506,9 @@ func apply_language() -> void:
 	for entry in labels:
 		entry.label.text = game.localize(entry.key)
 	if is_instance_valid(marker):
-		marker.text = "◇  " + objective()
+		marker.text = "◇  " + (game.localize("lane_sign") if stage >= 15 else objective())
 		marker.position = targets[STEPS[stage]].position + Vector3(0, 2.25, 0)
-		marker.visible = stage > 0 and stage < 15
+		marker.visible = stage > 0
 	if is_instance_valid(life):
 		life.van.get_node("Patrol sign").text = game.localize("van_sign")
 		life.van.get_node("Patrol sign right").text = game.localize("van_sign")

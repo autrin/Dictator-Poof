@@ -10,6 +10,7 @@ const BackgroundMusic := preload("res://scripts/background_music.gd")
 const Nowruz := preload("res://scripts/nowruz.gd")
 const StoryText := preload("res://scripts/nowruz_text.gd")
 var story_mode := true
+var late_night := false
 
 var player: CharacterBody3D
 var world: Node3D
@@ -101,6 +102,8 @@ func build_run() -> void:
 	beat = 0
 	world = Nowruz.new() if story_mode else WorldScript.new()
 	world.game = self
+	if not story_mode:
+		world.late_night = late_night
 	add_child(world)
 	if not story_mode:
 		build_navigation()
@@ -159,12 +162,26 @@ func restart_mission() -> void:
 	build_run()
 	start_or_resume()
 
-func start_night() -> void:
+func start_night(after_visit: bool = false) -> void:
 	if story_mode and is_instance_valid(world.cards):
 		world.cards.free()
 	story_mode = false
+	late_night = after_visit
 	build_run()
+	hud.apply_language()
 	start_or_resume()
+
+func finish_visit(chapter_id: int) -> void:
+	# A restart or title-screen launch may have replaced the requesting chapter.
+	if not story_mode or world.get_instance_id() != chapter_id:
+		return
+	if not active:
+		world.leaving = false
+		return
+	if world.stage != world.STEPS.size() - 1:
+		return
+	start_night(true)
+	notify("lane_arrival", 14)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if story_mode and active and event.is_action_pressed("drink") and not event.is_echo():
