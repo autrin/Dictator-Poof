@@ -29,6 +29,7 @@ func settle() -> void:
 
 func run() -> void:
 	var game := TestGame.new()
+	game.story_mode = false
 	root.add_child(game)
 	await settle()
 	var music: AudioStreamPlayer = game.music

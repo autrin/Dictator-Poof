@@ -5,6 +5,8 @@ const GraffitiWall := preload("res://scenes/graffiti_wall.tscn")
 const ParkEncounter := preload("res://scripts/park_encounter.gd")
 const PartyHouse := preload("res://scripts/party_house.gd")
 const PersonVisual := preload("res://scripts/person_visual.gd")
+const BookCafe := preload("res://scripts/book_cafe.gd")
+var cafe: Node3D
 const PersianFont := preload("res://assets/fonts/vazirmatn/Vazirmatn.ttf")
 const BRICK := Color("a57559")
 const PLASTER := Color("c3aa88")
@@ -50,7 +52,11 @@ func _ready() -> void:
 	for at in [Vector3(-13.6, 0, 2), Vector3(13.6, 0, -15), Vector3(-13.6, 0, -21)]:
 		tree(at)
 	shop(-1, 5.0, "bread_shop", Color("9d493b"))
-	shop(1, -11.0, "book_shop", TEAL)
+	cafe = BookCafe.new()
+	cafe.game = game
+	cafe.position = Vector3(12.2, 0, -11)
+	cafe.rotation.y = -PI / 2
+	add_child(cafe)
 	banner(Vector3(0, 4.6, -23.3))
 	var street_name := localized_label(self, Vector3(0, 3.6, -23.25), "lane_name", Color("f0dbab"), 62)
 	street_name.pixel_size = 0.012

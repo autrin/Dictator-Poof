@@ -15,6 +15,7 @@ func check(condition: bool, message: String) -> void:
 
 func run() -> void:
 	var game: Node3D = load("res://scenes/main.tscn").instantiate()
+	game.story_mode = false
 	root.add_child(game)
 	await physics_frame
 	await process_frame

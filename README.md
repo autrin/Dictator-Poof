@@ -1,12 +1,21 @@
 # Dictator Poof
 ![Game Screenshot](docs/screenshots/kaveh-lane.png)
-**A night on Kaveh Lane. Bring back the light.**
+**Nowruz. A garden, a family, and the first visit of the year.**
 ![Morality Police Screenshot](docs/screenshots/morality%20police.png)
 ![Shahnameh Bookshop and Women Life Freedom Screenshot](docs/screenshots/Shahnameh%20bookshop%20and%20woman%20life%20freedom.png)
 
 A first-person resistance game set in a fictional Iranian neighborhood.
-The playable opening is now outdoors: brick homes, balconies, shops, Persian
-graffiti, a fountain, and friends waiting in a courtyard.
+The opening follows a family through Nowruz: wake up, open the garden blinds,
+stop for pastries, face a morality patrol with your sister, and gather at your
+grandparents' home for Sal Tahvil, lunch, and Hokm. The book café serves coffee
+at outdoor tables and carries four real Persian literary titles with original
+cover designs and short descriptions. Story text supports English and Persian.
+
+Ramadan is reserved for a later chapter. The Nowruz café serves during the day.
+Travel uses short fades, meals are staged interactions, and Hokm is one
+four-player partnership hand. Progress lasts for the current session.
+
+Choose **Kaveh Lane / Night Mission** on the title screen for the original mission:
 
 Restore the three amber power boxes, then return to the speaker beside the
 rug near your starting point. Each restored box lights nearby homes and heals
@@ -26,9 +35,11 @@ No .NET SDK or export is needed.
 | --- | --- |
 | WASD / mouse | Move / look |
 | Shift / Ctrl / Space | Sprint / crouch / jump |
-| Left click / R | Fire / reload |
-| H | Holster or draw the gun; see your hands when holstered |
-| E | Use a power box, speak to a friend or party guest, or start the gathering |
+| E | Advance nearby story interactions, browse books, order coffee, sit or speak |
+| F | Drink water in the family chapter |
+| Mouse / left click | Choose trump and play legal cards at the Hokm table |
+| Left click / R | Fire / reload in the night mission |
+| H | Holster or draw the gun in the night mission |
 | F2 | Switch between English and Persian during play |
 | Esc | Pause / resume |
 
@@ -37,8 +48,8 @@ Adjust it with **Music volume**; **Sound** mutes music and effects.
 See [music credit](docs/MUSIC.md).
 
 The menu offers language, sound, music volume, blood, and sensitivity settings. The neighborhood is
-still a stylized prototype: procedural characters, geometry, and synthesized
-music. It is not a finished realistic city or a completed historical campaign.
+still a stylized prototype with procedural characters and geometry.
+It is not a finished realistic city or a completed historical campaign.
 
 ## Contribute
 
@@ -55,9 +66,12 @@ in reading order; do not reverse it. You can write in other languages, as well. 
 and press **F6** to check the result. Include the slogan's meaning and any
 historical source in your pull request.
 
-For other contributions, the neighborhood is built in `scripts/world.gd`.
-Mission state lives in `scripts/game.gd`, movement in `scripts/player.gd`,
-and patrol behavior in `scripts/guard.gd`. See [the party house notes](docs/PARTY_HOUSE.md)
+The family chapter lives in [nowruz.gd](scripts/nowruz.gd), with shared
+[café](scripts/book_cafe.gd), [furniture](scripts/domestic_props.gd), and
+[Hokm rules](scripts/hokm_rules.gd). The night neighborhood is built in
+[world.gd](scripts/world.gd). Mission state lives in [game.gd](scripts/game.gd),
+movement in [player.gd](scripts/player.gd), and patrol behavior in
+[guard.gd](scripts/guard.gd). See [the party house notes](docs/PARTY_HOUSE.md)
 for the new scene and reusable character model.
 
 ## [docs/Iran WORLDBUILDING.md](docs/IRAN%20WORLDBUILDING.md)
@@ -87,12 +101,13 @@ With Godot on PATH:
 
 ```sh
 godot --headless --path . --editor --import --quit
-godot --headless --path . --script tests/smoke.gd
+godot --headless --path . --fixed-fps 60 --script tests/nowruz.gd
+godot --headless --path . --fixed-fps 60 --script tests/smoke.gd
 ```
 
-Tested on Windows with Godot 4.7.2: integration checks pass for movement,
-combat, reachable power boxes, lighting, victory, peaceful exploration,
-pause, and replay. Rendered views were inspected on an RTX 4070 Laptop GPU.
+Tested on Windows with Godot 4.7.2: integration checks cover the family story,
+Hokm, café interactions, language switching, collision, and the night mission.
+Rendered views were inspected on an RTX 4070 Laptop GPU.
 A full manual playthrough and performance benchmark remain to be done.
 
 ## Credits

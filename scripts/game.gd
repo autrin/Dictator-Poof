@@ -7,6 +7,9 @@ const WorldScript := preload("res://scripts/world.gd")
 const HudScript := preload("res://scripts/hud.gd")
 const Locale := preload("res://scripts/localization.gd")
 const BackgroundMusic := preload("res://scripts/background_music.gd")
+const Nowruz := preload("res://scripts/nowruz.gd")
+const StoryText := preload("res://scripts/nowruz_text.gd")
+var story_mode := true
 
 var player: CharacterBody3D
 var world: Node3D
@@ -58,7 +61,7 @@ func _ready() -> void:
 func configure_input() -> void:
 	var keys := {"forward": KEY_W, "back": KEY_S, "left": KEY_A, "right": KEY_D,
 		"jump": KEY_SPACE, "sprint": KEY_SHIFT, "reload": KEY_R, "interact": KEY_E, "holster": KEY_H,
-		"pause": KEY_ESCAPE, "crouch": KEY_CTRL, "language": KEY_F2}
+		"pause": KEY_ESCAPE, "crouch": KEY_CTRL, "language": KEY_F2, "drink": KEY_F}
 	for action: String in keys:
 		if not InputMap.has_action(action):
 			InputMap.add_action(action)
@@ -72,9 +75,12 @@ func configure_input() -> void:
 		InputMap.action_add_event("fire", click)
 
 func build_run() -> void:
+	active = false
 	if is_instance_valid(music):
 		music.stop()
 	if is_instance_valid(world):
+		if story_mode and is_instance_valid(world.get("cards")):
+			world.cards.free()
 		world.free()
 	if is_instance_valid(player):
 		player.free()
@@ -93,16 +99,20 @@ func build_run() -> void:
 	victory = false
 	beat_left = 0.0
 	beat = 0
-	world = WorldScript.new()
+	world = Nowruz.new() if story_mode else WorldScript.new()
 	world.game = self
 	add_child(world)
-	build_navigation()
+	if not story_mode:
+		build_navigation()
 	effects = Node3D.new()
 	add_child(effects)
 	player = PlayerScript.new()
 	player.game = self
 	player.position = Vector3(0, 0.05, 18)
 	add_child(player)
+	if story_mode:
+		world.spawn_player()
+		return
 	var spawns := [Vector3(-10, 0.05, 0), Vector3(9, 0.05, -10), Vector3(-4, 0.05, -19)]
 	for i in range(spawns.size()):
 		var guard := GuardScript.new()
@@ -149,7 +159,18 @@ func restart_mission() -> void:
 	build_run()
 	start_or_resume()
 
+func start_night() -> void:
+	if story_mode and is_instance_valid(world.cards):
+		world.cards.free()
+	story_mode = false
+	build_run()
+	start_or_resume()
+
 func _unhandled_input(event: InputEvent) -> void:
+	if story_mode and active and event.is_action_pressed("drink") and not event.is_echo():
+		world.drink()
+		get_viewport().set_input_as_handled()
+		return
 	if event.is_action_pressed("language") and not event.is_echo():
 		set_language("fa" if language == "en" else "en")
 		get_viewport().set_input_as_handled()
@@ -175,6 +196,8 @@ func update_music_mix() -> void:
 		music.set_mix(sound_enabled, music_volume)
 
 func localize(key: String) -> String:
+	if StoryText.STRINGS.has(key) or key in ["book_0", "book_1", "book_2", "book_3"]:
+		return StoryText.text(language, key)
 	return Locale.text(language, key)
 
 func set_language(value: String, persist: bool = true) -> void:
@@ -240,6 +263,11 @@ func near_and_visible(target: Node3D) -> bool:
 func interaction_prompt() -> String:
 	if notification_left > 0.0:
 		return message_text
+	if story_mode:
+		return world.prompt()
+	var cafe_prompt: String = world.cafe.prompt()
+	if cafe_prompt != "":
+		return cafe_prompt
 	for friend in world.neighbors:
 		if near_and_visible(friend):
 			return localize("prompt_friend")
@@ -257,6 +285,11 @@ func interaction_prompt() -> String:
 
 func interact() -> void:
 	if not active or (ended and not victory):
+		return
+	if story_mode:
+		world.interact()
+		return
+	if world.cafe.interact():
 		return
 	for friend in world.neighbors:
 		if near_and_visible(friend):

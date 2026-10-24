@@ -30,6 +30,7 @@ func position_player(at: Vector3, toward: Vector3) -> void:
 
 func run() -> void:
 	game = load("res://scenes/main.tscn").instantiate()
+	game.story_mode = false
 	root.add_child(game)
 	await settle()
 	game.set_language("en", false)

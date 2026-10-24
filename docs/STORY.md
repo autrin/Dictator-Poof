@@ -1,6 +1,32 @@
 # Story
 
+## Nowruz: the first visit
+
+The game opens at home on the morning of the family celebration. Open the
+blinds onto three cypresses, honeysuckle, fruit trees, and birdsong. Mum has
+chosen a Nowruz music program; the Haft-Seen is already set. Your sister has
+saved her blue outfit for today.
+
+On the way to your grandparents, a morality patrol stops her outside the
+pastry shop and demands she cover herself. Stay beside her, collect the dry
+and cream pastries, and continue the visit. At Grandma's, relatives share
+ajil, fruit, stories, and Sal Tahvil. Help with sabzi polo and fish, have lunch,
+then play a hand of Hokm before returning home and joining the next meal.
+
+The café is an optional stop for coffee, books, and conversation. It also
+appears in Kaveh Lane. Ramadan restrictions are disabled during this chapter;
+the separate service/enforcement rules are groundwork for a later story.
+
+This is an authored fictional day, without an assigned historical year or
+verified equinox timetable. Scene fades stand in for driving, meal preparation
+uses short interactions, and the evening visit reuses Grandma's house. Hokm
+uses four players, partnerships, suit-following and trump, ending at seven
+tricks for one team; a full seven-point match is not implemented. Progress is
+session-only. The character models and environments remain stylized.
+
 ## Kaveh Lane
+
+The original night mission remains a separate title-screen choice.
 
 Dusk in a fictional Iranian neighborhood. Someone has spread a rug in the
 courtyard. Friends have brought music and are waiting for you. The street's
