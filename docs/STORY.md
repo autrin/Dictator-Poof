@@ -1,8 +1,45 @@
 # Story
 
+## Nowruz: the first visit
+
+The game opens at home on the morning of the family celebration. Open the
+blinds onto three cypresses, honeysuckle, fruit trees, and birdsong. Mum has
+chosen a Nowruz music program; the Haft-Seen is already set. Your sister has
+saved her blue outfit for today.
+
+On the way to your grandparents, a morality patrol stops her outside the
+pastry shop and demands she cover herself. Stay beside her, collect the dry
+and cream pastries, and continue the visit. At Grandma's, relatives share
+ajil, fruit, stories, and Sal Tahvil. Help with sabzi polo and fish, have lunch,
+then play a hand of Hokm before returning home and joining the next meal.
+
+The café is an optional stop for coffee, books, and conversation. It also
+appears in Kaveh Lane. Ramadan restrictions are disabled during this chapter;
+the separate service/enforcement rules are groundwork for a later story.
+
+This is an authored fictional day, without an assigned historical year or
+verified equinox timetable. Family members follow authored walking routes and
+ride in the moving car, with the player looking around from the back seat.
+The patrol arrives by van and approaches on foot; its dialogue identifies the
+visible officer. Cooking and eating use short character animations, and the
+evening visit reuses Grandma's house. These are choreographed scenes rather
+than a traffic or cooking simulation. Hokm
+uses four players, partnerships, suit-following and trump, ending at seven
+tricks for one team; a full seven-point match is not implemented. Progress is
+session-only. The character models and environments remain stylized.
+
 ## Kaveh Lane
 
-Dusk in a fictional Iranian neighborhood. Someone has spread a rug in the
+After the dinner visit, your aunt points you to a note your cousin left on the
+blue Kaveh Lane gate. He went ahead to the courtyard gathering. The note warns
+that armed guards have cut the power and are firing on people, and identifies
+a pistol case beside the gate. Reading it does not end the family visit: taking
+the case and entering the lane is a separate interaction. The family stays
+indoors while you go to your friends. This fictional raid connects the two
+chapters; the original night mission is also available from the title screen.
+
+Night follows the family visit; the standalone mission starts at dusk.
+In this fictional Iranian neighborhood, someone has spread a rug in the
 courtyard. Friends have brought music and are waiting for you. The street's
 power is out, and patrols still pass through.
 

@@ -20,6 +20,8 @@ var fire_left := 0.0
 var recoil := 0.0
 var muzzle_flash_left := 0.0
 var collider: CollisionShape3D
+var stride := 0.0
+var flashlight: SpotLight3D
 
 func _ready() -> void:
 	collision_layer = 2
@@ -37,7 +39,7 @@ func _ready() -> void:
 	camera.current = true
 	camera.near = 0.05
 	add_child(camera)
-	var flashlight := SpotLight3D.new()
+	flashlight = SpotLight3D.new()
 	flashlight.light_color = Color("e0e7ee")
 	flashlight.light_energy = 2.0
 	flashlight.spot_range = 24.0
@@ -54,8 +56,8 @@ func _ready() -> void:
 	empty_hands = Node3D.new()
 	empty_hands.name = "Empty hands"
 	camera.add_child(empty_hands)
-	build_hand(empty_hands, -1, Vector3(-0.29, -0.36, -0.65))
-	build_hand(empty_hands, 1, Vector3(0.29, -0.36, -0.65))
+	build_hand(empty_hands, -1, Vector3(-0.32, -0.38, -0.52))
+	build_hand(empty_hands, 1, Vector3(0.32, -0.38, -0.52))
 	update_viewmodel()
 
 func build_gun() -> void:
@@ -109,13 +111,20 @@ func build_gun() -> void:
 func build_hand(parent: Node3D, side: int, at: Vector3) -> void:
 	var skin := Color("bd8b6e")
 	var sleeve := Color("4c5961")
-	PoofShapes.box(parent, at + Vector3(side * 0.035, -0.17, 0.13), Vector3(0.19, 0.25, 0.22), sleeve)
-	PoofShapes.box(parent, at + Vector3(0, -0.07, 0.03), Vector3(0.16, 0.08, 0.14), Color("b58a57"))
-	add_hand_curve(parent, at, Vector3(0.105, 0.115, 0.07), skin)
+	var hand := Node3D.new()
+	parent.add_child(hand)
+	hand.position = at
+	# Wrists enter from below the frame; knuckles point forward and palms face inward.
+	hand.rotation = Vector3(-0.25, -side * 0.2, side * 0.28) if parent == empty_hands else Vector3(0.8, 0, side * 0.18)
+	add_hand_curve(hand, Vector3(side * 0.035, -0.1, 0.19), Vector3(0.065, 0.07, 0.21), sleeve)
+	add_hand_curve(hand, Vector3(0, -0.015, 0.055), Vector3(0.043, 0.035, 0.085), skin)
+	add_hand_curve(hand, Vector3.ZERO, Vector3(0.051, 0.031, 0.077), skin)
 	for finger in range(4):
-		var x := at.x + (float(finger) - 1.5) * 0.044
-		add_hand_curve(parent, Vector3(x, at.y + 0.105, at.z - 0.065), Vector3(0.022, 0.065 - finger * 0.004, 0.025), skin)
-	add_hand_curve(parent, at + Vector3(side * 0.095, 0.015, -0.035), Vector3(0.038, 0.06, 0.035), skin)
+		var x := (float(finger) - 1.5) * 0.024
+		var length := 0.036 if finger == 3 else 0.045
+		add_hand_curve(hand, Vector3(x, -0.008, -0.073), Vector3(0.012, 0.014, length), skin)
+		add_hand_curve(hand, Vector3(x, -0.028, -0.099), Vector3(0.011, 0.022, 0.019), skin)
+	add_hand_curve(hand, Vector3(-side * 0.051, -0.022, -0.026), Vector3(0.02, 0.022, 0.045), skin)
 
 func add_hand_curve(parent: Node3D, at: Vector3, size: Vector3, color: Color) -> void:
 	var part := MeshInstance3D.new()
@@ -129,7 +138,7 @@ func add_hand_curve(parent: Node3D, at: Vector3, size: Vector3, color: Color) ->
 	parent.add_child(part)
 
 func set_gun_drawn(value: bool) -> void:
-	gun_drawn = value and not game.victory
+	gun_drawn = value and not game.victory and not game.story_mode
 	update_viewmodel()
 
 func update_viewmodel() -> void:
@@ -145,6 +154,14 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _physics_process(delta: float) -> void:
 	if not game.active:
+		return
+	if game.world.cafe.seated:
+		if Input.is_action_just_pressed("interact"):
+			game.world.cafe.stand()
+		return
+	if game.story_mode and game.world.movement_locked():
+		if Input.is_action_just_pressed("interact"):
+			game.interact()
 		return
 	if Input.is_action_just_pressed("holster"):
 		set_gun_drawn(not gun_drawn)
@@ -177,6 +194,10 @@ func _physics_process(delta: float) -> void:
 	elif Input.is_action_just_pressed("jump"):
 		velocity.y = 6.5
 	move_and_slide()
+	stride += Vector2(velocity.x, velocity.z).length() * delta * 1.65
+	var walking := minf(Vector2(velocity.x, velocity.z).length() / SPEED, 1.0)
+	empty_hands.position = empty_hands.position.lerp(Vector3(sin(stride) * 0.012, absf(cos(stride)) * 0.013 * walking, 0), minf(delta * 10, 1))
+	empty_hands.rotation.z = sin(stride) * 0.018 * walking
 	recoil = move_toward(recoil, 0.0, delta * 0.5)
 	weapon.position.z = -0.52 + recoil
 	weapon.rotation.x = -0.55 * (reload_left / 1.25)
@@ -184,7 +205,7 @@ func _physics_process(delta: float) -> void:
 		take_damage(100)
 
 func reload() -> void:
-	if reload_left <= 0.0 and ammo < MAGAZINE:
+	if game.active and gun_drawn and reload_left <= 0.0 and ammo < MAGAZINE:
 		reload_left = 1.25
 		game.play_tone(260.0, 0.09, 0.15)
 

@@ -42,6 +42,10 @@ read in this session. Editions and translations still need identifying.
 
 ## Contemporary context
 
+Use Iran International for political news reporting, as requested by the
+creator. The following sources provide context; the family and dialogue are
+fictional.
+
 - [UN Fact-Finding Mission, March 2025](https://www.unognewsroom.org/story/en/2562/hrc-press-conference-independent-international-fact-finding-mission-on-the-islamic-republic-of-iran-14-march-2025):
   compulsory hijab, surveillance, and repression.
 - [Amnesty: A Web of Impunity](https://iran-shutdown.amnesty.org/):
@@ -60,3 +64,20 @@ The game uses a fictional present-day neighborhood. Specific legal claims,
 historical episodes, and the unnamed professor's language-ancestry account
 need their actual sources before adaptation. The native-Persian writing
 preference is already part of the creative direction.
+
+## Nowruz chapter references
+
+- [International Nowruz Day — United Nations](https://www.un.org/en/observances/international-nowruz-day):
+  cultural context and the Haft-Seen. The chapter's clock is authored rather
+  than a reconstruction of a particular year's Sal Tahvil.
+- [Hokm rules — Pagat](https://www.pagat.com/whist/hokm.html):
+  partnerships, first five cards before choosing trump, anticlockwise play,
+  following suit, and seven tricks to win a hand.
+- [Iran International, March 18, 2024](https://www.iranintl.com/en/202403187638):
+  reported business closures for Ramadan violations. Reference for a later
+  chapter only; Ramadan is not active in the Nowruz opening. The current
+  enforcement rules are simplified fictional mechanics, not a legal guide.
+
+The café displays Shahnameh by Ferdowsi, Divan of Hafez, Golestan by Saadi,
+and Rubaiyat attributed to Omar Khayyam. Covers and descriptions are original;
+no edition's cover artwork, translation, or full text is reproduced.

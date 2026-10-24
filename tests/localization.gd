@@ -19,6 +19,7 @@ func settle() -> void:
 
 func run() -> void:
 	var game: Node3D = load("res://scenes/main.tscn").instantiate()
+	game.story_mode = false
 	root.add_child(game)
 	await settle()
 	var f2_bound := false
