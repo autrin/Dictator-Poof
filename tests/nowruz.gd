@@ -20,6 +20,63 @@ func settle() -> void:
 	await physics_frame
 	await process_frame
 
+func click_at(button: Control) -> void:
+	var point := button.get_global_transform_with_canvas() * (button.size / 2)
+	for pressed in [true, false]:
+		var click := InputEventMouseButton.new()
+		click.button_index = MOUSE_BUTTON_LEFT
+		click.position = point
+		click.pressed = pressed
+		root.push_input(click, true)
+
+func play_hokm(panel: Control) -> void:
+	panel.rules.deal(1403)
+	panel.refresh()
+	check(panel.hand.get_child_count() == 5, "trump selection shows the first five card faces")
+	click_at(panel.actions.get_child(1))
+	check(panel.hand.get_child_count() == 13 and panel.rules.trump == 1, "clicking hearts deals the full hand")
+	if panel.rules.trump < 0:
+		return
+	click_at(panel.hand.get_child(0))
+	check(panel.rules.trick.size() == 1, "the selected card lands before any relative plays")
+	game.pause_run()
+	await create_timer(panel.TURN_DELAY + 0.1).timeout
+	check(not panel.visible and panel.rules.trick.size() == 1, "pausing freezes the table during a relative's turn")
+	game.start_or_resume()
+	check(panel.visible and Input.mouse_mode == Input.MOUSE_MODE_VISIBLE, "resume restores cards and pointer")
+	game.set_language("en", false)
+	check(panel.trump.text.contains("Hearts") and panel.trick.get_child_count() == 1, "switching language preserves the trick")
+	var checked_blocked := false
+	for i in range(70):
+		if panel.rules.finished():
+			break
+		if panel.rules.trick.size() == 4:
+			var winner: int = panel.rules.winner()
+			var score: int = panel.rules.scores[winner % 2]
+			var marked: Array = panel.trick.get_children().filter(func(face): return face.winning)
+			var winning_play: Dictionary = panel.rules.trick.filter(func(p): return p.seat == winner)[0]
+			check(marked.size() == 1 and marked[0].card == winning_play.card, "the winning card is marked")
+			click_at(panel.next_button)
+			check(panel.rules.scores[winner % 2] == score + 1, "collecting credits the winning team")
+		elif panel.rules.turn == 0:
+			var legal: Array = panel.rules.legal_cards(0)
+			for face in panel.hand.get_children():
+				if not legal.has(face.card) and not checked_blocked:
+					var before: int = panel.rules.trick.size()
+					click_at(face)
+					check(face.disabled and panel.rules.trick.size() == before, "a click on an off-suit card cannot play through it")
+					checked_blocked = true
+				if face.card == legal[0]:
+					click_at(face)
+					break
+		else:
+			await create_timer(panel.TURN_DELAY + 0.02).timeout
+	check(checked_blocked, "the hand exercises suit-following through the interface")
+	check(panel.rules.finished(), "the family completes a hand through the playable controls")
+	if panel.rules.finished():
+		click_at(panel.next_button)
+	await settle()
+
 func approach(target: Node3D, offset: Vector3) -> void:
 	game.player.position = target.global_position + offset
 	game.player.velocity = Vector3.ZERO
@@ -50,6 +107,33 @@ func wait_scene() -> void:
 	check(false, "scene finishes without blocked routes: " + game.world.life.trip_phase)
 
 func run() -> void:
+	var standalone := preload("res://scenes/hokm.tscn").instantiate()
+	root.add_child(standalone)
+	await settle()
+	var table: Control = standalone.table
+	check(table.hand.get_child_count() == 5, "standalone scene opens directly on the deal")
+	var previous_language: String = standalone.language
+	var key := InputEventKey.new()
+	key.keycode = KEY_F2
+	key.pressed = true
+	root.push_input(key, true)
+	check(standalone.language != previous_language, "F2 switches language in standalone Hokm")
+	click_at(table.actions.get_child(1))
+	for i in range(66):
+		if table.rules.finished():
+			break
+		if table.rules.trick.size() == 4:
+			click_at(table.next_button)
+		elif table.rules.turn == 0:
+			var legal: int = table.rules.legal_cards(0)[0]
+			click_at(table.hand.get_child(table.rules.hands[0].find(legal)))
+		else:
+			table._process(table.TURN_DELAY + 0.01)
+	check(table.rules.finished(), "standalone hand can be played to completion")
+	click_at(table.next_button)
+	await settle()
+	check(standalone.table.hand.get_child_count() == 5 and standalone.table.rules.trump == -1, "playing again opens a fresh standalone hand")
+	standalone.free()
 	var rules := Rules.new()
 	rules.ramadan = true
 	rules.minute = rules.dawn - 1
@@ -143,18 +227,7 @@ func run() -> void:
 		if step == 12:
 			check(is_instance_valid(game.world.cards), "Hokm opens from the table")
 			if is_instance_valid(game.world.cards):
-				var panel: Control = game.world.cards
-				game.pause_run()
-				check(not panel.visible, "pause hides the card panel")
-				game.start_or_resume()
-				check(panel.visible and Input.mouse_mode == Input.MOUSE_MODE_VISIBLE, "resume restores cards and pointer")
-				panel.rules.choose_trump(0)
-				while not panel.rules.finished():
-					while panel.rules.trick.size() < 4:
-						panel.rules.play(panel.rules.turn, panel.rules.computer_card())
-					panel.next_trick()
-				panel.next_trick()
-				await settle()
+				await play_hokm(game.world.cards)
 		check(game.world.stage == step + 1, "reachable story interaction: " + game.world.STEPS[step])
 		if game.world.stage != step + 1:
 			break
