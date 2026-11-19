@@ -5,6 +5,14 @@ const Person := preload("res://scripts/person_visual.gd")
 const Patrol := preload("res://scripts/patrol_visual.gd")
 # Three lanes clear both the porch posts and the parked car's swept capsule margin.
 const DOOR_LANES := [2.65, 3.38, 4.11]
+const GRANDMAS_PARKING := Vector3(5.5, 0, -36)
+const DRIVES := {
+	"bakery": [Vector3(5.5, 0, -19), Vector3(-3.5, 0, -19)],
+	"grandma": [Vector3(5.5, 0, -23), GRANDMAS_PARKING],
+	"home": [Vector3(5.5, 0, -25), Vector3(5.5, 0, -9)],
+	"visits": [Vector3(5.5, 0, -24), GRANDMAS_PARKING],
+}
+const PATROL_PARKED_Z := -22.8
 var chapter: Node3D
 var motion := Motion.new()
 var van: Node3D
@@ -105,21 +113,26 @@ func board() -> void:
 	player.camera.rotation = Vector3.ZERO
 	player.camera.position.y = 1.3
 	player.empty_hands.hide()
-	match trip:
-		"bakery": road = [Vector3(5.5, 0, -19), Vector3(-3.5, 0, -19)]
-		"grandma": road = [Vector3(5.5, 0, -23), Vector3(5.5, 0, -36)]
-		"home": road = [Vector3(5.5, 0, -25), Vector3(5.5, 0, -9)]
-		"visits": road = [Vector3(5.5, 0, -24), Vector3(5.5, 0, -36)]
+	road.assign(DRIVES[trip])
 	trip_phase = "driving"
 	chapter.game.notify("family_driving", 5)
 
-func disembark() -> void:
+func park_at(destination: String) -> void:
+	chapter.car.position = DRIVES[destination][-1]
 	chapter.car.rotation.y = 0
+
+static func family_room_spot(index: int, home: bool) -> Vector3:
+	return Vector3(2.5 + index * 0.7, 0, 0 if home else -46)
+
+func disembark(destination: String) -> void:
+	trip = destination
+	park_at(trip)
 	var bakery := trip == "bakery"
 	var home := trip == "home"
 	for i in range(chapter.family.size()):
 		var actor: Node3D = chapter.family[i]
-		actor.reparent(chapter)
+		if actor.get_parent() != chapter:
+			actor.reparent(chapter)
 		actor.position = chapter.car.position + Vector3(-1.6, 0, -0.9 + i * 0.85)
 		actor.get_node("Body collider").collision_layer = 1
 		var points: Array
@@ -129,7 +142,8 @@ func disembark() -> void:
 			var lane: float = DOOR_LANES[i]
 			var door := -5.0 if home else -39.0
 			var direction := 1.0 if home else -1.0
-			points = [Vector3(lane, 0, door - direction * 1.5), Vector3(lane, 0, door + direction * 1.5), Vector3(lane, 0, -42 if not home else -2), Vector3(2.5 + i * 0.7, 0, -42 if not home else -2), Vector3(2.5 + i * 0.7, 0, 0 if home else -46)]
+			var spot := family_room_spot(i, home)
+			points = [Vector3(lane, 0, door - direction * 1.5), Vector3(lane, 0, door + direction * 1.5), Vector3(lane, 0, -42 if not home else -2), Vector3(spot.x, 0, -42 if not home else -2), spot]
 			if trip == "grandma" and i == 0:
 				points.append_array([Vector3(2.5, 0, -46.99), Vector3(chapter.targets.gift.position.x, 0, -46.99)])
 		motion.walk(actor, points)
@@ -145,6 +159,20 @@ func disembark() -> void:
 func start_patrol() -> void:
 	patrol_phase = "driving"
 	chapter.game.notify("patrol_arriving", 5)
+
+func dismiss_patrol(animate: bool = true) -> void:
+	patrol_phase = "departed"
+	van.position.z = PATROL_PARKED_Z
+	for i in range(officers.size()):
+		var actor := officers[i]
+		var destination := Vector3(-7 + i, 0, -23)
+		if animate:
+			motion.walk(actor, [Vector3(-6 + i, 0, -18), destination], 1.3)
+		else:
+			actor.show()
+			actor.get_node("Body collider").collision_layer = 1
+			actor.position = destination
+			Motion.face(actor, van.position)
 
 func start_cooking() -> void:
 	cooking_left = 8.0
@@ -169,7 +197,7 @@ func _physics_process(delta: float) -> void:
 		if chapter.car.position.distance_to(road[0]) < 0.05:
 			road.pop_front()
 			if road.is_empty():
-				disembark()
+				disembark(trip)
 	elif trip_phase == "arriving" and not family_busy():
 		if trip == "grandma":
 			trip_phase = "setting_down"
@@ -183,11 +211,11 @@ func _physics_process(delta: float) -> void:
 		if placing_time >= 1.75 and chapter.pastry_box.get_parent() == sister:
 			chapter.set_out_pastries()
 		if placing_time >= 2.40:
-			motion.walk(sister, [Vector3(2.50, 0, -46.99), Vector3(2.50, 0, -46)])
+			motion.walk(sister, [Vector3(2.50, 0, -46.99), family_room_spot(0, false)])
 			finish_arrival()
 	if patrol_phase == "driving":
-		van.position.z = move_toward(van.position.z, -22.8, delta * 3)
-		if van.position.z >= -22.85:
+		van.position.z = move_toward(van.position.z, PATROL_PARKED_Z, delta * 3)
+		if is_equal_approx(van.position.z, PATROL_PARKED_Z):
 			for i in range(officers.size()):
 				var actor := officers[i]
 				actor.show()
