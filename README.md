@@ -46,6 +46,11 @@ To play only Hokm in the Godot editor, open `scenes/hokm.tscn` in the
 FileSystem dock and press **F6** (Run Current Scene). Choose trump and play
 with the mouse. **F2** switches language and **F8** stops the run.
 
+For the Nowruz bakery, open `scenes/pastry_shop.tscn` and press **F6**.
+Click the trays to pack four pastries. You can put the last one back before
+wrapping the box. In the story, your sister carries it to Grandma’s. Press
+**E** beside the tea table to offer what you picked.
+
 | Control | Action |
 | --- | --- |
 | WASD / mouse | Move / look |

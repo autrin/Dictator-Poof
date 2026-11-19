@@ -143,7 +143,7 @@ func set_gun_drawn(value: bool) -> void:
 
 func update_viewmodel() -> void:
 	weapon.visible = gun_drawn and not game.victory
-	empty_hands.visible = not weapon.visible
+	empty_hands.visible = not weapon.visible and not (game.story_mode and game.world.bakery.packing)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not game.active or Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:

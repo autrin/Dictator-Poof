@@ -173,9 +173,8 @@ func _physics_process(delta: float) -> void:
 		chapter.complete_step()
 		if arrived == "bakery":
 			start_patrol()
-		elif arrived in ["grandma", "visits"]:
-			chapter.pastry_box.reparent(chapter)
-			chapter.pastry_box.position = Vector3(0.6, 0.9, -45.8)
+		elif arrived == "grandma":
+			chapter.set_out_pastries()
 	if patrol_phase == "driving":
 		van.position.z = move_toward(van.position.z, -22.8, delta * 3)
 		if van.position.z >= -22.85:

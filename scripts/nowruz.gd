@@ -7,6 +7,8 @@ const DayRules := preload("res://scripts/day_rules.gd")
 const Life := preload("res://scripts/nowruz_life.gd")
 const Decor := preload("res://scripts/home_decor.gd")
 const Hokm := preload("res://scripts/hokm.gd")
+const Pastries := preload("res://scripts/pastry_art.gd")
+const Bakery := preload("res://scenes/pastry_shop.tscn")
 const SUNSET_MINUTE := 18 * 60 + 20
 const STEPS := ["wake", "blinds", "tv", "family", "car", "stop", "scarf", "pastry", "grandma", "sal", "help", "lunch", "cards", "home", "visits", "done", "lane"]
 var game: Node3D
@@ -20,6 +22,8 @@ var relatives: Array[Node3D] = []
 var officer: Node3D
 var scarf: MeshInstance3D
 var pastry_box: Node3D
+var pastry_lid: Node3D
+var bakery: Node3D
 var car: Node3D
 var cafe: Node3D
 var sun: DirectionalLight3D
@@ -86,6 +90,7 @@ func _ready() -> void:
 	target("pastry", Vector3(-10, 0, -16))
 	target("grandma", Vector3(-1.9, 0, -17.3))
 	target("sal", Vector3(0, 0, -46))
+	target("gift", Vector3(-2.77, 0, -47.65))
 	target("help", Vector3(5, 0, -44))
 	target("lunch", Vector3(2, 0, -42.5))
 	target("cards", Vector3(-2.7, 0, -43.5))
@@ -263,16 +268,36 @@ func garden_grass(at: Vector3) -> void:
 	add_child(grass)
 
 func build_bakery() -> void:
-	PoofShapes.box(self, Vector3(-11.5, 1.5, -17.5), Vector3(5, 3, 0.2), Color("c4a178"), true)
-	PoofShapes.box(self, Vector3(-11.5, 0.5, -16.5), Vector3(4.2, 1, 0.8), Props.WOOD, true)
-	label_at(self, Vector3(-11.5, 2.2, -17.3), "pastry_shop")
-	for i in range(12):
-		Person.sphere(self, "Pastry", Vector3(-13 + (i % 6) * 0.5, 1.06, -16.7 + (i / 6) * 0.35), Vector3(0.25, 0.12, 0.22), Color("d2a16a") if i < 6 else Props.CREAM)
-	pastry_box = Node3D.new()
-	add_child(pastry_box)
-	PoofShapes.box(pastry_box, Vector3.ZERO, Vector3(0.48, 0.2, 0.36), Color("efe0ce"))
-	PoofShapes.box(pastry_box, Vector3(0, 0.105, 0), Vector3(0.5, 0.02, 0.38), Color("b57870"))
+	bakery = Bakery.instantiate()
+	bakery.game = game
+	bakery.position = Vector3(-11.5, 0, -16.55)
+	add_child(bakery)
+	bakery.wrapped.connect(collect_pastries)
+	pastry_box = Pastries.box_base(self)
+	pastry_lid = Pastries.lid(pastry_box)
 	pastry_box.hide()
+
+func collect_pastries() -> void:
+	for i in range(bakery.packed_pieces.size()):
+		var piece: Node3D = bakery.packed_pieces[i]
+		piece.reparent(pastry_box, false)
+		piece.position = Pastries.slot(i)
+	pastry_box.reparent(sister, false)
+	pastry_box.position = Vector3(0, 0.92, -0.3)
+	pastry_box.show()
+	bakery.gift.hide()
+	game.player.camera.make_current()
+	game.player.update_viewmodel()
+	game.hud.hud.show()
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	game.notify("line_pastry", 8)
+	complete_step()
+
+func set_out_pastries() -> void:
+	pastry_box.reparent(self, false)
+	# The tea table by the garden window has room beside its tray.
+	pastry_box.position = targets.gift.position + Vector3.UP * 0.79
+	pastry_lid.hide()
 
 func build_car() -> void:
 	car = Node3D.new()
@@ -374,7 +399,7 @@ func label_at(parent: Node3D, at: Vector3, key: String) -> Label3D:
 	return label
 
 func movement_locked() -> bool:
-	return stage == 0 or life.trip_phase == "driving" or transition_left > 0 or (is_instance_valid(cards) and cards.visible)
+	return stage == 0 or bakery.packing or life.trip_phase == "driving" or transition_left > 0 or (is_instance_valid(cards) and cards.visible)
 
 func spawn_player() -> void:
 	game.player.position = Vector3(-4.7, 0.55, 3.3)
@@ -393,13 +418,17 @@ func prompt() -> String:
 		return game.localize("action_wake")
 	if game.near_and_visible(targets[STEPS[stage]]):
 		return "[E]  " + objective()
+	if pastry_box.visible and not pastry_lid.visible and game.near_and_visible(targets.gift):
+		return game.localize("pastry_offer")
 	return cafe.prompt()
 
 func interact() -> void:
-	if leaving or life.busy() or transition_left > 0 or (is_instance_valid(cards) and cards.visible):
+	if leaving or bakery.packing or life.busy() or transition_left > 0 or (is_instance_valid(cards) and cards.visible):
 		return
 	if stage == 0 or game.near_and_visible(targets[STEPS[stage]]):
 		advance()
+	elif pastry_box.visible and not pastry_lid.visible and game.near_and_visible(targets.gift):
+		game.notify(bakery.reaction(), 9)
 	else:
 		cafe.interact()
 
@@ -431,11 +460,13 @@ func advance() -> void:
 			scarf.show()
 			sister.rotation.z = 0.045
 		"pastry":
-			pastry_box.show()
-			pastry_box.reparent(sister)
-			pastry_box.position = Vector3(0, 0.92, -0.3)
+			bakery.open()
+			marker.hide()
+			game.hud.hud.hide()
+			game.player.empty_hands.hide()
 			for i in range(life.officers.size()):
 				life.motion.walk(life.officers[i], [Vector3(-6 + i, 0, -18), Vector3(-7 + i, 0, -23)], 1.3)
+			return
 		"sal":
 			rules.minute = 11 * 60
 			game.play_tone(660, 0.6, 0.12)
@@ -508,7 +539,7 @@ func apply_language() -> void:
 	if is_instance_valid(marker):
 		marker.text = "◇  " + (game.localize("lane_sign") if stage >= 15 else objective())
 		marker.position = targets[STEPS[stage]].position + Vector3(0, 2.25, 0)
-		marker.visible = stage > 0
+		marker.visible = stage > 0 and not bakery.packing
 	if is_instance_valid(life):
 		life.van.get_node("Patrol sign").text = game.localize("van_sign")
 		life.van.get_node("Patrol sign right").text = game.localize("van_sign")

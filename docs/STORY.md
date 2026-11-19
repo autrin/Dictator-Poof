@@ -8,8 +8,10 @@ chosen a Nowruz music program; the Haft-Seen is already set. Your sister has
 saved her blue outfit for today.
 
 On the way to your grandparents, a morality patrol stops her outside the
-pastry shop and demands she cover herself. Stay beside her, collect the dry
-and cream pastries, and continue the visit. At Grandma's, relatives share
+pastry shop and demands she cover herself. Stay beside her, then pack
+four pieces at Bahar Pastry Shop from trays of cream puffs, rice cookies, and chickpea cookies.
+Your sister carries the box to Grandma’s. You can offer the same pieces
+beside the tea, and who speaks up depends on the assortment. Relatives share
 ajil, fruit, stories, and Sal Tahvil. Help with sabzi polo and fish, have lunch,
 then play a hand of Hokm before returning home and joining the next meal.
 
