@@ -16,7 +16,10 @@ The family walks to the car and into the houses; trips use a moving back-seat
 view. A marked patrol van arrives and two uniformed officers approach before
 the bakery confrontation. Relatives eat at the table while a cook works at
 the counter. Interiors include original patterned carpets, tilework, curtains,
-ceramics, and chandeliers. Hokm is one four-player partnership hand. Progress
+ceramics, and chandeliers. At Grandma’s Hokm table, choose trump from five
+cards, then play a partnership hand with your cousin across from you. Each
+relative lays down a card in turn. The winning card is edged in gold before
+you collect the trick. Progress
 lasts for the current session.
 
 After the dinner visit, read your cousin’s note on the blue **Kaveh Lane** gate
