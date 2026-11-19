@@ -58,6 +58,45 @@ static func remember_pose(parent: Node3D) -> void:
 			rest[part] = part.transform
 	parent.set_meta("standing_pose", rest)
 
+static func articulate_head(actor: Node3D) -> void:
+	# The face, hair and ears turn as one unit about the base of the neck.
+	var pivot := Node3D.new()
+	pivot.name = "Gaze"
+	pivot.position.y = 1.52
+	actor.add_child(pivot)
+	for part in actor.get_children():
+		if part is MeshInstance3D and part.position.y > 1.53:
+			var offset: Vector3 = part.position - pivot.position
+			part.reparent(pivot, false)
+			part.position = offset
+	remember_pose(actor)
+
+static func look_toward(actor: Node3D, target: Vector3, delta: float, nod := 0.0) -> void:
+	var pivot: Node3D = actor.get_node("Gaze")
+	var direction := actor.to_local(target) - pivot.position
+	var yaw := clampf(atan2(-direction.x, -direction.z), -0.84, 0.84)
+	var pitch := clampf(atan2(direction.y, Vector2(direction.x, direction.z).length()), -0.27, 0.23)
+	pivot.rotation.y = rotate_toward(pivot.rotation.y, yaw, delta * 2.6)
+	pivot.rotation.x = rotate_toward(pivot.rotation.x, pitch + nod, delta * 1.4)
+
+static func reading_glasses(pivot: Node3D) -> void:
+	var brass := Color("79644c")
+	for side in [-1, 1]:
+		var lens := MeshInstance3D.new()
+		var rim := TorusMesh.new()
+		rim.inner_radius = 0.039
+		rim.outer_radius = 0.045
+		rim.rings = 20
+		rim.ring_segments = 6
+		lens.mesh = rim
+		lens.material_override = PoofShapes.material(brass)
+		lens.position = Vector3(side * 0.055, 0.226, -0.146)
+		lens.rotation.x = PI / 2
+		lens.scale.z = 0.76
+		pivot.add_child(lens)
+		PoofShapes.box(pivot, Vector3(side * 0.104, 0.231, -0.079), Vector3(0.006, 0.007, 0.13), brass)
+	PoofShapes.box(pivot, Vector3(0, 0.23, -0.147), Vector3(0.026, 0.006, 0.006), brass)
+
 static func stand(parent: Node3D) -> void:
 	var rest: Dictionary = parent.get_meta("standing_pose")
 	for part: Node3D in rest:
@@ -74,13 +113,26 @@ static func walk_pose(parent: Node3D, phase: float, amount: float) -> void:
 		var original: Transform3D = rest[part]
 		var kind: String = part.get_meta("part", "")
 		var side := -1.0 if original.origin.x < 0 else 1.0
-		var swing := sin(phase) * side * 0.32 * amount
+		var swing := sin(phase) * side * 0.36 * amount
+		var lift := maxf(0.0, cos(phase) * side)
+		var knee := -lift * lift * 0.63 * amount
+		var bounce := 0.021 * amount * cos(phase * 2)
 		if kind in ["Thigh", "Shin", "Shoe"]:
 			var hip := Vector3(original.origin.x, 0.9, 0)
-			part.position = hip + Basis(Vector3.RIGHT, swing) * (original.origin - hip)
-			part.rotation.x = swing
+			var knee_at := Vector3(original.origin.x, 0.48, 0)
+			var point := original.origin
+			if kind != "Thigh":
+				point = knee_at + Basis(Vector3.RIGHT, knee) * (point - knee_at)
+			part.position = hip + Basis(Vector3.RIGHT, swing) * (point - hip)
+			part.rotation.x = swing + (0.0 if kind == "Thigh" else knee)
+			if kind == "Shoe":
+				part.rotation.x *= 0.48
 		elif kind in ["Left arm", "Right arm"]:
-			part.rotation.x = -swing * 0.75
+			part.rotation.x = -swing * 0.80
+			part.get_node("Forearm").rotation.x = (0.16 + 0.13 * lift) * amount
+			part.position.y = original.origin.y + bounce
+		else:
+			part.position.y = original.origin.y + bounce
 
 static func build_hair(parent: Node3D, hair: Color, style: int, scarf: bool) -> void:
 	sphere(parent, "Hair crown", Vector3(0, 1.855, 0.025), Vector3(0.278, 0.13, 0.275), hair)

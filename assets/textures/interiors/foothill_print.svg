@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="900" height="406" viewBox="0 0 900 406">
+  <!-- Original layered landscape for the family sitting room. GPL-3.0-or-later. -->
+  <defs>
+    <linearGradient id="sky" x2=".3" y2="1"><stop stop-color="#719998"/><stop offset="1" stop-color="#f7d9aa"/></linearGradient>
+    <g id="house"><path d="M0 8 34 2 56 10v23l-30 8L0 31Z" fill="#deb283"/><path d="m34 2 22 8v23l-30 8V13Z" fill="#a66c55"/><path d="m-3 7 37-7 26 9-34 8Z" fill="#f5d2a5"/><path d="M6 15h6v8H6zm12 3h5v8h-5zm17 3 6-2v12l-6 2z" fill="#4a5955"/></g>
+    <g id="cypress"><path d="M-1 0v-66h3V0Z" fill="#4f493a"/><path d="M0-105C0-82-18-55-12-27-10-5 9-7 13-24 19-52 6-74 0-105Z" fill="#214c50"/><path d="M0-90C-1-65-11-40-7-22m9-52c5 23 8 41 3 53" fill="none" stroke="#648278" stroke-width="2"/></g>
+  </defs>
+  <path fill="url(#sky)" d="M0 0h900v406H0z"/><circle cx="689" cy="71" r="36" fill="#f9dfa5"/>
+  <path d="m0 191 78-51 42 12 72-75 45 19 57-37 42 42 97-81 29 21 49 52 40-22 73 59 56-21 47 24 71-62 104 94v71H0Z" fill="#859fa0"/>
+  <path d="m338 101 95-81 29 21 49 52-52-28-15 4-14-21-24 29-3-11-32 30 9-22ZM160 113l32-36 45 19-21-4 9 13-26-14-10 13-4-6Z" fill="#f2e9d3"/>
+  <path d="m0 173 114-33 100 19 110-46 59 17 50-26 76 24 94-20 75 24 75-45 147 49v99H0Z" fill="#9a9e87"/>
+  <path d="M0 137q119 23 171 63 119-56 199-48 116 10 178-15 129 38 209 13 70-16 143-15v103H0Z" fill="#bba782"/>
+  <path d="M0 201q118-36 240 1 135 31 247-4 136-46 271-26l142 25v209H0Z" fill="#c99169"/>
+  <path d="M900 189q-205-6-274 47-55 47-164 54-145 10-230 116H58q98-108 305-144 190-23 227-55 106-49 310-27Z" fill="#e5bd91"/>
+  <path d="M900 200q-201-9-266 44-48 47-176 58-115 8-181 104H133q87-89 243-121 177-25 222-62 112-52 302-34Z" fill="#749e98"/>
+  <g fill="none" stroke="#f1cf9e" stroke-width="2"><path d="M17 180q84-8 144 18m-97-5q33-2 62 6m351 101q94-10 127-36m16-15 35-17m58-22 68-9M342 331q-35 16-59 41"/></g>
+  <path d="M0 253q143-70 283-34l114 30q-242 1-397 136Z" fill="#9c6d50"/>
+  <g stroke="#d1a27b" fill="none" stroke-width="3"><path d="M5 280q140-79 288-55M0 301q163-88 316-68M0 326q178-92 317-84"/></g>
+  <g><use xlink:href="#house" transform="translate(65 192) scale(.8)"/><use xlink:href="#house" transform="translate(113 184) scale(.72)"/><use xlink:href="#house" transform="translate(154 189) scale(.63)"/><use xlink:href="#house" transform="translate(100 205) scale(.85)"/><use xlink:href="#house" transform="translate(173 203) scale(.75)"/><use xlink:href="#house" transform="translate(206 195) scale(.6)"/></g>
+  <path d="M0 372q63-48 146-39l-96 73H0Zm900-96q-150-48-265-8-48 22-95 30 182 20 360 108Z" fill="#4b7371"/>
+  <path d="M900 330q-134-39-237-14-108 35-200 26-81-10-153 64h590Z" fill="#345b59"/>
+  <g><use xlink:href="#cypress" transform="translate(82 228) scale(.45)"/><use xlink:href="#cypress" transform="translate(145 210) scale(.37)"/><use xlink:href="#cypress" transform="translate(606 291) scale(.48)"/><use xlink:href="#cypress" transform="translate(720 332) scale(.97)"/><use xlink:href="#cypress" transform="translate(751 340) scale(.68)"/><use xlink:href="#cypress" transform="translate(808 359) scale(1.35)"/></g>
+  <g stroke="#a9b298" stroke-width="2" fill="none"><path d="M443 375q45-24 92-22m-26 14 56-12m59-26 46-4m89 45 60 6m-35 5 41 5"/></g>
+</svg>

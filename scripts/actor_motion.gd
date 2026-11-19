@@ -6,7 +6,7 @@ var walked: Dictionary = {}
 
 func walk(actor: Node3D, points: Array, speed: float = 1.5) -> void:
 	Person.stand(actor)
-	routes[actor] = {"points": points.duplicate(), "speed": speed}
+	routes[actor] = {"points": points.duplicate(), "speed": speed, "pace": 0.0}
 	walked[actor] = 0.0
 
 func busy(actor: Node3D) -> bool:
@@ -21,9 +21,17 @@ func tick(delta: float, player: CharacterBody3D) -> void:
 			route.points.pop_front()
 			if route.points.is_empty():
 				routes.erase(actor)
+				walked.erase(actor)
 				Person.stand(actor)
 			continue
-		var motion := to.normalized() * minf(to.length(), route.speed * delta)
+		var yaw := atan2(-to.x, -to.z)
+		actor.rotation.y = rotate_toward(actor.rotation.y, yaw, delta * 4.6)
+		var pace: float = route.speed
+		if route.points.size() == 1:
+			pace = minf(pace, sqrt(7.0 * to.length()))
+		pace *= lerpf(0.30, 1.0, maxf(0.0, cos(angle_difference(actor.rotation.y, yaw))))
+		route.pace = move_toward(route.pace, pace, delta * 4.8)
+		var motion := to.normalized() * minf(to.length(), route.pace * delta)
 		# Leave personal space rather than letting an animated body push the player.
 		var separation: Vector3 = actor.global_position - player.global_position
 		var horizontal := Vector2(separation.x, separation.z)
@@ -42,9 +50,8 @@ func tick(delta: float, player: CharacterBody3D) -> void:
 		var safe := actor.get_world_3d().direct_space_state.cast_motion(query)
 		motion *= safe[0]
 		actor.position += motion
-		actor.rotation.y = lerp_angle(actor.rotation.y, atan2(-to.x, -to.z), minf(8 * delta, 1))
 		walked[actor] += motion.length()
-		Person.walk_pose(actor, walked[actor] * 5, minf(motion.length() / maxf(delta, 0.001), 1.0))
+		Person.walk_pose(actor, walked[actor] * 5.6, minf(motion.length() / maxf(delta, 0.001), 1.0))
 
 static func face(actor: Node3D, toward: Vector3) -> void:
 	var direction := toward - actor.position
