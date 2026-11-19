@@ -56,7 +56,7 @@ static func furnish(room: Node3D, grandparents: bool) -> void:
 			var cushion := Person.sphere(decor, "Embroidered cushion", Vector3(x + offset, 0.65, 3.65), Vector3(0.49, 0.42, 0.18), Color("984e50") if offset != 0 else Color("c1a56f"))
 			cushion.rotation.z = offset * 0.15
 	# Small tea service on an inlaid side table.
-	Props.table(decor, Vector3(-3.5, 0, -3.7), Vector2(1.2, 0.65))
+	Props.table(decor, Vector3(-3.31 if grandparents else -3.5, 0, -3.7), Vector2(1.9 if grandparents else 1.2, 0.65))
 	Props.round_shape(decor, Vector3(-3.5, 0.8, -3.7), 0.28, 0.02, GOLD)
 	for x in [-3.65, -3.35]:
 		Props.cup(decor, Vector3(x, 0.82, -3.7))

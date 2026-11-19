@@ -204,6 +204,8 @@ func show_menu(state: String) -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	if game.story_mode and is_instance_valid(game.world.cards):
 		game.world.cards.hide()
+	if game.story_mode and game.world.bakery.packing:
+		game.world.bakery.overlay.hide()
 	replay_button.visible = game.victory or (game.story_mode and state == "pause")
 	apply_language()
 	start_button.grab_focus()
@@ -258,6 +260,10 @@ func hide_menu() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	if game.story_mode and is_instance_valid(game.world.cards):
 		game.world.cards.show()
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	if game.story_mode and game.world.bakery.packing:
+		game.world.bakery.overlay.show()
+		hud.hide()
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	replay_button.hide()
 

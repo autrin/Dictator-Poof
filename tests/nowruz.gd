@@ -22,12 +22,40 @@ func settle() -> void:
 
 func click_at(button: Control) -> void:
 	var point := button.get_global_transform_with_canvas() * (button.size / 2)
+	click_point(point)
+
+func click_point(point: Vector2) -> void:
 	for pressed in [true, false]:
 		var click := InputEventMouseButton.new()
 		click.button_index = MOUSE_BUTTON_LEFT
 		click.position = point
 		click.pressed = pressed
 		root.push_input(click, true)
+
+func pack_pastries(shop: Node3D) -> void:
+	await settle()
+	var camera: Camera3D = shop.camera
+	check(camera.is_current() and shop.overlay.visible, "opening the bakery gives the player the counter view")
+	check(shop.finish.disabled and shop.undo.disabled, "an empty box cannot be wrapped or undone")
+	click_point(camera.unproject_position(shop.to_global(shop.display_spot(0, 2))))
+	check(shop.selection == [0], "clicking a pastry on the 3D tray adds it to the box")
+	click_at(shop.picks[2])
+	click_at(shop.undo)
+	check(shop.selection == [0] and shop.stock[2].size() == 6, "undo returns the last pastry to its own tray")
+	game.pause_run()
+	var paused_at: Vector3 = shop.packed_pieces[0].position
+	await create_timer(0.4).timeout
+	check(not shop.overlay.visible and shop.packed_pieces[0].position == paused_at, "pause freezes the counter and hides its controls")
+	game.start_or_resume()
+	game.set_language("fa", false)
+	check(shop.overlay.visible and shop.picks[1].text == "نان برنجی" and Input.mouse_mode == Input.MOUSE_MODE_VISIBLE, "resume and F2 preserve the active box")
+	for kind in [1, 2, 1]:
+		click_at(shop.picks[kind])
+	click_at(shop.picks[2])
+	check(shop.selection == [0, 1, 2, 1] and not shop.finish.disabled, "a full box keeps exactly the four selected pieces")
+	click_at(shop.finish)
+	check(not shop.packing and game.player.camera.is_current() and game.world.pastry_box.get_parent() == game.world.sister, "wrapping hands the box to the sister and restores first-person play")
+	check(game.world.pastry_lid.visible and shop.packed_pieces.all(func(p): return p.get_parent() == game.world.pastry_box), "the chosen pieces travel inside the closed box")
 
 func play_hokm(panel: Control) -> void:
 	panel.rules.deal(1403)
@@ -107,6 +135,18 @@ func wait_scene() -> void:
 	check(false, "scene finishes without blocked routes: " + game.world.life.trip_phase)
 
 func run() -> void:
+	var bakery := preload("res://scenes/pastry_shop.tscn").instantiate()
+	root.add_child(bakery)
+	await settle()
+	for order in [[0, 0, 0, 1], [2, 2, 2, 2], [1, 2, 1, 2]]:
+		for kind in order:
+			click_at(bakery.picks[kind])
+		click_at(bakery.finish)
+		var response: String = {0: "pastry_gift_cream", 1: "pastry_mixed", 2: "pastry_gift_chickpea"}[order[0]]
+		check(bakery.sealed and bakery.note.text == bakery.words(response), "standalone bakery responds to the packed assortment")
+		click_at(bakery.finish)
+		check(bakery.selection.is_empty() and bakery.stock.all(func(tray): return tray.size() == 6), "packing another gift restores all three trays")
+	bakery.free()
 	var standalone := preload("res://scenes/hokm.tscn").instantiate()
 	root.add_child(standalone)
 	await settle()
@@ -205,6 +245,8 @@ func run() -> void:
 			var start_at: Vector3 = game.world.sister.position
 			await create_timer(0.4).timeout
 			check(game.world.sister.position.distance_to(start_at) > 0.1, "family visibly walks toward the car")
+		if step == 7:
+			await pack_pastries(game.world.bakery)
 		if step in [4, 8, 13, 14]:
 			game.world.teleport(game.world.car.position + Vector3(2, 0.05, 2), game.world.car.position)
 		await wait_scene()
@@ -217,6 +259,12 @@ func run() -> void:
 			check(game.world.speaker.is_visible_in_tree(), "officer dialogue has a visible label over the officer")
 			var officer_head: Vector3 = game.world.officer.global_position + Vector3(0, 1.65, 0)
 			check(not game.player.camera.is_position_behind(officer_head), "the speaking officer is in front of the camera")
+		if step == 8:
+			check(game.world.pastry_box.get_parent() == game.world and not game.world.pastry_lid.visible, "the same assortment is open on Grandma's tea table")
+			await approach(game.world.targets.gift, Vector3(0, 0.05, 1.3))
+			check(game.world.prompt() == game.localize("pastry_offer"), "the gift has a reachable prompt beside the tea")
+			game.interact()
+			check(game.message_key == "pastry_gift_rice" and game.world.stage == 9, "offering the box gets a response to the player's choice")
 		if step == 10:
 			check(game.world.serving.visible and game.world.life.spoon.visible, "cooking finishes before lunch is served")
 		if step == 11:
