@@ -42,6 +42,11 @@ private. A patrol entering the house breaks up the party.
 Import `project.godot` into **Godot 4.7.2 Standard**, then press **F5**.
 No .NET SDK or export is needed.
 
+The opening home has a screened sleeping corner and a sitting room with an
+original foothill print. To go straight to the grandparents’ visit, open
+`scenes/grandmas_visit.tscn` and press **F6**. You arrive with a packed
+pastry box. Follow your sister inside to see her set it beside the tea.
+
 To play only Hokm in the Godot editor, open `scenes/hokm.tscn` in the
 FileSystem dock and press **F6** (Run Current Scene). Choose trump and play
 with the mouse. **F2** switches language and **F8** stops the run.

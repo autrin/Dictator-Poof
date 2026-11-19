@@ -1,6 +1,7 @@
 extends RefCounted
 ## Original decorative motifs and domestic objects; passages remain unobstructed.
 const Props := preload("res://scripts/domestic_props.gd")
+const Interiors := preload("res://scripts/family_interiors.gd")
 const Person := preload("res://scripts/person_visual.gd")
 const GOLD := Color("b8995b")
 const WALNUT := Color("543a30")
@@ -28,17 +29,22 @@ static func furnish(room: Node3D, grandparents: bool) -> void:
 	# Draped curtains, tiebacks and a brass rail.
 	PoofShapes.box(decor, Vector3(-2.5, 2.43, -4.7), Vector3(8.7, 0.035, 0.035), GOLD)
 	for x in [-6.35, 1.4]:
-		for pleat in range(7):
-			var curtain := Person.sphere(decor, "Curtain fold", Vector3(x + (pleat - 3) * 0.10, 1.62, -4.67), Vector3(0.15, 1.62, 0.16), Color("7f4046").lightened(pleat % 2 * 0.035))
-			curtain.rotation.z = (pleat - 3) * 0.012
-		PoofShapes.box(decor, Vector3(x, 1.3, -4.55), Vector3(0.76, 0.055, 0.035), GOLD)
+		curtain(decor, x, Color("86665d") if grandparents else Color("456c70"))
 	# A display cabinet holds blue ceramics and family keepsakes.
-	PoofShapes.box(decor, Vector3(-6.48, 1.05, -0.35), Vector3(0.75, 2.1, 2.4), WALNUT, true)
-	for y in [0.6, 1.15, 1.72]:
-		PoofShapes.box(decor, Vector3(-6.06, y, -0.35), Vector3(0.2, 0.04, 2.3), GOLD)
-		for z in [-1.15, -0.4, 0.4]:
-			vase(decor, Vector3(-5.96, y + 0.03, z), Color("3a778d"), y > 1.5)
+	if not grandparents:
+		PoofShapes.box(decor, Vector3(-6.48, 0.48, -0.35), Vector3(0.75, 0.96, 2.4), WALNUT, true)
+		for z in [-1.40, 0.70]:
+			PoofShapes.box(decor, Vector3(-6.46, 1.51, z), Vector3(0.66, 1.10, 0.05), WALNUT)
+		for y in [0.99, 1.52, 2.06]:
+			PoofShapes.box(decor, Vector3(-6.44, y, -0.35), Vector3(0.74, 0.045, 2.2), WALNUT)
+		vase(decor, Vector3(-6.4, 1.02, -0.84), Color("477d89"), false)
+		vase(decor, Vector3(-6.4, 1.55, 0.32), Color("ad7d58"), false)
+		var book_row := Interiors.wall(decor, Vector3(-6.36, 1.55, -0.42), PI / 2)
+		Interiors.books(book_row, Vector3.ZERO, 6)
 	# A brass chandelier and hanging crystal drops.
+	for i in range(3):
+		var moulding := Props.round_shape(decor, Vector3(0.3, 3.01 - i * 0.014, 0.8), 0.69 - i * 0.14, 0.027, Color("e6d7bc").darkened(i % 2 * 0.085))
+		moulding.mesh.radial_segments = 32
 	Props.round_shape(decor, Vector3(0.3, 2.92, 0.8), 0.18, 0.08, GOLD)
 	Props.round_shape(decor, Vector3(0.3, 2.65, 0.8), 0.025, 0.5, GOLD)
 	for i in range(6):
@@ -50,16 +56,15 @@ static func furnish(room: Node3D, grandparents: bool) -> void:
 		Person.sphere(decor, "Lamp glass", at + Vector3(0, 0.09, 0), Vector3(0.11, 0.2, 0.11), Color("f7e8c7"))
 		for j in range(3):
 			Person.sphere(decor, "Crystal drop", at + Vector3((j - 1) * 0.075, -0.1 - (j % 2) * 0.05, 0), Vector3(0.04, 0.15, 0.04), Color("cfddd6"))
-	# Upholstered cushions and carved sofa arms.
-	for x in [-5.7, 5.7]:
-		for offset in [-0.7, 0, 0.7]:
-			var cushion := Person.sphere(decor, "Embroidered cushion", Vector3(x + offset, 0.65, 3.65), Vector3(0.49, 0.42, 0.18), Color("984e50") if offset != 0 else Color("c1a56f"))
-			cushion.rotation.z = offset * 0.15
 	# Small tea service on an inlaid side table.
 	Props.table(decor, Vector3(-3.31 if grandparents else -3.5, 0, -3.7), Vector2(1.9 if grandparents else 1.2, 0.65))
 	Props.round_shape(decor, Vector3(-3.5, 0.8, -3.7), 0.28, 0.02, GOLD)
 	for x in [-3.65, -3.35]:
-		Props.cup(decor, Vector3(x, 0.82, -3.7))
+		Props.tea_glass(decor, Vector3(x, 0.82, -3.7))
+	Props.round_shape(decor, Vector3(-3.51, 0.84, -3.55), 0.077, 0.057, Color("61888c"))
+	for j in range(4):
+		var cube := PoofShapes.box(decor, Vector3(-3.53 + 0.037 * (j % 2), 0.872, -3.57 + 0.035 * (j / 2)), Vector3.ONE * 0.034, Color("f4ecd6"))
+		cube.rotation.y = j * 0.43
 	vase(decor, Vector3(-3.9, 0.8, -3.75), Color("af7856"), true)
 	if grandparents:
 		# Backsplash, cupboard fronts, chopping board, herbs and a simmering pot.
@@ -69,6 +74,27 @@ static func furnish(room: Node3D, grandparents: bool) -> void:
 		PoofShapes.box(decor, Vector3(5.5, 0.93, -0.65), Vector3(0.58, 0.025, 0.48), Color("b39360"))
 		for i in range(14):
 			Person.sphere(decor, "Fresh herbs", Vector3(5.3 + (i % 4) * 0.1, 0.96, -0.8 + (i / 4) * 0.08), Vector3(0.12, 0.035, 0.1), Color("4c7044"))
+
+static func curtain(parent: Node3D, x: float, tint: Color) -> void:
+	var surface := SurfaceTool.new()
+	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var heights := [2.43, 1.92, 1.34, 0.79]
+	var widths := [0.91, 0.68, 0.32, 0.59]
+	for row in range(3):
+		for col in range(24):
+			for corner: Vector2i in [Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(0, 0), Vector2i(1, 1), Vector2i(1, 0)]:
+				var level := row + corner.y
+				var u := (col + corner.x) / 24.0
+				var ripple := cos(u * TAU * 6)
+				var drape := 0.17 * sin(level * 0.83) * (-1 if x < 0 else 1)
+				surface.add_vertex(Vector3(x + (u - 0.5) * widths[level] + drape, heights[level] + (0.022 * ripple if level == 3 else 0.0), -4.68 + ripple * 0.055))
+	surface.generate_normals()
+	var cloth := MeshInstance3D.new()
+	cloth.mesh = surface.commit()
+	cloth.material_override = PoofShapes.material(tint)
+	cloth.material_override.cull_mode = BaseMaterial3D.CULL_DISABLED
+	parent.add_child(cloth)
+	PoofShapes.box(parent, Vector3(x + (-0.17 if x < 0 else 0.17), 1.34, -4.61), Vector3(0.33, 0.044, 0.04), GOLD)
 
 static func vase(parent: Node3D, at: Vector3, color: Color, flowers: bool) -> void:
 	Person.sphere(parent, "Ceramic vase", at + Vector3(0, 0.15, 0), Vector3(0.24, 0.3, 0.24), color)

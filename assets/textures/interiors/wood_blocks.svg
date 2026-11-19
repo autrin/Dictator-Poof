@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+ <!-- Parquet blocks laid in alternating directions. GPL-3.0-or-later. -->
+ <defs><g id="block" stroke="#b39171" stroke-width="1.2">
+ <path fill="#d6b997" d="M0 0h128v32H0z"/><path fill="#cbae8a" d="M0 32h128v32H0z"/><path fill="#d9bb97" d="M0 64h128v32H0z"/><path fill="#cfb18b" d="M0 96h128v32H0z"/>
+ <g fill="none" stroke="#bd9c7c" opacity=".6"><path d="M5 10q36 3 62 1t52-1M19 18q27 1 48-1m14 37 38 1M2 42q27-3 59 0t62 0M9 77q15-2 36 0t68-2M17 87l48-2m30 29 25-2M4 108q26-2 55 0t63-1"/></g></g></defs>
+ <g xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="#block"/><use xlink:href="#block" transform="translate(256 0) rotate(90)"/><use xlink:href="#block" transform="translate(128 128) rotate(90)"/><use xlink:href="#block" transform="translate(128 128)"/></g>
+</svg>

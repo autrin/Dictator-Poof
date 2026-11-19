@@ -2,6 +2,7 @@ extends SceneTree
 var failures := 0
 var game: Node3D
 var ride_checked := false
+var placement_checked := false
 const Rules := preload("res://scripts/day_rules.gd")
 const HokmRules := preload("res://scripts/hokm_rules.gd")
 
@@ -114,6 +115,20 @@ func approach(target: Node3D, offset: Vector3) -> void:
 func wait_scene() -> void:
 	for frame in range(3600):
 		await physics_frame
+		if game.world.life.trip_phase == "setting_down" and game.world.life.placing_time >= 1.63 and not placement_checked:
+			placement_checked = true
+			var box: Node3D = game.world.pastry_box
+			var table_at: Vector3 = game.world.targets.gift.global_position + Vector3.UP * 0.79
+			check(box.get_parent() == game.world.sister and box.global_position.distance_to(table_at) < 0.02, "the sister lowers the gift to the table before releasing it")
+			for side in ["Left", "Right"]:
+				var palm: Node3D = game.world.sister.get_node("%s arm/Forearm/%s hand" % [side, side])
+				var handle := box.to_global(Vector3(-0.25 if side == "Left" else 0.25, 0.035, 0.083))
+				check(palm.global_position.distance_to(handle) < 0.035, side + " palm supports the gift at the table")
+			var placed_at := box.global_transform
+			game.pause_run()
+			await create_timer(0.25).timeout
+			check(box.get_parent() == game.world.sister and box.global_transform.is_equal_approx(placed_at), "pausing holds the gift in the sister's hands")
+			game.start_or_resume()
 		if game.world.life.trip_phase == "driving" and not ride_checked:
 			ride_checked = true
 			var car_at: Vector3 = game.world.car.position
@@ -260,6 +275,7 @@ func run() -> void:
 			var officer_head: Vector3 = game.world.officer.global_position + Vector3(0, 1.65, 0)
 			check(not game.player.camera.is_position_behind(officer_head), "the speaking officer is in front of the camera")
 		if step == 8:
+			check(placement_checked, "the visit includes the sister's walk to the tea table")
 			check(game.world.pastry_box.get_parent() == game.world and not game.world.pastry_lid.visible, "the same assortment is open on Grandma's tea table")
 			await approach(game.world.targets.gift, Vector3(0, 0.05, 1.3))
 			check(game.world.prompt() == game.localize("pastry_offer"), "the gift has a reachable prompt beside the tea")
@@ -267,11 +283,20 @@ func run() -> void:
 			check(game.message_key == "pastry_gift_rice" and game.world.stage == 9, "offering the box gets a response to the player's choice")
 		if step == 10:
 			check(game.world.serving.visible and game.world.life.spoon.visible, "cooking finishes before lunch is served")
+			var ladle: Node3D = game.world.life.spoon.get_node("Spoon bowl")
+			check(ladle.global_position.distance_to(Vector3(5.49, 1.16, -44.0)) < 0.25, "the cook stirs inside the pot")
 		if step == 11:
-			var arm: Node3D = game.world.relatives[0].get_node("Right arm/Forearm")
-			var before: float = arm.rotation.x
-			await create_timer(0.4).timeout
-			check(game.world.life.eating and not is_equal_approx(before, arm.rotation.x), "seated relatives lift their utensils during lunch")
+			var diner: Node3D = game.world.life.diners[0]
+			var spoon: Node3D = game.world.life.utensils[0].get_node("Spoon bowl")
+			var mouth: Node3D = diner.get_node("Gaze/Smile")
+			var plate := diner.to_global(Vector3(0, 0.87, -0.55))
+			var nearest_mouth := INF
+			var nearest_plate := INF
+			for frame in range(260):
+				await physics_frame
+				nearest_mouth = minf(nearest_mouth, spoon.global_position.distance_to(mouth.global_position))
+				nearest_plate = minf(nearest_plate, spoon.global_position.distance_to(plate))
+			check(game.world.life.eating and nearest_plate < 0.14 and nearest_mouth < 0.11, "the diner's spoon travels from plate to mouth")
 		if step == 12:
 			check(is_instance_valid(game.world.cards), "Hokm opens from the table")
 			if is_instance_valid(game.world.cards):

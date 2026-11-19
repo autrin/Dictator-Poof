@@ -54,6 +54,23 @@ static func cup(parent: Node3D, at: Vector3) -> Node3D:
 	root.add_child(handle)
 	return root
 
+static func tea_glass(parent: Node3D, at: Vector3) -> void:
+	round_shape(parent, at, 0.089, 0.013, CREAM)
+	round_shape(parent, at + Vector3.UP * 0.008, 0.075, 0.006, Color("557582"))
+	round_shape(parent, at + Vector3.UP * 0.013, 0.065, 0.005, CREAM)
+	# Narrow-waisted estekan: amber tea shows through the flared glass rim.
+	var foot := round_shape(parent, at + Vector3.UP * 0.028, 0.041, 0.023, Color("c5b599"))
+	foot.mesh.top_radius = 0.032
+	var tea := round_shape(parent, at + Vector3.UP * 0.075, 0.048, 0.086, Color("94552b"))
+	tea.mesh.bottom_radius = 0.032
+	round_shape(parent, at + Vector3.UP * 0.118, 0.046, 0.003, Color("68341c"))
+	var rim := round_shape(parent, at + Vector3.UP * 0.131, 0.052, 0.026, Color(0.82, 0.89, 0.86, 0.32))
+	rim.mesh.bottom_radius = 0.048
+	rim.mesh.cap_top = false
+	rim.mesh.cap_bottom = false
+	rim.material_override.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	rim.material_override.roughness = 0.18
+
 static func rug(parent: Node3D, at: Vector3, size: Vector2) -> void:
 	var carpet := MeshInstance3D.new()
 	var plane := PlaneMesh.new()

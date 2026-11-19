@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="416" height="576" viewBox="0 0 416 576">
+ <!-- Original pomegranate painting for Grandma's dining room. GPL-3.0-or-later. -->
+ <defs>
+  <g id="leaf"><path d="M0 0Q-39-7-51-42-14-42 0 0Z" fill="#79a48a"/><path d="M-47-38-3-3" stroke="#c3bf80" fill="none" stroke-width="1.8"/></g>
+  <g id="fruit"><path d="m-8-25-5-19 12 8 9-11 2 13 11-1-10 12c43 0 48 48 22 65-17 13-48 12-62-6-21-25-5-58 21-61Z" fill="#cf6348" stroke="#e8af74" stroke-width="2"/><path d="M0-18c-29 2-38 42-10 57-17-22-11-43 10-57Z" fill="#9e4040"/><path d="M13-16q14 3 17 16" fill="none" stroke="#ed995d" stroke-width="4"/></g>
+ </defs>
+ <path fill="#193f47" d="M0 0h416v576H0z"/>
+ <g fill="none" stroke="#c09a61"><path d="M9 9h398v558H9zM16 16h384v544H16z"/><path d="M29 545V108Q33 71 87 64q74-4 121-39 47 35 121 39 54 7 58 44v437Z" stroke-width="3"/></g>
+ <g fill="none" stroke="#ad936c" stroke-linecap="round"><path d="M124 545q83-135 63-234-13-77 31-146 35-58 25-97" stroke-width="8"/><path d="M176 424q-32-76-69-97l-37-34m120 30q52-62 86-83l47-45m-126 34q-54-31-72-69m99 12 70-42m-109 243 111-57m-105 87-59 36" stroke-width="4"/></g>
+ <g><use xlink:href="#leaf" transform="translate(210 182) rotate(12)"/><use xlink:href="#leaf" transform="translate(233 131) rotate(100)"/><use xlink:href="#leaf" transform="translate(236 104) rotate(-4) scale(.78)"/><use xlink:href="#leaf" transform="translate(173 261) rotate(21)"/><use xlink:href="#leaf" transform="translate(151 198) rotate(-33)"/><use xlink:href="#leaf" transform="translate(245 267) rotate(108)"/><use xlink:href="#leaf" transform="translate(288 228) rotate(-7)"/><use xlink:href="#leaf" transform="translate(147 368) rotate(-39)"/><use xlink:href="#leaf" transform="translate(112 330) rotate(18)"/><use xlink:href="#leaf" transform="translate(214 355) rotate(105)"/><use xlink:href="#leaf" transform="translate(271 327) rotate(135)"/><use xlink:href="#leaf" transform="translate(156 463) rotate(12)"/><use xlink:href="#leaf" transform="translate(162 459) rotate(126)"/></g>
+ <use xlink:href="#fruit" transform="translate(117 190) rotate(-15) scale(.80)"/><use xlink:href="#fruit" transform="translate(287 152) rotate(10) scale(.68)"/><use xlink:href="#fruit" transform="translate(312 237) rotate(11)"/><use xlink:href="#fruit" transform="translate(88 325) rotate(-13) scale(.82)"/><use xlink:href="#fruit" transform="translate(260 376) rotate(15)"/>
+ <g fill="#d4bb84"><circle cx="72" cy="132" r="2"/><circle cx="333" cy="94" r="2"/><circle cx="343" cy="317" r="3"/><circle cx="87" cy="442" r="2"/><circle cx="310" cy="463" r="2"/></g>
+</svg>

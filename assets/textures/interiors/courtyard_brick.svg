@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="384" height="192" viewBox="0 0 384 192">
+ <!-- Original running-bond brickwork. GPL-3.0-or-later. -->
+ <rect width="384" height="192" fill="#ceb296"/>
+ <g stroke="#ae826b" stroke-width="1">
+  <rect x="1" y="2" width="93" height="28" fill="#bc8d71"/>
+  <rect x="97" y="2" width="93" height="28" fill="#c2987b"/>
+  <rect x="193" y="2" width="93" height="28" fill="#b8866d"/>
+  <rect x="289" y="2" width="93" height="28" fill="#c4987d"/>
+  <rect x="-47" y="34" width="93" height="28" fill="#c2987b"/>
+  <rect x="49" y="34" width="93" height="28" fill="#b8866d"/>
+  <rect x="145" y="34" width="93" height="28" fill="#c4987d"/>
+  <rect x="241" y="34" width="93" height="28" fill="#bc8d71"/>
+  <rect x="337" y="34" width="93" height="28" fill="#c2987b"/>
+  <rect x="1" y="66" width="93" height="28" fill="#c4987d"/>
+  <rect x="97" y="66" width="93" height="28" fill="#bc8d71"/>
+  <rect x="193" y="66" width="93" height="28" fill="#c2987b"/>
+  <rect x="289" y="66" width="93" height="28" fill="#b8866d"/>
+  <rect x="-47" y="98" width="93" height="28" fill="#bc8d71"/>
+  <rect x="49" y="98" width="93" height="28" fill="#c2987b"/>
+  <rect x="145" y="98" width="93" height="28" fill="#b8866d"/>
+  <rect x="241" y="98" width="93" height="28" fill="#c4987d"/>
+  <rect x="337" y="98" width="93" height="28" fill="#bc8d71"/>
+  <rect x="1" y="130" width="93" height="28" fill="#b8866d"/>
+  <rect x="97" y="130" width="93" height="28" fill="#c4987d"/>
+  <rect x="193" y="130" width="93" height="28" fill="#bc8d71"/>
+  <rect x="289" y="130" width="93" height="28" fill="#c2987b"/>
+  <rect x="-47" y="162" width="93" height="28" fill="#c4987d"/>
+  <rect x="49" y="162" width="93" height="28" fill="#bc8d71"/>
+  <rect x="145" y="162" width="93" height="28" fill="#c2987b"/>
+  <rect x="241" y="162" width="93" height="28" fill="#b8866d"/>
+  <rect x="337" y="162" width="93" height="28" fill="#c4987d"/>
+ </g>
+</svg>

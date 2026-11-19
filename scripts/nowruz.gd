@@ -6,6 +6,8 @@ const Cafe := preload("res://scripts/book_cafe.gd")
 const DayRules := preload("res://scripts/day_rules.gd")
 const Life := preload("res://scripts/nowruz_life.gd")
 const Decor := preload("res://scripts/home_decor.gd")
+const Interiors := preload("res://scripts/family_interiors.gd")
+const Front := preload("res://scripts/house_front.gd")
 const Hokm := preload("res://scripts/hokm.gd")
 const Pastries := preload("res://scripts/pastry_art.gd")
 const Bakery := preload("res://scenes/pastry_shop.tscn")
@@ -60,14 +62,18 @@ func _ready() -> void:
 	cafe.rotation.y = -PI / 2
 	add_child(cafe)
 	sister = person(Vector3(2, 0, 1), Color("427b88"), 1)
-	scarf = Person.sphere(sister, "Covering scarf", Vector3(0, 1.82, 0.035), Vector3(0.32, 0.21, 0.31), Color("bd8393"))
+	scarf = Person.sphere(sister.get_node("Gaze"), "Covering scarf", Vector3(0, 0.30, 0.035), Vector3(0.32, 0.21, 0.31), Color("bd8393"))
 	scarf.hide()
 	Person.remember_pose(sister)
 	family.append(sister)
 	family.append(person(Vector3(3.5, 0, 1.5), Color("ab6652"), 3))
 	family.append(person(Vector3(4.7, 0, 0.8), Color("75644f"), 0))
+	var jackets := [Color("746b75"), Color("527572"), Color("a68163"), Color("716855"), Color("9c654c"), Color("637588")]
 	for i in range(6):
-		var relative := person(Vector3(-1 + (i % 3), 0, -42.5 + (-1.0 if i < 3 else 1.0)), [Color("9c654c"), Color("527572"), Color("8c6e82")][i % 3], i % 5)
+		var hair := Color("998c80") if i in [0, 3] else Color("473633")
+		var relative := person(Vector3(-1 + (i % 3), 0, -42.5 + (-1.0 if i < 3 else 1.0)), jackets[i], i % 5, hair)
+		if i == 3:
+			Person.reading_glasses(relative.get_node("Gaze"))
 		relative.rotation.y = PI if i < 3 else 0
 		relatives.append(relative)
 		Props.chair(self, relative.position, relative.rotation.y)
@@ -91,7 +97,7 @@ func _ready() -> void:
 	target("grandma", Vector3(-1.9, 0, -17.3))
 	target("sal", Vector3(0, 0, -46))
 	target("gift", Vector3(-2.77, 0, -47.65))
-	target("help", Vector3(5, 0, -44))
+	targets["help"] = life.cook
 	target("lunch", Vector3(2, 0, -42.5))
 	target("cards", Vector3(-2.7, 0, -43.5))
 	target("home", Vector3(7.1, 0, -34.3))
@@ -109,6 +115,8 @@ func _ready() -> void:
 	var texture := Props.surface_texture()
 	for mesh in find_children("*", "MeshInstance3D", true, false):
 		if mesh.mesh is BoxMesh and mesh.mesh.size.length() > 5:
+			if mesh.get_parent().has_meta("house_shell"):
+				continue
 			var material := mesh.material_override as StandardMaterial3D
 			if material.albedo_texture != null:
 				continue
@@ -142,10 +150,14 @@ func build_light() -> void:
 
 func build_home(at: Vector3, grandparents: bool) -> void:
 	var room := Node3D.new()
+	room.name = "Grandparents home" if grandparents else "Family home"
+	room.set_meta("house_shell", true)
 	add_child(room)
 	room.position = at
-	# Flush with the courtyard so the capsule does not catch on a tiny threshold.
-	PoofShapes.box(room, Vector3(0, -0.03, 0), Vector3(14, 0.04, 10), Color("d6b78d"), true)
+	# The courtyard slab already supports the capsule through both doorways.
+	var floorboards := PoofShapes.box(room, Vector3(0, -0.02, 0), Vector3(14, 0.04, 10), Color("d3b594") if grandparents else Color("e4cfaf"))
+	floorboards.material_override.albedo_texture = preload("res://assets/textures/interiors/wood_blocks.svg")
+	floorboards.material_override.uv1_scale = Vector3(15, 9, 1)
 	for x in [-7.0, 7.0]:
 		PoofShapes.box(room, Vector3(x, 1.55, 0), Vector3(0.2, 3.1, 10), Color("e6d7bb"), true)
 	if not grandparents:
@@ -154,15 +166,14 @@ func build_home(at: Vector3, grandparents: bool) -> void:
 	PoofShapes.box(room, Vector3(-2.5, 0.42, -5), Vector3(9, 0.84, 0.2), Color("d8c6a4"), true)
 	PoofShapes.box(room, Vector3(-2.5, 2.7, -5), Vector3(9, 0.8, 0.2), Color("e6d7bb"), true)
 	PoofShapes.box(room, Vector3(6, 1.55, -5), Vector3(2, 3.1, 0.2), Color("e6d7bb"), true)
-	for x in [-6.7, -1.8, 1.9]:
-		PoofShapes.box(room, Vector3(x, 1.6, -4.97), Vector3(0.09, 1.6, 0.14), Props.WOOD, true)
+	if grandparents:
+		for x in [-6.7, -1.8, 1.9]:
+			PoofShapes.box(room, Vector3(x, 1.6, -4.97), Vector3(0.09, 1.6, 0.14), Props.WOOD, true)
 	PoofShapes.box(room, Vector3(0, 3.1, 0), Vector3(14.2, 0.16, 10.2), Color("efe1c4"), true)
 	Decor.furnish(room, grandparents)
+	Front.build(room, grandparents)
 	Props.rug(room, Vector3(1, 0.035, 0), Vector2(6, 6))
 	Props.haftseen(room, Vector3(0, 0, -2))
-	for x in [-5.7, 5.7]:
-		PoofShapes.box(room, Vector3(x, 0.32, 3.6), Vector3(2, 0.55, 0.9), Color("87745d"), true)
-		PoofShapes.box(room, Vector3(x, 0.71, 3.95), Vector3(2, 0.5, 0.17), Color("87745d"), true)
 	var lamp := OmniLight3D.new()
 	lamp.position = Vector3(0, 2.5, 0)
 	lamp.omni_range = 10
@@ -171,29 +182,51 @@ func build_home(at: Vector3, grandparents: bool) -> void:
 	room.add_child(lamp)
 	if grandparents:
 		# The street-facing south wall has a full-height doorway.
-		PoofShapes.box(room, Vector3(-2.5, 1.55, 5), Vector3(9, 3.1, 0.2), Color("e6d7bb"), true)
+		Interiors.grandparents(room)
+		PoofShapes.box(room, Vector3(-2.5, 0.42, 5), Vector3(9, 0.84, 0.2), Color("ded1b9"), true)
+		PoofShapes.box(room, Vector3(-2.5, 2.71, 5), Vector3(9, 0.78, 0.2), Color("ded1b9"), true)
 		PoofShapes.box(room, Vector3(6, 1.55, 5), Vector3(2, 3.1, 0.2), Color("e6d7bb"), true)
 		Props.table(room, Vector3(0, 0, 1.5), Vector2(3, 1.3))
+		var runner := PoofShapes.box(room, Vector3(0, 0.786, 1.5), Vector3(3.04, 0.009, 0.43), Color.WHITE)
+		runner.material_override.albedo_texture = Interiors.WEAVE
 		serving = Node3D.new()
 		room.add_child(serving)
 		for i in range(6):
 			var dish := Vector3(-1 + (i % 3), 0.8, 1.2 + (i / 3) * 0.5)
 			Props.round_shape(serving, dish, 0.24, 0.025, Props.CREAM)
-			Person.sphere(serving, "Herbed rice", dish + Vector3(0, 0.04, 0), Vector3(0.36, 0.08, 0.32), Color("c8c591"))
-			Person.sphere(serving, "Fish", dish + Vector3(0.1, 0.08, 0), Vector3(0.26, 0.07, 0.11), Color("b88848"))
+			Props.round_shape(serving, dish + Vector3.UP * 0.014, 0.219, 0.004, Color("588181"))
+			Props.round_shape(serving, dish + Vector3.UP * 0.018, 0.207, 0.005, Props.CREAM)
+			Person.sphere(serving, "Herbed rice", dish + Vector3(-0.043, 0.054, 0), Vector3(0.27, 0.096, 0.29), Color("d4c897"))
+			for j in range(9):
+				var radius := 0.097 * sqrt(j / 9.0)
+				var herb := dish + Vector3(-0.043 + radius * cos(j * 2.4), 0.101 - 0.013 * j / 9.0, radius * sin(j * 2.4))
+				Person.sphere(serving, "Dill", herb, Vector3(0.026, 0.007, 0.011), Color("688052"))
+			var fillet := Person.sphere(serving, "Fish", dish + Vector3(0.096, 0.049, 0.025), Vector3(0.113, 0.061, 0.24), Color("bc8350"))
+			fillet.rotation.y = 0.20
+			var lemon := Props.round_shape(serving, dish + Vector3(0.10, 0.037, -0.112), 0.052, 0.020, Color("e3b34e"))
+			Props.round_shape(lemon, Vector3.UP * 0.011, 0.044, 0.004, Color("f1d491"))
+		var yogurt := Props.round_shape(serving, Vector3(0.49, 0.83, 1.5), 0.15, 0.084, Color("427272"))
+		yogurt.mesh.bottom_radius = 0.095
+		Props.round_shape(yogurt, Vector3.UP * 0.042, 0.136, 0.004, Color("e8dfc5"))
+		for x in [-0.51, 0.88]:
+			Props.tea_glass(serving, Vector3(x, 0.80, 1.49))
 		serving.hide()
 		PoofShapes.box(room, Vector3(5.8, 0.45, 0), Vector3(1.3, 0.9, 2), Props.WOOD, true)
-		Props.round_shape(room, Vector3(5.8, 1.03, 0), 0.33, 0.24, Color("525d60"))
+		var pot := Props.round_shape(room, Vector3(5.49, 1.03, 0), 0.30, 0.24, Color("99705a"))
+		Props.round_shape(pot, Vector3.UP * 0.122, 0.279, 0.007, Color("bdc295"))
+		for z in [-0.31, 0.31]:
+			PoofShapes.box(pot, Vector3(0, 0.065, z), Vector3(0.16, 0.026, 0.089), Color("766054"))
 		Props.table(room, Vector3(-2.7, 0, 0.5), Vector2(1.2, 0.9))
 		for i in range(8):
 			PoofShapes.box(room, Vector3(-3.1 + i * 0.1, 0.79, 0.5), Vector3(0.064, 0.008, 0.095), Color("823e43"))
-		var house_sign := label_at(room, Vector3(0, 2.5, 4.88), "grandma_house")
-		house_sign.rotation.y = PI
-		house_sign.pixel_size = 0.004
+		PoofShapes.box(room, Vector3(5.98, 1.66, 5.173), Vector3(1.38, 0.32, 0.044), Color("365d5a"))
+		var house_sign := label_at(room, Vector3(5.98, 1.66, 5.201), "grandma_house")
+		house_sign.pixel_size = 0.0017
 		# Ajil and fruit set out beside the Haft-Seen.
 		for i in range(12):
 			Person.sphere(room, "Ajil", Vector3(0.5 + (i % 4) * 0.05, 0.85, -1.7 + (i / 4) * 0.04), Vector3(0.04, 0.035, 0.035), Color("ad8553"))
 	else:
+		Interiors.home(room)
 		PoofShapes.box(room, Vector3(-4.7, 0.27, 3), Vector3(2.1, 0.54, 3.1), Props.WOOD, true)
 		PoofShapes.box(room, Vector3(-4.7, 0.58, 3), Vector3(2, 0.12, 2.9), Color("c7d0bd"))
 		PoofShapes.box(room, Vector3(-4.7, 0.69, 4), Vector3(1.25, 0.17, 0.48), Props.CREAM)
@@ -384,11 +417,12 @@ func target(key: String, at: Vector3) -> void:
 	add_child(node)
 	targets[key] = node
 
-func person(at: Vector3, clothes: Color, style: int) -> Node3D:
+func person(at: Vector3, clothes: Color, style: int, hair := Color("3b302e")) -> Node3D:
 	var node := Node3D.new()
 	add_child(node)
 	node.position = at
-	Person.build(node, clothes, Color("c4977b"), Color("3b302e"), style)
+	Person.build(node, clothes, Color("c4977b"), hair, style)
+	Person.articulate_head(node)
 	return node
 
 func label_at(parent: Node3D, at: Vector3, key: String) -> Label3D:
