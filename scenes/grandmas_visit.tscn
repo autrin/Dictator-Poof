@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scripts/grandmas_visit.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/nowruz_preview.tscn" id="1"]
 
-[node name="GrandmasVisit" type="Node3D"]
-script = ExtResource("1")
+[node name="GrandmasVisit" instance=ExtResource("1")]
+start_at = 2

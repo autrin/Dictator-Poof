@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://d1cj81kvjv3sk"]
+
+[ext_resource type="Script" uid="uid://cac1ej88chtgi" path="res://scripts/nowruz_preview.gd" id="1"]
+
+[node name="NowruzPreview" type="Node3D" unique_id=56946997]
+script = ExtResource("1")
+start_at = 0

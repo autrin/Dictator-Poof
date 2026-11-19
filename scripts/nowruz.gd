@@ -498,8 +498,7 @@ func advance() -> void:
 			marker.hide()
 			game.hud.hud.hide()
 			game.player.empty_hands.hide()
-			for i in range(life.officers.size()):
-				life.motion.walk(life.officers[i], [Vector3(-6 + i, 0, -18), Vector3(-7 + i, 0, -23)], 1.3)
+			life.dismiss_patrol()
 			return
 		"sal":
 			rules.minute = 11 * 60

@@ -42,10 +42,13 @@ private. A patrol entering the house breaks up the party.
 Import `project.godot` into **Godot 4.7.2 Standard**, then press **F5**.
 No .NET SDK or export is needed.
 
-The opening home has a screened sleeping corner and a sitting room with an
-original foothill print. To go straight to the grandparents’ visit, open
-`scenes/grandmas_visit.tscn` and press **F6**. You arrive with a packed
-pastry box. Follow your sister inside to see her set it beside the tea.
+To start partway through Nowruz in the Godot editor, open
+`scenes/nowruz_preview.tscn`, select **NowruzPreview** in the Scene dock,
+and choose **Start At** in the Inspector. Press **F6** (Run Current Scene).
+Choose **Wake Up**, **Bakery Arrival**, **Visit Grandma**, or **Family Lunch**.
+At lunch, the family is eating and you can walk to the card table to play Hokm.
+Restarting the story in this preview returns to the selected moment.
+The existing `scenes/grandmas_visit.tscn` shortcut still opens at Grandma’s door.
 
 To play only Hokm in the Godot editor, open `scenes/hokm.tscn` in the
 FileSystem dock and press **F6** (Run Current Scene). Choose trump and play
@@ -130,6 +133,7 @@ With Godot on PATH:
 ```sh
 godot --headless --path . --editor --import --quit
 godot --headless --path . --fixed-fps 60 --script tests/nowruz.gd
+godot --headless --path . --fixed-fps 60 --script tests/nowruz_preview.gd
 godot --headless --path . --fixed-fps 60 --script tests/smoke.gd
 ```
 

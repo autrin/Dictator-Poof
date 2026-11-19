@@ -213,13 +213,31 @@ func open() -> void:
 	refresh_language()
 
 func add_piece(kind: int) -> void:
-	if not overlay.visible or sealed or selection.size() == CAPACITY:
+	if not overlay.visible or sealed or selection.size() == CAPACITY or not has_stock(kind):
 		return
+	take_from_tray(kind)
+	refresh_language()
+
+func take_from_tray(kind: int) -> void:
 	var pastry: Node3D = stock[kind].pop_back()
 	move_piece(pastry, gift.position + Art.slot(selection.size()))
 	selection.append(kind)
 	packed_pieces.append(pastry)
-	refresh_language()
+
+func has_stock(kind: int, count: int = 1) -> bool:
+	return kind >= 0 and kind < stock.size() and stock[kind].size() >= count
+
+## Prepare a complete story gift without opening the counter or changing cameras.
+func pack_assortment(kinds: Array[int]) -> bool:
+	if packing or sealed or not selection.is_empty() or kinds.size() != CAPACITY:
+		return false
+	for kind in kinds:
+		if not has_stock(kind, kinds.count(kind)):
+			return false
+	for kind in kinds:
+		take_from_tray(kind)
+	seal_box()
+	return true
 
 func undo_piece() -> void:
 	if not overlay.visible or sealed or selection.is_empty():
@@ -252,17 +270,22 @@ func wrap_box() -> void:
 		while not selection.is_empty():
 			undo_piece()
 		position_lid(false)
+		refresh_language()
 	else:
-		for pastry: Node3D in flights:
-			pastry.position = flights[pastry].to
-		flights.clear()
-		sealed = true
-		position_lid(true)
-		if game != null:
+		seal_box()
+
+func seal_box() -> void:
+	for pastry: Node3D in flights:
+		pastry.position = flights[pastry].to
+	flights.clear()
+	sealed = true
+	position_lid(true)
+	if game != null:
+		if packing:
 			packing = false
 			overlay.hide()
 			camera.clear_current(false)
-			wrapped.emit()
+		wrapped.emit()
 	refresh_language()
 
 func reaction() -> String:
