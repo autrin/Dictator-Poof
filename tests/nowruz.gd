@@ -107,6 +107,33 @@ func wait_scene() -> void:
 	check(false, "scene finishes without blocked routes: " + game.world.life.trip_phase)
 
 func run() -> void:
+	var standalone := preload("res://scenes/hokm.tscn").instantiate()
+	root.add_child(standalone)
+	await settle()
+	var table: Control = standalone.table
+	check(table.hand.get_child_count() == 5, "standalone scene opens directly on the deal")
+	var previous_language: String = standalone.language
+	var key := InputEventKey.new()
+	key.keycode = KEY_F2
+	key.pressed = true
+	root.push_input(key, true)
+	check(standalone.language != previous_language, "F2 switches language in standalone Hokm")
+	click_at(table.actions.get_child(1))
+	for i in range(66):
+		if table.rules.finished():
+			break
+		if table.rules.trick.size() == 4:
+			click_at(table.next_button)
+		elif table.rules.turn == 0:
+			var legal: int = table.rules.legal_cards(0)[0]
+			click_at(table.hand.get_child(table.rules.hands[0].find(legal)))
+		else:
+			table._process(table.TURN_DELAY + 0.01)
+	check(table.rules.finished(), "standalone hand can be played to completion")
+	click_at(table.next_button)
+	await settle()
+	check(standalone.table.hand.get_child_count() == 5 and standalone.table.rules.trump == -1, "playing again opens a fresh standalone hand")
+	standalone.free()
 	var rules := Rules.new()
 	rules.ramadan = true
 	rules.minute = rules.dawn - 1

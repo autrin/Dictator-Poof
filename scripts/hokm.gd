@@ -11,7 +11,8 @@ const INK := Color("283e3c")
 const RUST := Color("904d3f")
 const GOLD := Color("efc991")
 const TURN_DELAY := 0.58
-var game: Node3D
+var game: Node
+var leave_label := "hokm_leave"
 var rules := Rules.new()
 var board := Cloth.new()
 var hand := Control.new()
@@ -140,7 +141,7 @@ func refresh() -> void:
 	draw_hand(legal)
 	draw_trick()
 	next_button.visible = rules.trick.size() == 4 or rules.finished()
-	next_button.text = game.localize("hokm_leave" if rules.finished() else "hokm_next")
+	next_button.text = game.localize(leave_label if rules.finished() else "hokm_next")
 	status.text = turn_prompt(legal)
 
 func draw_hand(legal: Array) -> void:

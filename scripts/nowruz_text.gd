@@ -71,6 +71,7 @@ const STRINGS := {
 	"drink_fine": ["Patrol: Drinking in public during Ramadan? You’re being cited. Do it again and we’ll take you in.", "مأمور: در رمضان جلوی مردم آب می‌خوری؟ برایت جریمه ثبت می‌کنیم. تکرار کنی بازداشتت می‌کنیم."],
 	"drink_detained": ["The patrol detains you for public drinking. After questioning, you are released and rejoin your family. The citation remains.", "گشت به‌خاطر نوشیدن در ملأعام بازداشتت می‌کند. پس از بازجویی آزاد می‌شوی و به خانواده می‌پیوندی. جریمه همچنان ثبت است."],
 	"hokm_title": ["Hokm", "حکم"],
+	"hokm_deal_again": ["Play another hand", "یک دست دیگر بازی کن"],
 	"hokm_place": ["Grandma’s table", "میز مادربزرگ"],
 	"hokm_choose": ["Look at your five cards and choose trump.", "پنج کارتت را ببین و حکم را بگو."],
 	"hokm_team_0": ["You & Cousin · %d", "تو و پسرخاله · %d"],

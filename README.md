@@ -42,6 +42,10 @@ private. A patrol entering the house breaks up the party.
 Import `project.godot` into **Godot 4.7.2 Standard**, then press **F5**.
 No .NET SDK or export is needed.
 
+To play only Hokm in the Godot editor, open `scenes/hokm.tscn` in the
+FileSystem dock and press **F6** (Run Current Scene). Choose trump and play
+with the mouse. **F2** switches language and **F8** stops the run.
+
 | Control | Action |
 | --- | --- |
 | WASD / mouse | Move / look |
