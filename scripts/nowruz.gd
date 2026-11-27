@@ -97,6 +97,7 @@ func _ready() -> void:
 	target("grandma", Vector3(-1.9, 0, -17.3))
 	target("sal", Vector3(0, 0, -46))
 	target("gift", Vector3(-2.77, 0, -47.65))
+	target("album_garden", Vector3(0, 0, -2))
 	targets["help"] = life.cook
 	target("lunch", Vector3(2, 0, -42.5))
 	target("cards", Vector3(-2.7, 0, -43.5))
@@ -445,6 +446,37 @@ func spawn_player() -> void:
 func objective() -> String:
 	return game.localize("action_" + STEPS[stage])
 
+func bearing() -> String:
+	if stage == 0 or movement_locked() or life.busy() or cafe.seated:
+		return ""
+	var target_pos: Vector3 = targets[STEPS[stage]].global_position
+	var local: Vector3 = game.player.to_local(target_pos)
+	var distance := Vector2(local.x, local.z).length()
+	if distance < 2.5:
+		return ""
+	var arrows := ["↑", "↗", "→", "↘", "↓", "↙", "←", "↖"]
+	var sector := posmod(roundi(atan2(local.x, -local.z) / (PI / 4)), 8)
+	return "     ·     " + game.localize("objective_bearing") % [arrows[sector], roundi(distance)]
+
+func photo_subject() -> int:
+	if movement_locked() or life.busy() or cafe.seated:
+		return -1
+	var subjects := [targets.album_garden, targets.pastry, targets.gift]
+	var available := [stage >= 2, bakery.sealed, pastry_box.visible and not pastry_lid.visible]
+	for i in range(subjects.size()):
+		if available[i] and not game.keepsakes.has(i) and game.near_and_visible(subjects[i]):
+			return i
+	return -1
+
+func take_photo() -> void:
+	var subject := photo_subject()
+	if subject < 0:
+		return
+	game.keepsakes.append(subject)
+	game.hud.show_print(subject)
+	game.play_tone(720, 0.06, 0.09)
+	game.save_progress()
+
 func prompt() -> String:
 	if life.busy():
 		return game.localize("scene_wait")
@@ -513,17 +545,21 @@ func advance() -> void:
 		"cards":
 			life.eating = false
 			rules.minute = 17 * 60
-			cards = Hokm.new()
-			cards.game = game
-			game.hud.add_child(cards)
-			cards.finished.connect(finish_cards)
+			open_cards()
 			return
 	complete_step()
+
+func open_cards() -> void:
+	cards = Hokm.new()
+	cards.game = game
+	game.hud.add_child(cards)
+	cards.finished.connect(finish_cards)
 
 func complete_step() -> void:
 	stage = mini(stage + 1, STEPS.size() - 1)
 	update_time()
 	apply_language()
+	game.save_left = 0.0
 
 func finish_cards() -> void:
 	stage = 13
@@ -531,6 +567,7 @@ func finish_cards() -> void:
 	update_time()
 	apply_language()
 	game.notify("line_cards_done", 10)
+	game.save_left = 0.0
 
 func teleport(at: Vector3, look: Vector3) -> void:
 	game.player.position = at

@@ -27,8 +27,15 @@ visible officer. Cooking and eating use short character animations, and the
 evening visit reuses Grandma's house. These are choreographed scenes rather
 than a traffic or cooking simulation. Hokm
 uses four players, partnerships, suit-following and trump, ending at seven
-tricks for one team; a full seven-point match is not implemented. Progress is
-session-only. The character models and environments remain stylized.
+tricks for one team; a full seven-point match is not implemented. Named local
+profiles carry the visit and the family album across sessions, including a
+partly packed gift or a hand in progress. The character models and environments remain stylized.
+
+During the visit, the player can make three pictures for the family album.
+The ribbon on the sabzeh belongs to Mum, the pastry box recalls the sister’s
+care on the drive, and the tea by the window recalls Grandma’s way of looking
+after each guest. Bringing the three pictures together reveals a note from
+Grandma asking to take the next family photograph herself.
 
 ## Kaveh Lane
 

@@ -19,8 +19,9 @@ the counter. Interiors include original patterned carpets, tilework, curtains,
 ceramics, and chandeliers. At Grandma’s Hokm table, choose trump from five
 cards, then play a partnership hand with your cousin across from you. Each
 relative lays down a card in turn. The winning card is edged in gold before
-you collect the trick. Progress
-lasts for the current session.
+you collect the trick. Three optional album pictures follow the visit from
+the family Haft-Seen to Bahar’s counter and Grandma’s tea table. Collect all
+three to read Grandma’s inscription.
 
 After the dinner visit, read your cousin’s note on the blue **Kaveh Lane** gate
 across the street. Collect the pistol case and enter the original armed mission,
@@ -41,6 +42,16 @@ private. A patrol entering the house breaks up the party.
 
 Import `project.godot` into **Godot 4.7.2 Standard**, then press **F5**.
 No .NET SDK or export is needed.
+
+Enter your name and choose **Wake up** to start the visit or **Kaveh Lane /
+Night Mission** to play the lane directly. On your next visit, choose your
+name and **Continue playing**. **New profile** starts a separate game.
+The game saves locally every five seconds during play, on pause, on normal
+exit and at story milestones. It keeps the previous save as a backup.
+Continue restores your position and view, the family’s journey, your pastry
+box or Hokm hand, and progress in the lane. After a defeat, retry returns to
+your last living save. Save files live in Godot’s `user://profiles/` folder.
+The F6 chapter previews run independently of player profiles.
 
 To start partway through Nowruz in the Godot editor, open
 `scenes/nowruz_preview.tscn`, select **NowruzPreview** in the Scene dock,
@@ -65,6 +76,8 @@ wrapping the box. In the story, your sister carries it to Grandma’s. Press
 | Shift / Ctrl / Space | Sprint / crouch / jump |
 | E | Advance nearby story interactions, browse books, order coffee, sit or speak |
 | F | Drink water in the family chapter |
+| C | Photograph a nearby album subject when its prompt appears |
+| J | Open or close the family album. Unfilled pages give clues |
 | Mouse / left click | Choose trump and play legal cards at the Hokm table |
 | Left click / R | Fire / reload in the night mission |
 | H | Holster or draw the gun in the night mission |
@@ -135,6 +148,7 @@ godot --headless --path . --editor --import --quit
 godot --headless --path . --fixed-fps 60 --script tests/nowruz.gd
 godot --headless --path . --fixed-fps 60 --script tests/nowruz_preview.gd
 godot --headless --path . --fixed-fps 60 --script tests/smoke.gd
+godot --headless --path . --fixed-fps 60 --script tests/profiles.gd
 ```
 
 Tested on Windows with Godot 4.7.2: integration checks cover the family story,
@@ -145,6 +159,7 @@ A full manual playthrough and performance benchmark remain to be done.
 ## Credits
 
 Original code and procedural art: [GPL-3.0-or-later](LICENSE).
+The three album illustrations have [artwork and license notes](assets/album/README.md).
 Bundled Persian font: [Vazirmatn, SIL OFL 1.1](assets/fonts/vazirmatn/OFL.txt),
 by the Vazirmatn Project Authors. [Source and credits](assets/fonts/vazirmatn/README.md).
 The existing face image in `assets/textures/faces/` is separate from these
