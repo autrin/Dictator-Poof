@@ -1,4 +1,7 @@
 .godot/
+.import/
+export_presets.cfg.tmp
+*.translation
 builds/
 *.tmp
 *.log
@@ -6,3 +9,14 @@ builds/
 Thumbs.db
 .vscode/
 docs/PERSONAL SOURCE NOTES DO NOT PUBLISH.md
+.env
+.env.*
+!.env.example
+/.mcp.json
+/.mcp.json.*
+/addons/.godot_ai_update/
+mcp_token
+export_credentials.cfg
+*.p12
+*.pfx
+*.key

@@ -98,6 +98,15 @@ func _process(delta: float) -> void:
 			elapsed = 0.0
 		return
 	elapsed += delta
+	pose_encounter()
+	for i in range(BEAT_TIMES.size()):
+		if elapsed >= BEAT_TIMES[i] and shown_beat < i:
+			shown_beat = i
+			game.notify("park_beat_%d" % i, 3.1)
+	if elapsed >= 23.2:
+		completed = true
+
+func pose_encounter() -> void:
 	van.position.z = lerpf(7.0, 3.3, clampf(elapsed / 2.2, 0.0, 1.0))
 	for i in range(civilians.size()):
 		var person := civilians[i]
@@ -138,9 +147,3 @@ func _process(delta: float) -> void:
 		else:
 			left_arm.position.y = 1.43
 			left_arm.rotation.z = 0.0
-	for i in range(BEAT_TIMES.size()):
-		if elapsed >= BEAT_TIMES[i] and shown_beat < i:
-			shown_beat = i
-			game.notify("park_beat_%d" % i, 3.1)
-	if elapsed >= 23.2:
-		completed = true

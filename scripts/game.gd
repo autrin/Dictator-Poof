@@ -9,6 +9,14 @@ const Locale := preload("res://scripts/localization.gd")
 const BackgroundMusic := preload("res://scripts/background_music.gd")
 const Nowruz := preload("res://scripts/nowruz.gd")
 const StoryText := preload("res://scripts/nowruz_text.gd")
+const Profiles := preload("res://scripts/player_profiles.gd")
+const RunState := preload("res://scripts/run_state.gd")
+var profiles := Profiles.new()
+var profile_id := ""
+var profile_name := ""
+var keepsakes: Array[int] = []
+var save_left := 5.0
+var save_failed := false
 var story_mode := true
 var late_night := false
 
@@ -49,7 +57,9 @@ var sound_cache: Dictionary = {}
 var navigation := AStarGrid2D.new()
 
 func _ready() -> void:
+	get_tree().auto_accept_quit = false
 	load_settings()
+	profiles.refresh()
 	configure_input()
 	music = BackgroundMusic.new()
 	add_child(music)
@@ -62,7 +72,8 @@ func _ready() -> void:
 func configure_input() -> void:
 	var keys := {"forward": KEY_W, "back": KEY_S, "left": KEY_A, "right": KEY_D,
 		"jump": KEY_SPACE, "sprint": KEY_SHIFT, "reload": KEY_R, "interact": KEY_E, "holster": KEY_H,
-		"pause": KEY_ESCAPE, "crouch": KEY_CTRL, "language": KEY_F2, "drink": KEY_F}
+		"pause": KEY_ESCAPE, "crouch": KEY_CTRL, "language": KEY_F2, "drink": KEY_F,
+		"album": KEY_J, "photograph": KEY_C}
 	for action: String in keys:
 		if not InputMap.has_action(action):
 			InputMap.add_action(action)
@@ -77,10 +88,12 @@ func configure_input() -> void:
 
 func build_run() -> void:
 	active = false
+	if is_instance_valid(hud):
+		hud.print_index = -1
 	if is_instance_valid(music):
 		music.stop()
 	if is_instance_valid(world):
-		if story_mode and is_instance_valid(world.get("cards")):
+		if is_instance_valid(world.get("cards")):
 			world.cards.free()
 		world.free()
 	if is_instance_valid(player):
@@ -151,16 +164,93 @@ func chase_path(from: Vector3, to: Vector3) -> PackedVector2Array:
 func start_or_resume() -> void:
 	# Button signals run outside the physics step, so rebuilding here is safe.
 	if ended and not victory:
+		if profiles.entries.has(profile_id):
+			load_profile(profile_id)
+			return
 		build_run()
 	started = true
 	active = true
 	music.start_or_resume()
 	hud.hide_menu()
 	player.update_viewmodel()
+	if story_mode and world.life.trip_phase == "driving":
+		player.empty_hands.hide()
+
+func begin_profile(display_name: String, night: bool) -> void:
+	var problem := profiles.create_name_error(display_name)
+	if problem != "":
+		hud.show_profile_error(problem)
+		return
+	var original_story := story_mode
+	story_mode = not night
+	late_night = false
+	keepsakes.clear()
+	build_run()
+	profile_id = profiles.new_id()
+	profile_name = display_name.strip_edges()
+	started = true
+	if not save_progress():
+		profile_id = ""
+		profile_name = ""
+		started = false
+		story_mode = original_story
+		build_run()
+		hud.show_profile_error("save_failed")
+		return
+	hud.apply_language()
+	start_or_resume()
+
+func load_profile(id: String) -> void:
+	var entry: Dictionary = profiles.entries[id]
+	var data: Dictionary = entry.run
+	profile_id = id
+	profile_name = entry.name
+	story_mode = data.story
+	late_night = data.late
+	build_run()
+	RunState.restore(self, data)
+	save_left = 5.0
+	save_failed = false
+	start_or_resume()
+
+func save_progress() -> bool:
+	if profile_id == "" or not started or (ended and not victory):
+		return true
+	save_left = 5.0
+	save_failed = not profiles.write(profile_id, profile_name, RunState.capture(self))
+	return not save_failed
+
+func return_to_title() -> void:
+	if not save_progress():
+		hud.show_profile_error("save_failed")
+		return
+	profile_id = ""
+	profile_name = ""
+	started = false
+	active = false
+	story_mode = true
+	late_night = false
+	keepsakes.clear()
+	build_run()
+	profiles.refresh()
+	hud.populate_profiles()
+	hud.show_menu("title")
+
+func quit_game() -> void:
+	if active:
+		pause_run()
+	elif started:
+		save_progress()
+	if not started or not save_failed:
+		get_tree().quit()
+	else:
+		hud.show_profile_error("save_failed")
+		hud.confirm_quit.popup_centered()
 
 func restart_mission() -> void:
 	build_run()
 	start_or_resume()
+	save_progress()
 
 func start_night(after_visit: bool = false) -> void:
 	if story_mode and is_instance_valid(world.cards):
@@ -170,6 +260,7 @@ func start_night(after_visit: bool = false) -> void:
 	build_run()
 	hud.apply_language()
 	start_or_resume()
+	save_progress()
 
 func finish_visit(chapter_id: int) -> void:
 	# A restart or title-screen launch may have replaced the requesting chapter.
@@ -184,6 +275,18 @@ func finish_visit(chapter_id: int) -> void:
 	notify("lane_arrival", 14)
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("album") and not event.is_echo() and started and (not ended or victory):
+		if active:
+			pause_run()
+			hud.open_album()
+		elif hud.album.visible:
+			start_or_resume()
+		get_viewport().set_input_as_handled()
+		return
+	if event.is_action_pressed("photograph") and not event.is_echo() and active and story_mode:
+		world.take_photo()
+		get_viewport().set_input_as_handled()
+		return
 	if story_mode and active and event.is_action_pressed("drink") and not event.is_echo():
 		world.drink()
 		get_viewport().set_input_as_handled()
@@ -202,10 +305,13 @@ func _unhandled_input(event: InputEvent) -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and active and is_instance_valid(hud):
 		pause_run()
+	if what == NOTIFICATION_WM_CLOSE_REQUEST and is_instance_valid(hud):
+		quit_game()
 
 func pause_run() -> void:
 	active = false
 	music.stream_paused = true
+	save_progress()
 	hud.show_menu("pause")
 
 func update_music_mix() -> void:
@@ -247,6 +353,10 @@ func refresh_message() -> void:
 func _process(delta: float) -> void:
 	if active:
 		run_time += delta
+		if profile_id != "":
+			save_left -= delta
+			if save_left <= 0:
+				save_progress()
 		hit_marker = maxf(0.0, hit_marker - delta)
 		hurt_flash = maxf(0.0, hurt_flash - delta)
 		notification_left = maxf(0.0, notification_left - delta)
@@ -320,20 +430,25 @@ func interact() -> void:
 		return
 	for relay in relays:
 		if not relay.online and near_and_visible(relay.node):
-			relay.online = true
-			relays_online += 1
-			relay.screen.material_override = PoofShapes.material(Color("81dbc8"), 1.0)
-			relay.label.text = localize("power_restored")
-			relay.label.modulate = Color("81dbc8")
+			light_relay(relays.find(relay))
 			player.health = mini(100, player.health + 25)
-			world.restore_district(relays.find(relay))
 			notify("relay_message_%d" % (relays_online - 1), 4.0)
 			play_tone(640.0, 0.2, 0.18)
-			if relays_online == 3:
-				broadcast_screen.material_override = PoofShapes.material(Color("81dbc8"), 1.0)
+			save_progress()
 			return
 	if relays_online == 3 and near_and_visible(broadcast):
 		finish(true)
+
+func light_relay(index: int) -> void:
+	var relay := relays[index]
+	relay.online = true
+	relays_online += 1
+	relay.screen.material_override = PoofShapes.material(Color("81dbc8"), 1.0)
+	relay.label.text = localize("power_restored")
+	relay.label.modulate = Color("81dbc8")
+	world.restore_district(index)
+	if relays_online == 3:
+		broadcast_screen.material_override = PoofShapes.material(Color("81dbc8"), 1.0)
 
 func finish(won: bool) -> void:
 	if ended:
@@ -345,6 +460,7 @@ func finish(won: bool) -> void:
 	if won:
 		world.celebrate()
 		player.set_gun_drawn(false)
+		save_progress()
 	hud.show_menu("won" if won else "lost")
 
 func tracer(from: Vector3, to: Vector3, color: Color) -> void:

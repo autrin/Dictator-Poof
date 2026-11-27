@@ -11,7 +11,7 @@ const STRINGS := {
 	"nowruz_start": ["WAKE UP", "بیدار شو"],
 	"story_restart": ["RESTART THE VISIT", "دیدار را از نو شروع کن"],
 	"night_start": ["KAVEH LANE / NIGHT MISSION", "کوچهٔ کاوه / مأموریت شب"],
-	"story_controls": ["WASD Move · E Interact · F Drink water · F2 Language · Esc Pause", "WASD حرکت · E تعامل · F نوشیدن آب · F2 زبان · Esc مکث"],
+	"story_controls": ["WASD Move · E Interact · F Drink · C Photo · J Album · F2 Language · Esc Pause", "WASD حرکت · E تعامل · F آب · C عکس · J آلبوم · F2 زبان · Esc مکث"],
 	"story_time": ["NOWRUZ  /  %s", "نوروز / %s"],
 	"action_wake": ["[E] Get out of bed", "[E] از تخت بلند شو"],
 	"action_blinds": ["Open the garden blinds", "پردهٔ رو به حیاط را باز کن"],
